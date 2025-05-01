@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.ui.theme
 
 import android.app.Activity
+import android.hardware.lights.Light
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,26 +13,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = PrimaryDark100,
+    secondary = PrimaryDark75,
+    tertiary = PrimaryDarkActive,
+    background = DarkBackground,
+    surface = DarkBackground,
+    onPrimary = Black100,
+    onSecondary = Black100,
+    onTertiary = Black100,
+    onBackground = White100,
+    onSurface = White100,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = PrimaryLight100,
+    secondary = PrimaryLight75,
+    tertiary = PrimaryLightActive,
+    background = LightBackground,
+    surface = LightBackground,
+    onPrimary = White100,
+    onSecondary = White100,
+    onTertiary = White100,
+    onBackground = Black100,
+    onSurface = Black100,
 )
+
 
 @Composable
 fun TaskSpacesTheme(
