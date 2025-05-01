@@ -1,0 +1,1 @@
+Serialized object and data classes to navigate between screens (use safe navigation only)

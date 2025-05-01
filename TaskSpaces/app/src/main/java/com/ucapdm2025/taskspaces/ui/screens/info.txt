@@ -1,0 +1,1 @@
+Main screen of the app to show the corresponding sections of the app

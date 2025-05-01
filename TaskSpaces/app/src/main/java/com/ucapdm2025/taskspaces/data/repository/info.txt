@@ -1,0 +1,1 @@
+Repository to manage the data of the app. Tells the way of how to get the data
