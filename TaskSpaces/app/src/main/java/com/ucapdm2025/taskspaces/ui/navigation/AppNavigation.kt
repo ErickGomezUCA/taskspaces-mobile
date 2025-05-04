@@ -11,37 +11,28 @@ import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-//        TODO: Change startDestination to OnboardingRoute when implemented
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
-        composable<OnboardingRoute> {
-//            Onboarding screen goes here
-        }
-
-        composable<LoginRoute> {
-//            Login screen goes here
-        }
-
-        composable<SignupRoute> {
-//            Signup screen goes here
-        }
-
         composable<HomeRoute> {
                 HomeScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
+//                Use this ID to get the workspace
             val workspaceId = backStackEntry.arguments?.getString("workspaceId") ?: 0
 
 //            Workspace screen goes here
         }
 
         composable<ProjectRout> { backStackEntry ->
+//                Use this ID to get the project
             val projectId = backStackEntry.arguments?.getString("projectId") ?: 0
 //            Project screen goes here
         }
 
         composable<TaskRoute> { backStackEntry ->
+//                Use this ID to get the task
+//                TODO: See if this is correct, because tasks are handled by a dialog instead of a view
             val taskId = backStackEntry.arguments?.getString("taskId") ?: 0
 //            Task screen goes here
         }
