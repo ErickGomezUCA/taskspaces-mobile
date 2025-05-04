@@ -14,8 +14,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TaskSpacesTheme {
-                OnboardingNavigation()
-//                AppScaffold()
+
+//                OnboardingNavigation provides the navigation from onboarding screen, then
+//                to login or signup, and finally to the main app screen
+
+//                To avoid that navigation and start straight into the main app navigation,
+//                just uncomment AppScaffold and comment the OnboardingNavigation
+
+//                OnboardingNavigation()
+                AppScaffold()
             }
         }
     }
