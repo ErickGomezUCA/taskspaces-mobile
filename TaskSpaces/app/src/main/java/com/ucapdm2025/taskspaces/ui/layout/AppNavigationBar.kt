@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
@@ -55,8 +56,8 @@ fun AppNavigationBar(navController: NavHostController) {
         ),
         NavItem(
             label = "Bookmarks",
-            filledIcon = Icons.Outlined.Bookmark,
-            outlinedIcon = Icons.Outlined.Bookmark,
+            filledIcon = Icons.Filled.Bookmark,
+            outlinedIcon = Icons.Outlined.BookmarkBorder,
             route = BookmarksRoute
         )
     )
