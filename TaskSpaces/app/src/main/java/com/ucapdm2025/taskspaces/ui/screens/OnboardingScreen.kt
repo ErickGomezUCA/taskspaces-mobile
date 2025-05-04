@@ -13,6 +13,11 @@ import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.navigation.LoginRoute
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+/**
+ * A composable function that displays the onboarding screen.
+ *
+ * @param navController The [NavHostController] used to navigate to the login screen.
+ */
 @Composable
 fun OnboardingScreen(navController: NavHostController) {
     Scaffold { innerPadding ->
@@ -27,6 +32,11 @@ fun OnboardingScreen(navController: NavHostController) {
     }
 }
 
+/**
+ * A composable function that displays the onboarding screen.
+ *
+ * @param navController The [NavHostController] used to navigate to the login screen.
+ */
 @Preview(showBackground = true)
 @Composable
 fun OnboardingScreenPreview() {

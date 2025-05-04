@@ -8,6 +8,10 @@ import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
 import com.ucapdm2025.taskspaces.ui.screens.LoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
 
+/**
+ * A composable function that sets up the navigation graph for the onboarding flow.
+ * Includes routes for onboarding, login, signup, and the main app scaffold.
+ */
 @Composable
 fun OnboardingNavigation() {
     val navController = rememberNavController()
