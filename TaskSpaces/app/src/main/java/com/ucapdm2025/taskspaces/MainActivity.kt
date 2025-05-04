@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.ucapdm2025.taskspaces.ui.layout.AppNavigationBar
+import com.ucapdm2025.taskspaces.ui.navigation.AppNavigation
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +23,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TaskSpacesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                val navController = rememberNavController()
+
+                Scaffold(bottomBar = { AppNavigationBar(navController = navController) },  modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
-                        Text(text="Hello World")
+                        AppNavigation(navController = navController)
                     }
                 }
             }
