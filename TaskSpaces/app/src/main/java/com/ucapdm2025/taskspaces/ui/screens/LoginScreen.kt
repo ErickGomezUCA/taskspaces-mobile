@@ -10,28 +10,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.ucapdm2025.taskspaces.ui.navigation.LoginRoute
+import com.ucapdm2025.taskspaces.ui.navigation.AppRoute
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
-fun OnboardingScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController) {
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            Text(text= "Onboarding Screen")
+            Text(text= "Login Screen")
             Button(onClick = {
-                navController.navigate(LoginRoute)
+                navController.navigate(AppRoute)
             }) {
-                Text(text = "Go to login")
+                Text(text = "Go to home")
             }
         }
+
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun OnboardingScreenPreview() {
+fun LoginScreenPreview() {
     TaskSpacesTheme {
-        OnboardingScreen(
+        LoginScreen(
             rememberNavController()
         )
     }

@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
+import com.ucapdm2025.taskspaces.ui.screens.LoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
 
 @Composable
@@ -17,13 +18,16 @@ fun OnboardingNavigation() {
         }
 
         composable<LoginRoute> {
-//            Login screen goes here
+            LoginScreen(navController = navController)
         }
 
         composable<SignupRoute> {
 //            Signup screen goes here
         }
 
+//        Home, workspace, project, tasks, search, bookmarks and user will go in this route
+//        Inside of AppScaffold there is AppNavigation, where the bottom bar handles the
+//        navigation between all those screens
         composable<AppRoute> {
             AppScaffold()
         }
