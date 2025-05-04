@@ -11,6 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.navigation.AppRoute
+import com.ucapdm2025.taskspaces.ui.navigation.LoginRoute
+import com.ucapdm2025.taskspaces.ui.navigation.OnboardingRoute
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
@@ -23,8 +25,12 @@ fun LoginScreen(navController: NavHostController) {
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Text(text= "Login Screen")
+//            Avoid returning to this screen when pressing back button
             Button(onClick = {
-                navController.navigate(AppRoute)
+                navController.navigate(AppRoute) {
+                    popUpTo(LoginRoute) { inclusive = true }
+                    launchSingleTop = true
+                }
             }) {
                 Text(text = "Go to home")
             }

@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
 //                To avoid that navigation and start straight into the main app navigation,
 //                just uncomment AppScaffold and comment the OnboardingNavigation
 
-//                OnboardingNavigation()
-                AppScaffold()
+                OnboardingNavigation()
+//                AppScaffold()
             }
         }
     }
