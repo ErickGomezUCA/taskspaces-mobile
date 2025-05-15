@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,12 +35,12 @@ fun Container(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     ) { content() }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 fun ContainerPreview() {
     TaskSpacesTheme(darkTheme = true) {
         Container {
-            Text(text = "Container Preview")
+            Text(text = "Container Preview", color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }
