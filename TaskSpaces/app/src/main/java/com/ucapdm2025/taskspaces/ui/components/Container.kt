@@ -1,7 +1,9 @@
 package com.ucapdm2025.taskspaces.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -22,18 +24,20 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun Container(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Column(
         modifier = modifier
+            .fillMaxWidth()
             .background(
                 color = Color(0x0D21232B),
                 shape = RoundedCornerShape(size = 24.dp)
             )
+            .border(width = 1.dp, color = Color(0x4021232B), shape = RoundedCornerShape(size = 24.dp))
             .padding(24.dp)
     ) { content() }
 }
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 fun ContainerPreview() {
-    TaskSpacesTheme {
+    TaskSpacesTheme(darkTheme = true) {
         Container {
             Text(text = "Container Preview")
         }
