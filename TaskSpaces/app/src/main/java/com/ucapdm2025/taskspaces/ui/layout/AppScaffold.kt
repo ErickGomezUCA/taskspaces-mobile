@@ -20,6 +20,7 @@ fun AppScaffold() {
     val navController = rememberNavController()
 
     Scaffold(
+        topBar = { AppTopBar(title = "Top App Bar") },
         bottomBar = { AppNavigationBar(navController = navController) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
