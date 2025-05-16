@@ -31,6 +31,7 @@ fun AppTopBar(title: String) {
                 Icon(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         },
@@ -40,6 +41,7 @@ fun AppTopBar(title: String) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "User",
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
