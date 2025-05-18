@@ -23,6 +23,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
+/**
+ * A composable function that displays a task card with a title and a list of tags.
+ *
+ * This component is used within the project board to represent individual tasks.
+ * When clicked, it should navigate to the settings or detail screen of the selected task.
+ *
+ * @param title The title of the task to be displayed.
+ * @param tags A list of [Tag] objects representing the labels associated with the task.
+ * @param onClick A lambda function triggered when the card is clicked. Intended to navigate to the task's settings screen.
+ */
 @Composable
 fun TaskCard(
     title: String,
@@ -81,7 +91,12 @@ data class Tag(
     val color: Color
 )
 
-@Preview (showBackground = true)
+/**
+ * A preview composable for the [TaskCard] component.
+ *
+ * Displays a sample task card with mock data for design-time visualization in Android Studio.
+ */
+@Preview(showBackground = true)
 @Composable
 fun TaskCardPreview() {
     val tagsTest = listOf(

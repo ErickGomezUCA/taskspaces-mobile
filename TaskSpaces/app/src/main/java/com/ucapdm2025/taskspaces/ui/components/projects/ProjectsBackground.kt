@@ -9,6 +9,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.ui.theme.ProjectScreenBackground
 
+/**
+ * A composable layout that provides the standard background for the Projects screen.
+ *
+ * This component wraps its content with a full-screen column that applies the
+ * specific background color used exclusively on the Projects screen, along with
+ * consistent padding.
+ *
+ * Use this to ensure visual consistency across all content displayed on the Projects screen.
+ *
+ * @param modifier Optional [Modifier] to be applied to the layout.
+ * @param content The composable content to be displayed within the background.
+ */
 @Composable
 fun ProjectsBackground(
     modifier: Modifier = Modifier,
