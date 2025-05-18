@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,30 +23,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
-
 @Composable
-fun TaskCard() {
-    val task = Task(
-        title = "Task Title",
-        tags = listOf(
-            Tag("Tag 1", Color.Red),
-            Tag("Tag 2", Color.Green)
-        ),
-    )
-    Column(
-        modifier = Modifier
-            .background(PrimaryLight25, RoundedCornerShape(8.dp))
-            .padding(16.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+fun TaskCard(
+    title: String,
+    tags: List<Tag>,
+    //TODO: Replace with real navigation to the task chosen
+    onClick: () -> Unit = {}
+) {
+    Card(
+        modifier = Modifier,
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = PrimaryLight25),
+        onClick = onClick
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = task.title,
+                text = title,
                 color = Black100,
                 fontSize = 16.sp
             )
@@ -52,7 +49,7 @@ fun TaskCard() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                task.tags.forEach { tag ->
+                tags.forEach { tag ->
                     Row(
                         modifier = Modifier
                             .border(1.dp, tag.color, RoundedCornerShape(8.dp))
@@ -72,20 +69,29 @@ fun TaskCard() {
     }
 }
 
-private data class Task(
+// TODO: Replace with actual models
+data class Task(
     val title: String,
     val tags: List<Tag>,
 )
 
-private data class Tag(
+// TODO: Replace with actual models
+data class Tag(
     val title: String,
     val color: Color
 )
 
-@Preview(showBackground = true)
+@Preview (showBackground = true)
 @Composable
 fun TaskCardPreview() {
+    val tagsTest = listOf(
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
+    )
     TaskSpacesTheme {
-        TaskCard()
+        TaskCard(
+            title = "Create inial mockups",
+            tags = tagsTest
+        )
     }
 }
