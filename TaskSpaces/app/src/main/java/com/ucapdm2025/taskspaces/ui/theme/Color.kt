@@ -28,3 +28,5 @@ val White25 = White100.copy(0.25f)
 val White10 = White100.copy(0.1f)
 val White05 = White100.copy(0.05f)
 val LightBackground = Color(0xFFF7F8F8)
+
+val ProjectScreenBackground = Color(0xFF4A4A4A)
