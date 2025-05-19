@@ -30,3 +30,6 @@ val White05 = White100.copy(0.05f)
 val LightBackground = Color(0xFFF7F8F8)
 
 val ProjectScreenBackground = Color(0xFF4A4A4A)
+val PendingStatusColor = Color(0xFF2E88DD)
+val DoingStatusColor = Color(0xFFDD972E)
+val DoneStatusColor = Color(0xFF26AA5D)
