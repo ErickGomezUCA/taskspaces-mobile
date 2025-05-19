@@ -17,6 +17,14 @@ import com.ucapdm2025.taskspaces.ui.theme.DoneStatusColor
 import com.ucapdm2025.taskspaces.ui.theme.PendingStatusColor
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
+/**
+ * A composable function that displays a visual label representing the task's current status.
+ *
+ * The label is styled with a background color and text based on the provided [StatusVariations] value.
+ * This component is typically used as a header or tag within a task status column.
+ *
+ * @param status The current status of the task, used to determine the label and background color.
+ */
 @Composable
 fun TaskStatus(status: StatusVariations) {
     val (label, backgroundColor) = when (status) {
@@ -35,6 +43,11 @@ fun TaskStatus(status: StatusVariations) {
     )
 }
 
+/**
+ * A preview composable for the [TaskStatus] component.
+ *
+ * Displays all possible status variations (Pending, Doing, Done) to visualize their appearance.
+ */
 @Preview(showBackground = true)
 @Composable
 fun TaskStatusPreview() {

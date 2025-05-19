@@ -21,6 +21,17 @@ import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
+/**
+ * A composable function that displays a column of tasks grouped by their status.
+ *
+ * This component is used to represent a task status column (e.g., Pending, In Progress, Done)
+ * within a project board. It includes a header for the status, a list of task cards,
+ * and a button to add a new task.
+ *
+ * @param status The current status category represented by this column.
+ * @param tasks A list of [Task] objects to be displayed under the given status.
+ * @param onAddTaskClick A lambda function triggered when the "Add New Task" button is clicked.
+ */
 @Composable
 fun TaskStatusColumn(
     status: StatusVariations,
@@ -42,6 +53,7 @@ fun TaskStatusColumn(
             TaskCard(
                 title = task.title,
                 tags = task.tags,
+                //TODO: Replace with real navigation to the task chosen
                 onClick = {}
             )
         }
@@ -52,6 +64,7 @@ fun TaskStatusColumn(
             horizontalArrangement = Arrangement.Center
         ) {
             TextButton(
+                //TODO: Replace with real function of adding a task
                 onClick = { onAddTaskClick() },
                 contentPadding = PaddingValues(0.dp),
             ) {
@@ -64,6 +77,12 @@ fun TaskStatusColumn(
     }
 }
 
+/**
+ * A preview composable for the [TaskStatusColumn] component.
+ *
+ * Displays a sample column with mock tasks and a dark background to simulate
+ * how the component appears within the Projects screen.
+ */
 @Preview(showBackground = true)
 @Composable
 fun TaskStatusColumnPreview() {
