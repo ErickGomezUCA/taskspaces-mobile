@@ -15,6 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+/**
+ * Top bar for the app, used in all screens.
+ * @param title The title to show in the top bar.
+ */
+// TODO: Define a way to make variants of the same top bar based on the current route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 //TODO: Determine a way to show go back icon ir hide it
