@@ -64,7 +64,7 @@ fun TaskCard(
                         modifier = Modifier
                             .border(1.dp, tag.color, RoundedCornerShape(8.dp))
                             .background(White100, RoundedCornerShape(8.dp))
-                            .padding(4.dp),
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
