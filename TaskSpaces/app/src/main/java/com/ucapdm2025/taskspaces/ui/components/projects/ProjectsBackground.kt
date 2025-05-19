@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.ui.theme.ProjectScreenBackground
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
  * A composable layout that provides the standard background for the Projects screen.
@@ -33,5 +35,23 @@ fun ProjectsBackground(
             .padding(16.dp)
     ) {
         content()
+    }
+}
+
+/**
+ * A preview composable for the [ProjectsBackground] component.
+ *
+ * Displays the Projects screen background with system UI enabled,
+ * allowing developers to visualize layout spacing and theming in design-time previews.
+ */
+@Preview(showSystemUi = true)
+@Composable
+fun ProjectsBackgroundPreview() {
+    TaskSpacesTheme {
+        ProjectsBackground(
+            content = {
+
+            }
+        )
     }
 }
