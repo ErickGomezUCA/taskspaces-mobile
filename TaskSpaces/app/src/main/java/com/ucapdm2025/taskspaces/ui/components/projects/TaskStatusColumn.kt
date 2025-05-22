@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,11 +40,10 @@ fun TaskStatusColumn(
     Column(
         modifier = Modifier
             .background(color = White100, shape = RoundedCornerShape(16.dp))
-            .wrapContentWidth()
-            .wrapContentHeight()
-            .padding(16.dp),
-
+            .padding(16.dp)
+            .width(200.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
+
     ) {
         TaskStatus(status)
 
