@@ -21,7 +21,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 // TODO: Define a way to make variants of the same top bar based on the current route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//TODO: Determine a way to show go back icon ir hide it
+//TODO: Determine a way to show go back icon or hide it
 fun AppTopBar(title: String) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
