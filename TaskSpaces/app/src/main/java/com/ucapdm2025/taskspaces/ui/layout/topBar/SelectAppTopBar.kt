@@ -8,15 +8,15 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun SelectAppTopBar(currentRoute: String) {
     when (currentRoute) {
         "HomeRoute" -> {
-            AppTopBar(title = "Welcome, USER", variant = TopAppBarVariant.HOME)
+            AppTopBar(title = "Welcome, USER", variant = AppTopBarVariant.HOME)
         }
 
         "SearchRoute" -> {
-            AppTopBar(title = "Search", variant = TopAppBarVariant.DEFAULT)
+            AppTopBar(title = "Search", variant = AppTopBarVariant.DEFAULT)
         }
 
         "BookmarksRoute" -> {
-            AppTopBar(title = "Bookmarks", variant = TopAppBarVariant.DEFAULT)
+            AppTopBar(title = "Bookmarks", variant = AppTopBarVariant.DEFAULT)
         }
 
         "WorkspaceRoute",
@@ -27,7 +27,7 @@ fun SelectAppTopBar(currentRoute: String) {
         "SettingsRoute",
         "ChangePasswordRoute" -> {
 //            TODO: Add go back action here
-            AppTopBar(title = "Return", variant = TopAppBarVariant.NAVIGATION)
+            AppTopBar(title = "Return", variant = AppTopBarVariant.NAVIGATION)
         }
 
         else -> {
