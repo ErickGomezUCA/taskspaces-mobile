@@ -25,6 +25,7 @@ import com.ucapdm2025.taskspaces.utils.getTopAppBarContentColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 //TODO: Determine a way to show go back icon or hide it
+// TODO: Add search bar variant
 fun AppTopBar(title: String, variant: TopAppBarVariant = TopAppBarVariant.DEFAULT) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
