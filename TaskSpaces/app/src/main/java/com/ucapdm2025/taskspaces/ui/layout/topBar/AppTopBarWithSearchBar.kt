@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.layout.topBar
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,7 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.ui.components.SearchBar
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -39,18 +42,19 @@ fun AppTopBarWithSearchBar(
                 query = query,
                 placeholder = placeholder,
                 onQueryChange = onQueryChange,
-                onSearch = onSearch
+                onSearch = onSearch,
+                modifier = Modifier.padding(end = 14.dp)
             )
         },
         navigationIcon = {
 //            TODO: Show chevron only when stack is one route ahead of SearchRoute or BookmarksRoute
-            IconButton(onClick = { /* TODO: Handle back navigation */ }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
+//            IconButton(onClick = { /* TODO: Handle back navigation */ }) {
+//                Icon(
+//                    imageVector = Icons.Default.ArrowBackIosNew,
+//                    contentDescription = "Back",
+//                    tint = MaterialTheme.colorScheme.onBackground
+//                )
+//            }
         },
     )
 }

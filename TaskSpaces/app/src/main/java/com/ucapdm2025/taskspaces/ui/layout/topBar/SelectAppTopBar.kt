@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.ui.layout.topBar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
@@ -11,12 +12,14 @@ fun SelectAppTopBar(currentRoute: String) {
             AppTopBar(title = "Welcome, USER", variant = AppTopBarVariant.HOME)
         }
 
+//        TODO: Handle query change and search action
         "SearchRoute" -> {
-            AppTopBar(title = "Search", variant = AppTopBarVariant.DEFAULT)
+            AppTopBarWithSearchBar(query = "", placeholder = "Search...", onQueryChange = {}, onSearch = {})
         }
 
+        //        TODO: Handle query change and search action
         "BookmarksRoute" -> {
-            AppTopBar(title = "Bookmarks", variant = AppTopBarVariant.DEFAULT)
+            AppTopBarWithSearchBar(query = "", placeholder = "Search tasks...", onQueryChange = {}, onSearch = {})
         }
 
         "WorkspaceRoute",
@@ -40,7 +43,9 @@ fun SelectAppTopBar(currentRoute: String) {
 @Composable
 fun SelectAppTopBarHomeLightPreview() {
     TaskSpacesTheme {
-        SelectAppTopBar(currentRoute = "HomeRoute")
+        ExtendedColors {
+            SelectAppTopBar(currentRoute = "HomeRoute")
+        }
     }
 }
 
@@ -48,7 +53,9 @@ fun SelectAppTopBarHomeLightPreview() {
 @Composable
 fun SelectAppTopBarSearchLightPreview() {
     TaskSpacesTheme {
-        SelectAppTopBar(currentRoute = "SearchRoute")
+        ExtendedColors {
+            SelectAppTopBar(currentRoute = "SearchRoute")
+        }
     }
 }
 
@@ -56,7 +63,9 @@ fun SelectAppTopBarSearchLightPreview() {
 @Composable
 fun SelectAppTopBarBookmarksLightPreview() {
     TaskSpacesTheme {
-        SelectAppTopBar(currentRoute = "BookmarksRoute")
+        ExtendedColors {
+            SelectAppTopBar(currentRoute = "BookmarksRoute")
+        }
     }
 }
 
@@ -64,7 +73,9 @@ fun SelectAppTopBarBookmarksLightPreview() {
 @Composable
 fun SelectAppTopBarWorkspaceLightPreview() {
     TaskSpacesTheme {
-        SelectAppTopBar(currentRoute = "WorkspaceRoute")
+        ExtendedColors {
+            SelectAppTopBar(currentRoute = "WorkspaceRoute")
+        }
     }
 }
 
@@ -72,7 +83,9 @@ fun SelectAppTopBarWorkspaceLightPreview() {
 @Composable
 fun SelectAppTopBarDefaultLightPreview() {
     TaskSpacesTheme {
-        SelectAppTopBar(currentRoute = "")
+        ExtendedColors {
+            SelectAppTopBar(currentRoute = "")
+        }
     }
 }
 
@@ -80,7 +93,9 @@ fun SelectAppTopBarDefaultLightPreview() {
 @Composable
 fun SelectAppTopBarHomeDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        SelectAppTopBar(currentRoute = "HomeRoute")
+        ExtendedColors(darkTheme = true) {
+            SelectAppTopBar(currentRoute = "HomeRoute")
+        }
     }
 }
 
@@ -88,7 +103,9 @@ fun SelectAppTopBarHomeDarkPreview() {
 @Composable
 fun SelectAppTopBarSearchDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        SelectAppTopBar(currentRoute = "SearchRoute")
+        ExtendedColors(darkTheme = true) {
+            SelectAppTopBar(currentRoute = "SearchRoute")
+        }
     }
 }
 
@@ -96,7 +113,9 @@ fun SelectAppTopBarSearchDarkPreview() {
 @Composable
 fun SelectAppTopBarBookmarksDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        SelectAppTopBar(currentRoute = "BookmarksRoute")
+        ExtendedColors(darkTheme = true) {
+            SelectAppTopBar(currentRoute = "BookmarksRoute")
+        }
     }
 }
 
@@ -104,7 +123,9 @@ fun SelectAppTopBarBookmarksDarkPreview() {
 @Composable
 fun SelectAppTopBarWorkspaceDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        SelectAppTopBar(currentRoute = "WorkspaceRoute")
+        ExtendedColors(darkTheme = true) {
+            SelectAppTopBar(currentRoute = "WorkspaceRoute")
+        }
     }
 }
 
@@ -112,6 +133,8 @@ fun SelectAppTopBarWorkspaceDarkPreview() {
 @Composable
 fun SelectAppTopBarDefaultDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        SelectAppTopBar(currentRoute = "")
+        ExtendedColors(darkTheme = true) {
+            SelectAppTopBar(currentRoute = "")
+        }
     }
 }
