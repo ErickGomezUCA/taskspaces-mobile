@@ -73,7 +73,7 @@ fun FeedbackIcon(
 
 @Preview(showBackground = true)
 @Composable
-fun FeedbackIconPreview() {
+fun FeedbackIconPreviewLightMode() {
     TaskSpacesTheme {
         ExtendedColors {
             FeedbackIcon(

@@ -42,22 +42,22 @@ fun Container(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 }
 
 // Light theme preview
-//@Preview(showBackground = true)
-//@Composable
-//fun ContainerPreview() {
-//    TaskSpacesTheme(darkTheme = false) {
-//        ExtendedColors(darkTheme = false) {
-//            Container {
-//                Text(text = "Container Preview", color = MaterialTheme.colorScheme.onSurface)
-//            }
-//        }
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun ContainerPreviewLightMode() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            Container {
+                Text(text = "Container Preview", color = MaterialTheme.colorScheme.onSurface)
+            }
+        }
+    }
+}
 
 // Dark theme preview
-@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
-fun ContainerPreview() {
+fun ContainerPreviewDarkMode() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             Container {
