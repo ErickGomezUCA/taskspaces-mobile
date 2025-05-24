@@ -41,7 +41,6 @@ fun Container(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     ) { content() }
 }
 
-// Light theme preview
 @Preview(showBackground = true)
 @Composable
 fun ContainerPreviewLightMode() {
@@ -54,7 +53,6 @@ fun ContainerPreviewLightMode() {
     }
 }
 
-// Dark theme preview
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun ContainerPreviewDarkMode() {

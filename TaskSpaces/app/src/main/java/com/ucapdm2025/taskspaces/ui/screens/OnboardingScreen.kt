@@ -37,15 +37,20 @@ fun OnboardingScreen(navController: NavHostController) {
     }
 }
 
-/**
- * A composable function that displays the onboarding screen.
- *
- * @param navController The [NavHostController] used to navigate to the login screen.
- */
 @Preview(showBackground = true)
 @Composable
 fun OnboardingScreenPreview() {
     TaskSpacesTheme {
+        OnboardingScreen(
+            rememberNavController()
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnboardingScreenDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
         OnboardingScreen(
             rememberNavController()
         )
