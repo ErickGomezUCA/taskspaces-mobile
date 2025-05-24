@@ -169,3 +169,31 @@ fun SearchBarWithValuePreviewLightMode() {
         }
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun SearchBarPreviewDarkMode() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            SearchBar(
+                query = "",
+                onQueryChange = {},
+                placeholder = "Search...",
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun SearchBarWithValuePreviewDarkMode() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            SearchBar(
+                query = "Value example",
+                onQueryChange = {},
+                placeholder = "Search...",
+            )
+        }
+    }
+}
