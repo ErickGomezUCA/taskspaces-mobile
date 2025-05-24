@@ -58,7 +58,7 @@ fun TaskSpacesTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = OutfitTypography,
         content = content
     )
 }
