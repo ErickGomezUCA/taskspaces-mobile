@@ -25,7 +25,7 @@ import com.ucapdm2025.taskspaces.utils.getCurrentRoute
 fun AppScaffold() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = getCurrentRoute(navBackStackEntry) ?: "Unknown"
+    val currentRoute = getCurrentRoute(navBackStackEntry) ?: "UnknownRoute"
 
     Log.d("test1", currentRoute)
 
@@ -46,8 +46,16 @@ fun AppScaffold() {
  */
 @Preview(showBackground = true)
 @Composable
-fun AppScaffoldPreview() {
+fun AppScaffoldLightPreview() {
     TaskSpacesTheme {
+        AppScaffold()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AppScaffoldDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
         AppScaffold()
     }
 }
