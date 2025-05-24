@@ -54,7 +54,7 @@ fun FeedbackIcon(
             modifier = Modifier
                 .size(120.dp)
                 .background(
-                    color = ExtendedTheme.colors.background10,
+                    color = ExtendedTheme.colors.background05,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -72,7 +72,7 @@ fun FeedbackIcon(
         Text(
             text = title,
             fontSize = 16.sp,
-            color = Color.Gray,
+            color = ExtendedTheme.colors.background50,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium
         )
