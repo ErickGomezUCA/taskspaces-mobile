@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.layout.topBar.AppTopBar
+import com.ucapdm2025.taskspaces.ui.layout.topBar.SelectAppTopBar
 import com.ucapdm2025.taskspaces.ui.navigation.AppNavigation
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.utils.getCurrentRoute
@@ -29,7 +30,7 @@ fun AppScaffold() {
     Log.d("test1", currentRoute)
 
     Scaffold(
-        topBar = { AppTopBar(title = "Top App Bar") },
+        topBar = { SelectAppTopBar(currentRoute = currentRoute) },
         bottomBar = { AppNavigationBar(navController = navController) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
