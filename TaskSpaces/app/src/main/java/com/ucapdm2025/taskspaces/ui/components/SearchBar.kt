@@ -41,6 +41,16 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+/**
+ * A composable function that displays a search bar with customizable behavior and appearance.
+ *
+ * @param query The current text value of the search bar.
+ * @param modifier A [Modifier] for customizing the layout or behavior of the search bar.
+ * @param placeholder The placeholder text displayed when the search bar is empty. Defaults to "Placeholder...".
+ * @param onQueryChange A callback invoked when the text in the search bar changes.
+ * @param onSearch A callback invoked when the user submits a search action. Defaults to an empty lambda.
+ * @param enabled A boolean indicating whether the search bar is enabled. Defaults to `true`.
+ */
 @Composable
 fun SearchBar(
     query: String,

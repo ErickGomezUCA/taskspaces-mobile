@@ -28,6 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 
+
+/**
+ * A composable function that displays a feedback icon with a circular background and a title.
+ *
+ * @param icon The [ImageVector] to be displayed as the icon inside the circular background.
+ * @param title The text to be displayed below the icon, providing context or feedback to the user.
+ * @param modifier The [Modifier] to be applied to the root layout of the composable.
+ */
 @Composable
 fun FeedbackIcon(
     icon: ImageVector,
