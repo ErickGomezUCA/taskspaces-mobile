@@ -86,7 +86,7 @@ fun FeedbackIconPreviewLightMode() {
         ExtendedColors {
             FeedbackIcon(
                 icon = Icons.Default.Search,
-                title = "Start searching workspaces, projects tasks and users"
+                title = "Start searching workspaces, projects, tasks and users"
             )
         }
     }
@@ -99,7 +99,7 @@ fun FeedbackIconPreviewDarkMode() {
         ExtendedColors(darkTheme = true) {
             FeedbackIcon(
                 icon = Icons.Default.Search,
-                title = "Start searching workspaces, projects tasks and users"
+                title = "Start searching workspaces, projects, tasks and users"
             )
         }
     }

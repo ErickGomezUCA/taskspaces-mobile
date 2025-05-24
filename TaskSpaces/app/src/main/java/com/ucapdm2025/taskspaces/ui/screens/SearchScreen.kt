@@ -22,7 +22,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun SearchScreen(modifier: Modifier = Modifier) {
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         FeedbackIcon(
             icon = Icons.Default.Search,
             title = "Start searching workspaces, projects, tasks and users"

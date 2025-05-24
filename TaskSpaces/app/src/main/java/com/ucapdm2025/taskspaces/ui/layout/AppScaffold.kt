@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.layout
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ucapdm2025.taskspaces.ui.layout.topBar.AppTopBar
 import com.ucapdm2025.taskspaces.ui.layout.topBar.SelectAppTopBar
 import com.ucapdm2025.taskspaces.ui.navigation.AppNavigation
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
