@@ -146,7 +146,8 @@ fun SearchBar(
                 )
             }
         }
-    }}
+    }
+}
 
 // TODO: Check if IME actions work properly
 @Preview(showBackground = true)

@@ -14,6 +14,7 @@ import com.ucapdm2025.taskspaces.ui.navigation.LoginRoute
 import com.ucapdm2025.taskspaces.ui.navigation.OnboardingRoute
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+// TODO: Implement the OnboardingScreen UI
 /**
  * A composable function that displays the onboarding screen.
  *

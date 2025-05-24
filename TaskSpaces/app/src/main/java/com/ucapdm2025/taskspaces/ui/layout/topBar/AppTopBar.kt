@@ -22,11 +22,8 @@ import com.ucapdm2025.taskspaces.utils.getTopAppBarContentColor
  * Top bar for the app, used in all screens.
  * @param title The title to show in the top bar.
  */
-// TODO: Define a way to make variants of the same top bar based on the current route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//TODO: Determine a way to show go back icon or hide it
-// TODO: Add search bar variant
 fun AppTopBar(
     title: String,
     navController: NavHostController,

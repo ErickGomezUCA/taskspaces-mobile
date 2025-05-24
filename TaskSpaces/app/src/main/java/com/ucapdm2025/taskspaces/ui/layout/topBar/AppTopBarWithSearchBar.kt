@@ -64,7 +64,11 @@ fun AppTopBarWithSearchBar(
 fun AppTopBarWithSearchBarLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            AppTopBarWithSearchBar(query = "", placeholder = "Search...", onQueryChange = {}, onSearch = {})
+            AppTopBarWithSearchBar(
+                query = "",
+                placeholder = "Search...",
+                onQueryChange = {},
+                onSearch = {})
         }
     }
 }
@@ -74,7 +78,11 @@ fun AppTopBarWithSearchBarLightPreview() {
 fun AppTopBarWithSearchBarWithValueLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            AppTopBarWithSearchBar(query = "Query value", placeholder = "Search...", onQueryChange = {}, onSearch = {})
+            AppTopBarWithSearchBar(
+                query = "Query value",
+                placeholder = "Search...",
+                onQueryChange = {},
+                onSearch = {})
         }
     }
 }
@@ -84,7 +92,11 @@ fun AppTopBarWithSearchBarWithValueLightPreview() {
 fun AppTopBarWithSearchBarDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            AppTopBarWithSearchBar(query = "", placeholder = "Search tasks...", onQueryChange = {}, onSearch = {})
+            AppTopBarWithSearchBar(
+                query = "",
+                placeholder = "Search tasks...",
+                onQueryChange = {},
+                onSearch = {})
         }
     }
 }
@@ -94,7 +106,11 @@ fun AppTopBarWithSearchBarDarkPreview() {
 fun AppTopBarWithSearchBarWithValueDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            AppTopBarWithSearchBar(query = "Query value", placeholder = "Search tasks...", onQueryChange = {}, onSearch = {})
+            AppTopBarWithSearchBar(
+                query = "Query value",
+                placeholder = "Search tasks...",
+                onQueryChange = {},
+                onSearch = {})
         }
     }
 }
