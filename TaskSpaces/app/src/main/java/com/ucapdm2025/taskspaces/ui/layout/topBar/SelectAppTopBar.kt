@@ -36,3 +36,82 @@ fun SelectAppTopBar(currentRoute: String) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarHomeLightPreview() {
+    TaskSpacesTheme {
+        SelectAppTopBar(currentRoute = "HomeRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarSearchLightPreview() {
+    TaskSpacesTheme {
+        SelectAppTopBar(currentRoute = "SearchRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarBookmarksLightPreview() {
+    TaskSpacesTheme {
+        SelectAppTopBar(currentRoute = "BookmarksRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarWorkspaceLightPreview() {
+    TaskSpacesTheme {
+        SelectAppTopBar(currentRoute = "WorkspaceRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarDefaultLightPreview() {
+    TaskSpacesTheme {
+        SelectAppTopBar(currentRoute = "")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarHomeDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        SelectAppTopBar(currentRoute = "HomeRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarSearchDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        SelectAppTopBar(currentRoute = "SearchRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarBookmarksDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        SelectAppTopBar(currentRoute = "BookmarksRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarWorkspaceDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        SelectAppTopBar(currentRoute = "WorkspaceRoute")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SelectAppTopBarDefaultDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        SelectAppTopBar(currentRoute = "")
+    }
+}
