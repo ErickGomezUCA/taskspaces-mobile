@@ -2,24 +2,38 @@ package com.ucapdm2025.taskspaces.ui.layout.topBar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
-fun SelectAppTopBar(currentRoute: String) {
+fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
     when (currentRoute) {
         "HomeRoute" -> {
-            AppTopBar(title = "Welcome, USER", variant = AppTopBarVariant.HOME)
+            AppTopBar(
+                title = "Welcome, USER",
+                navController = navController,
+                variant = AppTopBarVariant.HOME
+            )
         }
 
 //        TODO: Handle query change and search action
         "SearchRoute" -> {
-            AppTopBarWithSearchBar(query = "", placeholder = "Search...", onQueryChange = {}, onSearch = {})
+            AppTopBarWithSearchBar(
+                query = "",
+                placeholder = "Search...",
+                onQueryChange = {},
+                onSearch = {})
         }
 
         //        TODO: Handle query change and search action
         "BookmarksRoute" -> {
-            AppTopBarWithSearchBar(query = "", placeholder = "Search tasks...", onQueryChange = {}, onSearch = {})
+            AppTopBarWithSearchBar(
+                query = "",
+                placeholder = "Search tasks...",
+                onQueryChange = {},
+                onSearch = {})
         }
 
         "WorkspaceRoute",
@@ -30,11 +44,15 @@ fun SelectAppTopBar(currentRoute: String) {
         "SettingsRoute",
         "ChangePasswordRoute" -> {
 //            TODO: Add go back action here
-            AppTopBar(title = "Return", variant = AppTopBarVariant.NAVIGATION)
+            AppTopBar(
+                title = "Return",
+                navController = rememberNavController(),
+                variant = AppTopBarVariant.NAVIGATION
+            )
         }
 
         else -> {
-            AppTopBar(title = "Top App Bar")
+            AppTopBar(title = "Top App Bar", navController = rememberNavController())
         }
     }
 }
@@ -44,7 +62,7 @@ fun SelectAppTopBar(currentRoute: String) {
 fun SelectAppTopBarHomeLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            SelectAppTopBar(currentRoute = "HomeRoute")
+            SelectAppTopBar(currentRoute = "HomeRoute", navController = rememberNavController())
         }
     }
 }
@@ -54,7 +72,7 @@ fun SelectAppTopBarHomeLightPreview() {
 fun SelectAppTopBarSearchLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            SelectAppTopBar(currentRoute = "SearchRoute")
+            SelectAppTopBar(currentRoute = "SearchRoute", navController = rememberNavController())
         }
     }
 }
@@ -64,7 +82,10 @@ fun SelectAppTopBarSearchLightPreview() {
 fun SelectAppTopBarBookmarksLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            SelectAppTopBar(currentRoute = "BookmarksRoute")
+            SelectAppTopBar(
+                currentRoute = "BookmarksRoute",
+                navController = rememberNavController()
+            )
         }
     }
 }
@@ -74,7 +95,10 @@ fun SelectAppTopBarBookmarksLightPreview() {
 fun SelectAppTopBarWorkspaceLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            SelectAppTopBar(currentRoute = "WorkspaceRoute")
+            SelectAppTopBar(
+                currentRoute = "WorkspaceRoute",
+                navController = rememberNavController()
+            )
         }
     }
 }
@@ -84,7 +108,7 @@ fun SelectAppTopBarWorkspaceLightPreview() {
 fun SelectAppTopBarDefaultLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            SelectAppTopBar(currentRoute = "")
+            SelectAppTopBar(currentRoute = "", navController = rememberNavController())
         }
     }
 }
@@ -94,7 +118,7 @@ fun SelectAppTopBarDefaultLightPreview() {
 fun SelectAppTopBarHomeDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SelectAppTopBar(currentRoute = "HomeRoute")
+            SelectAppTopBar(currentRoute = "HomeRoute", navController = rememberNavController())
         }
     }
 }
@@ -104,7 +128,7 @@ fun SelectAppTopBarHomeDarkPreview() {
 fun SelectAppTopBarSearchDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SelectAppTopBar(currentRoute = "SearchRoute")
+            SelectAppTopBar(currentRoute = "SearchRoute", navController = rememberNavController())
         }
     }
 }
@@ -114,7 +138,10 @@ fun SelectAppTopBarSearchDarkPreview() {
 fun SelectAppTopBarBookmarksDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SelectAppTopBar(currentRoute = "BookmarksRoute")
+            SelectAppTopBar(
+                currentRoute = "BookmarksRoute",
+                navController = rememberNavController()
+            )
         }
     }
 }
@@ -124,7 +151,10 @@ fun SelectAppTopBarBookmarksDarkPreview() {
 fun SelectAppTopBarWorkspaceDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SelectAppTopBar(currentRoute = "WorkspaceRoute")
+            SelectAppTopBar(
+                currentRoute = "WorkspaceRoute",
+                navController = rememberNavController()
+            )
         }
     }
 }
@@ -134,7 +164,7 @@ fun SelectAppTopBarWorkspaceDarkPreview() {
 fun SelectAppTopBarDefaultDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SelectAppTopBar(currentRoute = "")
+            SelectAppTopBar(currentRoute = "", navController = rememberNavController())
         }
     }
 }

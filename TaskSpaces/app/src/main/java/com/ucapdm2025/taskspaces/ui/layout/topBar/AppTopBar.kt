@@ -11,6 +11,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.ucapdm2025.taskspaces.ui.navigation.UserRoute
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.utils.getTopAppBarContainerColor
 import com.ucapdm2025.taskspaces.utils.getTopAppBarContentColor
@@ -24,7 +27,11 @@ import com.ucapdm2025.taskspaces.utils.getTopAppBarContentColor
 @Composable
 //TODO: Determine a way to show go back icon or hide it
 // TODO: Add search bar variant
-fun AppTopBar(title: String, variant: AppTopBarVariant = AppTopBarVariant.DEFAULT) {
+fun AppTopBar(
+    title: String,
+    navController: NavHostController,
+    variant: AppTopBarVariant = AppTopBarVariant.DEFAULT
+) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = getTopAppBarContainerColor(variant),
@@ -43,8 +50,7 @@ fun AppTopBar(title: String, variant: AppTopBarVariant = AppTopBarVariant.DEFAUL
             }
         },
         actions = {
-//            TODO: Go to user page
-            IconButton(onClick = {}) {
+            IconButton(onClick = { navController.navigate(UserRoute) }) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "User",
@@ -59,7 +65,7 @@ fun AppTopBar(title: String, variant: AppTopBarVariant = AppTopBarVariant.DEFAUL
 @Composable
 fun AppTopBarDefaultLightPreview() {
     TaskSpacesTheme {
-        AppTopBar(title = "Title example")
+        AppTopBar(title = "Title example", navController = rememberNavController())
     }
 }
 
@@ -67,7 +73,11 @@ fun AppTopBarDefaultLightPreview() {
 @Composable
 fun AppTopBarHomeLightPreview() {
     TaskSpacesTheme {
-        AppTopBar(title = "Title example", variant = AppTopBarVariant.HOME)
+        AppTopBar(
+            title = "Title example",
+            navController = rememberNavController(),
+            variant = AppTopBarVariant.HOME
+        )
     }
 }
 
@@ -75,7 +85,11 @@ fun AppTopBarHomeLightPreview() {
 @Composable
 fun AppTopBarNavigationLightPreview() {
     TaskSpacesTheme {
-        AppTopBar(title = "Title example", variant = AppTopBarVariant.NAVIGATION)
+        AppTopBar(
+            title = "Title example",
+            navController = rememberNavController(),
+            variant = AppTopBarVariant.NAVIGATION
+        )
     }
 }
 
@@ -83,7 +97,7 @@ fun AppTopBarNavigationLightPreview() {
 @Composable
 fun AppTopBarDefaultDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        AppTopBar(title = "Title example")
+        AppTopBar(title = "Title example", navController = rememberNavController())
     }
 }
 
@@ -91,7 +105,11 @@ fun AppTopBarDefaultDarkPreview() {
 @Composable
 fun AppTopBarHomeDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        AppTopBar(title = "Title example", variant = AppTopBarVariant.HOME)
+        AppTopBar(
+            title = "Title example",
+            navController = rememberNavController(),
+            variant = AppTopBarVariant.HOME
+        )
     }
 }
 
@@ -99,6 +117,10 @@ fun AppTopBarHomeDarkPreview() {
 @Composable
 fun AppTopBarNavigationDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        AppTopBar(title = "Title example", variant = AppTopBarVariant.NAVIGATION)
+        AppTopBar(
+            title = "Title example",
+            navController = rememberNavController(),
+            variant = AppTopBarVariant.NAVIGATION
+        )
     }
 }

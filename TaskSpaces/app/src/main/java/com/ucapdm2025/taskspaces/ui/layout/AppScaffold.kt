@@ -30,7 +30,7 @@ fun AppScaffold() {
     Log.d("test1", currentRoute)
 
     Scaffold(
-        topBar = { SelectAppTopBar(currentRoute = currentRoute) },
+        topBar = { SelectAppTopBar(currentRoute = currentRoute, navController = navController) },
         bottomBar = { AppNavigationBar(navController = navController) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
