@@ -109,16 +109,22 @@ fun AppNavigationBar(navController: NavHostController) {
     }
 }
 
-/**
- * A preview of the [AppNavigationBar] composable.
- * Demonstrates the navigation bar with a default theme.
- */
 @Preview(showBackground = true)
 @Composable
-fun AppNavigationBarPreview() {
+fun AppNavigationBarLightPreview() {
     val navController = rememberNavController()
 
     TaskSpacesTheme {
+        AppNavigationBar(navController = navController)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AppNavigationBarDarkPreview() {
+    val navController = rememberNavController()
+
+    TaskSpacesTheme(darkTheme = true) {
         AppNavigationBar(navController = navController)
     }
 }

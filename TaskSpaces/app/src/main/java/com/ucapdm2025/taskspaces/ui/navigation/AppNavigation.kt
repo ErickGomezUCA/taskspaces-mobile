@@ -7,20 +7,19 @@ import androidx.navigation.compose.composable
 import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
-
+import com.ucapdm2025.taskspaces.ui.screens.UserScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
-                HomeScreen()
+            HomeScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
 //                Use this ID to get the workspace
             val workspaceId = backStackEntry.arguments?.getString("workspaceId") ?: 0
-
 //            Workspace screen goes here
         }
 
@@ -43,15 +42,15 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable<SearchRoute> {
-                SearchScreen()
+            SearchScreen()
         }
 
         composable<BookmarksRoute> {
-                BookmarksScreen()
+            BookmarksScreen()
         }
 
         composable<UserRoute> {
-//            User screen goes here
+            UserScreen()
         }
 
         composable<SettingsRoute> {
