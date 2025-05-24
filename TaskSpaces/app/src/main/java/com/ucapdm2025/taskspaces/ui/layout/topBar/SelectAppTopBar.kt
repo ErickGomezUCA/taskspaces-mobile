@@ -46,13 +46,13 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
 //            TODO: Add go back action here
             AppTopBar(
                 title = "Return",
-                navController = rememberNavController(),
+                navController = navController,
                 variant = AppTopBarVariant.NAVIGATION
             )
         }
 
         else -> {
-            AppTopBar(title = "Top App Bar", navController = rememberNavController())
+            AppTopBar(title = "Top App Bar", navController = navController)
         }
     }
 }
