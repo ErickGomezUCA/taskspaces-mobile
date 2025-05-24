@@ -121,7 +121,7 @@ fun SearchBar(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Clear search",
-                        tint = ExtendedTheme.colors.background75,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                 }
