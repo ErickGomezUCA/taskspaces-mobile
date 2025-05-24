@@ -6,13 +6,19 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -44,89 +50,98 @@ fun SearchBar(
     onSearch: (String) -> Unit = {},
     enabled: Boolean = true,
 ) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        placeholder = {
-            Text(
-                text = placeholder,
-                color = ExtendedTheme.colors.background75,
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-        },
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
-        enabled = enabled,
-        singleLine = true,
-        shape = RoundedCornerShape(28.dp), // Rounded pill shape
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.background,
-            unfocusedContainerColor = MaterialTheme.colorScheme.background,
-            disabledContainerColor = MaterialTheme.colorScheme.background,
-            focusedBorderColor = ExtendedTheme.colors.background25,
-            unfocusedBorderColor = ExtendedTheme.colors.background25,
-            disabledBorderColor = ExtendedTheme.colors.background25,
-            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-            cursorColor = MaterialTheme.colorScheme.primary
-        ),
-        textStyle = MaterialTheme.typography.bodyLarge,
-        trailingIcon = {
-            Row (
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Clear button - only show when there's text
-                AnimatedVisibility(
-                    visible = query.isNotEmpty(),
-                    enter = fadeIn() + scaleIn(),
-                    exit = fadeOut() + scaleOut()
-                ) {
-                    IconButton(
-                        onClick = { onQueryChange("") },
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Clear search",
-                            tint = ExtendedTheme.colors.background75,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+            .height(56.dp)
+    ) {
+        // Main text field
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(28.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = ExtendedTheme.colors.background50,
+                    shape = RoundedCornerShape(28.dp)
+                )
+                .padding(
+                    start = 20.dp,
+                    end = if (query.isNotEmpty()) 88.dp else 56.dp, // Space for icons
+                    top = 16.dp,
+                    bottom = 16.dp
+                ),
+            enabled = enabled,
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground),
+            decorationBox = { innerTextField ->
+                if (query.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        color = ExtendedTheme.colors.background50,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
+                innerTextField()
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = { onSearch(query) })
+        )
 
-                // Search button
+        // Icons container
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Clear button - only show when there's text
+            AnimatedVisibility(
+                visible = query.isNotEmpty(),
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
                 IconButton(
-                    onClick = { onSearch(query) },
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape
-                        )
+                    onClick = { onQueryChange("") },
+                    modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(24.dp)
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear search",
+                        tint = ExtendedTheme.colors.background75,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
-        },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search
-        ),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                onSearch(query)
-            }
-        )
-    )
-}
 
+            // Search button - properly contained within the search bar
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    )
+                    .clickable { onSearch(query) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }}
+
+// TODO: Check if IME actions work properly
 @Preview(showBackground = true)
 @Composable
 fun SearchBarPreviewLightMode() {
