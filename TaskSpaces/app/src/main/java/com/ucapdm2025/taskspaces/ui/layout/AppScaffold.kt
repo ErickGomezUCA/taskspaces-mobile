@@ -27,8 +27,6 @@ fun AppScaffold() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = getCurrentRoute(navBackStackEntry) ?: "UnknownRoute"
 
-    Log.d("test1", currentRoute)
-
     Scaffold(
         topBar = { SelectAppTopBar(currentRoute = currentRoute, navController = navController) },
         bottomBar = { AppNavigationBar(navController = navController) },
