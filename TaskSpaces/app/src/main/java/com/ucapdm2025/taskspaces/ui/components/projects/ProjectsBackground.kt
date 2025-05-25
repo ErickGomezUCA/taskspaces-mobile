@@ -32,7 +32,7 @@ fun ProjectsBackground(
         modifier = Modifier
             .fillMaxSize()
             .background(ProjectScreenBackground)
-            .padding(vertical = 16.dp)
+            .padding(vertical = 16.dp, horizontal = 0.dp)
     ) {
         content()
     }
