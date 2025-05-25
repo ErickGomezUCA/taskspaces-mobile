@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,7 +14,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.data.model.Workspace
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -28,19 +31,11 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
-    val workspaces = viewModel.workspaces.collectAsState()
+//    Consume viewModel states here
+//    val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
 
     Column {
         Text("Home Screen", color = MaterialTheme.colorScheme.onBackground)
-
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(workspaces.value) { workspace ->
-                Card(modifier = Modifier.padding(8.dp)) {
-                    Text(text = workspace.id.toString())
-                    Text(text = workspace.title)
-                }
-            }
-        }
     }
 }
 

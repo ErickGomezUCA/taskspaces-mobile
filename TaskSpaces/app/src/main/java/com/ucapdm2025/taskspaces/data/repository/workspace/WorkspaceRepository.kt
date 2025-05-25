@@ -1,9 +1,10 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
 import com.ucapdm2025.taskspaces.data.model.Workspace
+import kotlinx.coroutines.flow.Flow
 
 interface WorkspaceRepository {
-    suspend fun getWorkspaces(): List<Workspace>
+    fun getWorkspaces(): Flow<List<Workspace>>
     suspend fun getWorkspaceById(id: Int): Workspace?
     suspend fun createWorkspace(workspace: Workspace): Workspace
     suspend fun updateWorkspace(workspace: Workspace): Workspace

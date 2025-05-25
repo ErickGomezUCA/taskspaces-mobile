@@ -3,44 +3,48 @@ package com.ucapdm2025.taskspaces.data.repository.workspace
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummy
 import com.ucapdm2025.taskspaces.data.model.Workspace
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 // TODO: Implement RoomDatabase to this repository
 class WorkspaceRepositoryImpl: WorkspaceRepository {
-    private var workspaces: MutableList<Workspace> = workspacesDummy.toMutableList()
+    private val workspaces = MutableStateFlow(workspacesDummy.toList())
 
-    override suspend fun getWorkspaces(): List<Workspace> {
-        delay(1000) // Simulate network delay
-        return workspaces
+    override fun getWorkspaces(): Flow<List<Workspace>> {
+        return workspaces.asStateFlow()
     }
 
     override suspend fun getWorkspaceById(id: Int): Workspace? {
-        delay(1000) // Simulate network delay
-        return workspaces.find { it.id == id }
+//        delay(1000) // Simulate network delay
+        return workspaces.value.find { it.id == id }
     }
 
     override suspend fun createWorkspace(workspace: Workspace): Workspace {
-        delay(1000) // Simulate network delay
-        workspaces.add(workspace)
+//        delay(1000) // Simulate network delay
+        workspaces.value = workspaces.value + workspace
         return workspace
     }
 
     override suspend fun updateWorkspace(workspace: Workspace): Workspace {
-        delay(1000) // Simulate network delay
-        val index = workspaces.indexOfFirst { it.id == workspace.id }
-        if (index != -1) {
-            workspaces[index] = workspace
+//        delay(1000) // Simulate network delay
+
+        workspaces.value = workspaces.value.map {
+            if (it.id == workspace.id) workspace else it
         }
+
         return workspace
     }
 
     override suspend fun deleteWorkspace(id: Int): Boolean {
-        delay(1000) // Simulate network delay
-        val index = workspaces.indexOfFirst { it.id == id }
-        return if (index != -1) {
-            workspaces.removeAt(index)
-            true
-        } else {
-            false
+//        delay(1000) // Simulate network delay
+
+        val exists = workspaces.value.any { it.id == id}
+
+        if (exists) {
+            workspaces.value = workspaces.value.filter { it.id != id }
         }
+
+        return exists
     }
 }
