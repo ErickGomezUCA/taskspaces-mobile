@@ -31,7 +31,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * It receives the [StatusVariations] of the column where the button was pressed.
  */
 @Composable
-fun ProjectsScreen(
+fun ProjectScreen(
     pendingTasks: List<Task>,
     doingTasks: List<Task>,
     doneTasks: List<Task>,
@@ -40,8 +40,7 @@ fun ProjectsScreen(
     ProjectsBackground {
         LazyRow(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 28.dp)
         ) {
@@ -92,7 +91,7 @@ fun ProjectsScreenPreview() {
         Task("Crear mockups", listOf(Tag("Diseño", Color(0xFF26AA5D))))
     )
     TaskSpacesTheme {
-        ProjectsScreen(
+        ProjectScreen(
             pendingTasks = pendingTasks,
             doingTasks = doingTasks,
             doneTasks = doneTasks,
