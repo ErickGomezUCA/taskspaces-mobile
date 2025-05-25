@@ -22,6 +22,8 @@ import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight25
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
@@ -47,7 +49,7 @@ fun TaskCard(
             .fillMaxWidth()
             .width(220.dp),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryLight25),
+        colors = CardDefaults.cardColors(containerColor = ExtendedTheme.colors.primary50),
         onClick = onClick
     ) {
         Column(
@@ -69,7 +71,7 @@ fun TaskCard(
                     Row(
                         modifier = Modifier
                             .border(1.dp, tag.color, RoundedCornerShape(8.dp))
-                            .background(White100, RoundedCornerShape(8.dp))
+                            .background(ExtendedTheme.colors.tag, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -102,9 +104,9 @@ data class Tag(
  *
  * Displays a sample task card with mock data for design-time visualization in Android Studio.
  */
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
-fun TaskCardPreview() {
+fun TaskCardPreviewLight() {
     val tagsTest = listOf(
         Tag("Tag", Color.Red),
         Tag("Tag", Color.Blue)
@@ -114,5 +116,24 @@ fun TaskCardPreview() {
             title = "Create inial mockups",
             tags = tagsTest
         )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardPreviewDark() {
+    val tagsTest = listOf(
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskSpacesTheme {
+                TaskCard(
+                    title = "Create inial mockups",
+                    tags = tagsTest
+                )
+            }
+        }
     }
 }

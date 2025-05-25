@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
@@ -39,7 +41,7 @@ fun TaskStatusColumn(
 ) {
     Column(
         modifier = Modifier
-            .background(color = White100, shape = RoundedCornerShape(16.dp))
+            .background(color = ExtendedTheme.colors.projectColumn, shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
             .width(200.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -83,33 +85,70 @@ fun TaskStatusColumn(
  */
 @Preview(showBackground = true)
 @Composable
-fun TaskStatusColumnPreview() {
-    TaskSpacesTheme {
-        Column(
-            modifier = Modifier
-                .background(Color(0xFF21232B))
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            TaskStatusColumn(
-                status = StatusVariations.PENDING,
-                tasks = listOf(
-                    Task(
-                        title = "Design login screen",
-                        tags = listOf(
-                            Tag("UI", Color(0xFF2E88DD)),
-                            Tag("Priority", Color(0xFFDD972E))
+fun TaskStatusColumnPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            Column(
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                TaskStatusColumn(
+                    status = StatusVariations.PENDING,
+                    tasks = listOf(
+                        Task(
+                            title = "Design login screen",
+                            tags = listOf(
+                                Tag("UI", Color(0xFF2E88DD)),
+                                Tag("Priority", Color(0xFFDD972E))
+                            )
+                        ),
+                        Task(
+                            title = "Connect API",
+                            tags = listOf(
+                                Tag("Backend", Color(0xFF26AA5D))
+                            )
                         )
                     ),
-                    Task(
-                        title = "Connect API",
-                        tags = listOf(
-                            Tag("Backend", Color(0xFF26AA5D))
+                    onAddTaskClick = {},
+                )
+            }
+        }
+    }
+}
+
+@Preview (showBackground = true)
+@Composable
+fun TaskStatusColumnPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Column(
+                modifier = Modifier
+                    .background(Color(0xFF21232B))
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                TaskStatusColumn(
+                    status = StatusVariations.PENDING,
+                    tasks = listOf(
+                        Task(
+                            title = "Design login screen",
+                            tags = listOf(
+                                Tag("UI", Color(0xFF2E88DD)),
+                                Tag("Priority", Color(0xFFDD972E))
+                            )
+                        ),
+                        Task(
+                            title = "Connect API",
+                            tags = listOf(
+                                Tag("Backend", Color(0xFF26AA5D))
+                            )
                         )
-                    )
-                ),
-                onAddTaskClick = {},
-            )
+                    ),
+                    onAddTaskClick = {},
+                )
+            }
         }
     }
 }

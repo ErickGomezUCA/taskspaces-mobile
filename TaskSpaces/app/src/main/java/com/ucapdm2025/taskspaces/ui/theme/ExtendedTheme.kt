@@ -17,6 +17,10 @@ data class ExtendedColors(
     val background25: Color,
     val background50: Color,
     val background75: Color,
+    val primary50: Color,
+    val projectColumn: Color,
+    val tag: Color,
+    val projectBackground: Color
 )
 
 // 2. Set colors for light and dark theme (must follow ExtendedColors structure)
@@ -27,6 +31,10 @@ val LocalExtendedColors = staticCompositionLocalOf {
         background25 = Color.Unspecified,
         background50 = Color.Unspecified,
         background75 = Color.Unspecified,
+        primary50 = Color.Unspecified,
+        projectColumn = Color.Unspecified,
+        tag = Color.Unspecified,
+        projectBackground = Color.Unspecified
     )
 }
 
@@ -37,6 +45,10 @@ val localExtendedColorsDark = staticCompositionLocalOf {
         background25 = White25,
         background50 = White50,
         background75 = White75,
+        primary50 = PrimaryDark50,
+        projectColumn = ProjectScreenColumnDark,
+        tag = Black75,
+        projectBackground = ProjectScreenBackgroundDark,
     )
 }
 
@@ -47,6 +59,10 @@ val localExtendedColorsLight = staticCompositionLocalOf {
         background25 = Black25,
         background50 = Black50,
         background75 = Black75,
+        primary50 = PrimaryLight50,
+        projectColumn = ProjectScreenColumnLight,
+        tag = White75,
+        projectBackground = ProjectScreenBackgroundLight,
     )
 }
 

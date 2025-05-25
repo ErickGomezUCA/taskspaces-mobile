@@ -15,6 +15,7 @@ import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.Task
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
@@ -77,7 +78,7 @@ fun ProjectScreen(
  */
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun ProjectsScreenPreview() {
+fun ProjectsScreenPreviewLight() {
     val pendingTasks = listOf(
         Task("Revisar requisitos", listOf(Tag("Análisis", Color(0xFF2E88DD)))),
         Task("Diseñar UI", listOf(Tag("UI", Color(0xFF2E88DD))))
@@ -90,12 +91,41 @@ fun ProjectsScreenPreview() {
     val doneTasks = listOf(
         Task("Crear mockups", listOf(Tag("Diseño", Color(0xFF26AA5D))))
     )
-    TaskSpacesTheme {
-        ProjectScreen(
-            pendingTasks = pendingTasks,
-            doingTasks = doingTasks,
-            doneTasks = doneTasks,
-            onAddTaskClick = {}
-        )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            ProjectScreen(
+                pendingTasks = pendingTasks,
+                doingTasks = doingTasks,
+                doneTasks = doneTasks,
+                onAddTaskClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun ProjectsScreenPreviewDark() {
+    val pendingTasks = listOf(
+        Task("Revisar requisitos", listOf(Tag("Análisis", Color(0xFF2E88DD)))),
+        Task("Diseñar UI", listOf(Tag("UI", Color(0xFF2E88DD))))
+    )
+
+    val doingTasks = listOf(
+        Task("Desarrollar login", listOf(Tag("Backend", Color(0xFFDD972E))))
+    )
+
+    val doneTasks = listOf(
+        Task("Crear mockups", listOf(Tag("Diseño", Color(0xFF26AA5D))))
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            ProjectScreen(
+                pendingTasks = pendingTasks,
+                doingTasks = doingTasks,
+                doneTasks = doneTasks,
+                onAddTaskClick = {}
+            )
+        }
     }
 }
