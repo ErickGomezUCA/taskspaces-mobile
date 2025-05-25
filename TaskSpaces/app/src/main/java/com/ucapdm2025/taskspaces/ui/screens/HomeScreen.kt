@@ -1,12 +1,20 @@
+
 package com.ucapdm2025.taskspaces.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.components.projects.YourWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import androidx.compose.ui.unit.dp
+
 
 // TODO: Implement the HomeScreen UI
 /**
@@ -17,8 +25,12 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun HomeScreen() {
-    Column {
-        Text("Home Screen", color = MaterialTheme.colorScheme.onBackground)
+    Column(modifier = Modifier.padding(16.dp)) {
+        //Text("Welcome, \$USER", style = MaterialTheme.typography.titleLarge)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        YourWorkspacesSection()
     }
 }
 
