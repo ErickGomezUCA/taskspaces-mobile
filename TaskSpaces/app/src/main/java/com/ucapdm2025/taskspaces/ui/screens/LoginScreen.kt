@@ -15,6 +15,7 @@ import com.ucapdm2025.taskspaces.ui.navigation.LoginRoute
 import com.ucapdm2025.taskspaces.ui.navigation.OnboardingRoute
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+// TODO: Implement the LoginScreen UI
 /**
  * A composable function that displays the login screen.
  *
@@ -39,15 +40,20 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
-/**
- * A composable function that displays the login screen.
- *
- * @param navController The [NavHostController] used to navigate to the home screen.
- */
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun LoginScreenLightPreview() {
     TaskSpacesTheme {
+        LoginScreen(
+            rememberNavController()
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
         LoginScreen(
             rememberNavController()
         )
