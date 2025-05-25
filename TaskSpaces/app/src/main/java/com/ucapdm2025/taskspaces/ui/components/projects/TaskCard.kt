@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,7 +61,7 @@ fun TaskCard(
         ) {
             Text(
                 text = title,
-                color = Black100,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp
             )
             Row(
@@ -111,11 +112,13 @@ fun TaskCardPreviewLight() {
         Tag("Tag", Color.Red),
         Tag("Tag", Color.Blue)
     )
-    TaskSpacesTheme {
-        TaskCard(
-            title = "Create inial mockups",
-            tags = tagsTest
-        )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest
+            )
+        }
     }
 }
 
@@ -128,12 +131,10 @@ fun TaskCardPreviewDark() {
     )
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            TaskSpacesTheme {
-                TaskCard(
-                    title = "Create inial mockups",
-                    tags = tagsTest
-                )
-            }
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest
+            )
         }
     }
 }
