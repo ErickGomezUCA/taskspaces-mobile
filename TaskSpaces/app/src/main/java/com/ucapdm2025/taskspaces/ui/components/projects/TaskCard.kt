@@ -5,11 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +23,8 @@ import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight25
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.ui.theme.White100
 
@@ -41,18 +46,22 @@ fun TaskCard(
     onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = Modifier,
+        modifier = Modifier
+            .fillMaxWidth()
+            .width(220.dp),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryLight25),
+        colors = CardDefaults.cardColors(containerColor = ExtendedTheme.colors.primary50),
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = title,
-                color = Black100,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp
             )
             Row(
@@ -63,7 +72,7 @@ fun TaskCard(
                     Row(
                         modifier = Modifier
                             .border(1.dp, tag.color, RoundedCornerShape(8.dp))
-                            .background(White100, RoundedCornerShape(8.dp))
+                            .background(ExtendedTheme.colors.tag, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -96,17 +105,36 @@ data class Tag(
  *
  * Displays a sample task card with mock data for design-time visualization in Android Studio.
  */
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
-fun TaskCardPreview() {
+fun TaskCardPreviewLight() {
     val tagsTest = listOf(
         Tag("Tag", Color.Red),
         Tag("Tag", Color.Blue)
     )
-    TaskSpacesTheme {
-        TaskCard(
-            title = "Create inial mockups",
-            tags = tagsTest
-        )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardPreviewDark() {
+    val tagsTest = listOf(
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest
+            )
+        }
     }
 }
