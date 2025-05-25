@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.components.projects.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.components.projects.SharedWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.components.projects.YourWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -35,7 +36,12 @@ fun HomeScreen() {
 
         item {
             SharedWorkspacesSection()
-            Spacer(modifier = Modifier.height(80.dp)) // para evitar que el último botón quede tapado por la bottom bar
+            Spacer(modifier = Modifier.height(80.dp)) 
+        }
+
+        item {
+            AssignedTasksSection()
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
