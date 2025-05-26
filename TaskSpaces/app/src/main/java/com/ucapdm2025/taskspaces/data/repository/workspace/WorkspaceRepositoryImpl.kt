@@ -1,6 +1,9 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
+import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummy
+import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummy
+import com.ucapdm2025.taskspaces.data.model.Task
 import com.ucapdm2025.taskspaces.data.model.Workspace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -10,9 +13,19 @@ import kotlinx.coroutines.flow.asStateFlow
 // TODO: Implement RoomDatabase to this repository
 class WorkspaceRepositoryImpl: WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummy)
+    private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummy)
+    private val assignedTasks = MutableStateFlow(assignedTasksDummy)
 
     override fun getWorkspaces(): Flow<List<Workspace>> {
         return workspaces.asStateFlow()
+    }
+
+    override fun getWorkspacesSharedWithMe(): Flow<List<Workspace>> {
+        return workspacesSharedWithMe.asStateFlow()
+    }
+
+    override fun getAssignedTasks(): Flow<List<Task>> {
+        return assignedTasks.asStateFlow()
     }
 
     override suspend fun getWorkspaceById(id: Int): Workspace? {

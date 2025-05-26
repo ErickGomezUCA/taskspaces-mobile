@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.ui.screens.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ucapdm2025.taskspaces.data.model.Task
 import com.ucapdm2025.taskspaces.data.model.Workspace
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
@@ -19,10 +20,12 @@ class HomeViewModel(): ViewModel() {
         .getWorkspaces()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val workspacesSharedWithMe: StateFlow<List<Workspace>> = workspaceRepository
+        .getWorkspacesSharedWithMe()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun getWorkspaceById(id: Int): Workspace? {
-        return workspaces.value.find { it.id == id }
-    }
+    val assignedTasks: StateFlow<List<Task>> = workspaceRepository.getAssignedTasks()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun createWorkspace(workspace: Workspace) {
         viewModelScope.launch {
