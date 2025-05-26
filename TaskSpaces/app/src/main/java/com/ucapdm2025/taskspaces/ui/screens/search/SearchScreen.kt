@@ -4,8 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,12 +34,25 @@ fun SearchScreen(
 ) {
     val results = viewModel.results.collectAsStateWithLifecycle()
 
+//    TODO: Replace this method into a proper query handler
+    val query = remember { mutableStateOf("") }
+
+
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+
         if (results.value.isEmpty()) {
-            FeedbackIcon(
-                icon = Icons.Default.Search,
-                title = "Start searching workspaces, projects, tasks and users"
-            )
+            if (query.value == "") {
+                Button(onClick = {query.value = "hi"}) { Text(text = "Get results") }
+                FeedbackIcon(
+                    icon = Icons.Default.Search,
+                    title = "Start searching workspaces, projects, tasks and users"
+                )
+            } else {
+                FeedbackIcon(
+                    icon = Icons.Default.Close,
+                    title = "There are no results with that term, try with another one"
+                )
+            }
         }
     }
 }
