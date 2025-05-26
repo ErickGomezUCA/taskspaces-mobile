@@ -16,7 +16,6 @@ class WorkspaceRepositoryImpl: WorkspaceRepository {
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummy)
 
     override fun getWorkspaces(): Flow<List<Workspace>> {
-        Log.d("test1", workspaces.value.toString())
         return workspaces.asStateFlow()
     }
 

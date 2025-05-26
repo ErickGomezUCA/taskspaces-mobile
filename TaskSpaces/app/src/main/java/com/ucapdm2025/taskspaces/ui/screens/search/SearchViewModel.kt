@@ -60,15 +60,21 @@ class SearchViewModel: ViewModel() {
             workspaceRepository.getWorkspaces().collect { list ->
                 _workspaces.value = list
             }
+        }
 
+        viewModelScope.launch {
             projectRepository.getProjects().collect { list ->
                 _projects.value = list
             }
+        }
 
+        viewModelScope.launch {
             taskRepository.getTasks().collect { list ->
                 _tasks.value = list
             }
+        }
 
+        viewModelScope.launch {
             userRepository.getUsers().collect { list ->
                 _users.value = list
             }
@@ -77,8 +83,6 @@ class SearchViewModel: ViewModel() {
 
     fun searchResults(query: String) {
         // TODO: Implement search logic here
-
-        Log.d("test1", workspaces.value.toString())
 
         _results.value = QueryResults(
             workspaces = workspaces.value,
