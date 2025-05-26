@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun AssignedTasksSection(
@@ -23,7 +22,7 @@ fun AssignedTasksSection(
             .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        // Header
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -74,7 +73,7 @@ fun AssignedTasksSection(
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
-            onClick = { /* See more */ },
+            onClick = {  },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary

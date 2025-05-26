@@ -2,8 +2,6 @@ package com.ucapdm2025.taskspaces.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,13 +19,13 @@ fun HomeScreen() {
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        item {
+        /*item {
             Text(
-                text = "Welcome, \$USER",
+               // text = "Welcome, \$USER",
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(12.dp))
-        }
+        }*/
 
         item {
             YourWorkspacesSection()
@@ -36,7 +34,7 @@ fun HomeScreen() {
 
         item {
             SharedWorkspacesSection()
-            Spacer(modifier = Modifier.height(80.dp)) 
+            Spacer(modifier = Modifier.height(80.dp))
         }
 
         item {
