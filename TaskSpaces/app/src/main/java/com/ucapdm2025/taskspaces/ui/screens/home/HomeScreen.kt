@@ -35,7 +35,8 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
 ) {
 //    Consume viewModel states here
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
