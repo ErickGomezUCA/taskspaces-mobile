@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Task
 import com.ucapdm2025.taskspaces.data.model.Workspace
+import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
+import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(): ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
+    private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
     val workspaces: StateFlow<List<Workspace>> = workspaceRepository
         .getWorkspaces()
@@ -24,7 +27,7 @@ class HomeViewModel(): ViewModel() {
         .getWorkspacesSharedWithMe()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val assignedTasks: StateFlow<List<Task>> = workspaceRepository.getAssignedTasks()
+    val assignedTasks: StateFlow<List<Task>> = taskRepository.getTasks()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun createWorkspace(workspace: Workspace) {

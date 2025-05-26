@@ -4,7 +4,7 @@ import com.ucapdm2025.taskspaces.data.model.Tag
 import com.ucapdm2025.taskspaces.data.model.Task
 import com.ucapdm2025.taskspaces.data.model.User
 
-val assignedTasksDummy: List<Task> = listOf(
+val tasksDummy: List<Task> = listOf(
     Task(
         id = 1,
         title = "Task 1",
