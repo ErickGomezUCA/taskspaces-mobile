@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.search
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Project
@@ -15,10 +16,9 @@ import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data class QueryResults(
     val workspaces: List<Workspace>? = null,
@@ -40,16 +40,45 @@ class SearchViewModel: ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
     private val userRepository: UserRepository = UserRepositoryImpl()
 
-    private val workspaces = workspaceRepository.getWorkspaces().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    private val projects = projectRepository.getProjects().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    private val tasks = taskRepository.getTasks().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    private val users = userRepository.getUsers().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
     private val _results =  MutableStateFlow(QueryResults())
     val results: StateFlow<QueryResults> = _results.asStateFlow()
 
+    private val _workspaces = MutableStateFlow<List<Workspace>>(emptyList())
+    private val workspaces: StateFlow<List<Workspace>> = _workspaces
+
+    private val _projects = MutableStateFlow<List<Project>>(emptyList())
+    private val projects: StateFlow<List<Project>> = _projects
+
+    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
+    private val tasks: StateFlow<List<Task>> = _tasks
+
+    private val _users = MutableStateFlow<List<User>>(emptyList())
+    private val users: StateFlow<List<User>> = _users
+
+    init {
+        viewModelScope.launch {
+            workspaceRepository.getWorkspaces().collect { list ->
+                _workspaces.value = list
+            }
+
+            projectRepository.getProjects().collect { list ->
+                _projects.value = list
+            }
+
+            taskRepository.getTasks().collect { list ->
+                _tasks.value = list
+            }
+
+            userRepository.getUsers().collect { list ->
+                _users.value = list
+            }
+        }
+    }
+
     fun searchResults(query: String) {
         // TODO: Implement search logic here
+
+        Log.d("test1", workspaces.value.toString())
 
         _results.value = QueryResults(
             workspaces = workspaces.value,

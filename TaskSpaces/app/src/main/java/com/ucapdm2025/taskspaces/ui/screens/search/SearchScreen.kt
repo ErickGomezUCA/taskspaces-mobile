@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.search
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,8 +42,14 @@ fun SearchScreen(
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
 
         if (results.value.isEmpty()) {
+            Log.d("test1", results.value.toString())
+            Log.d("test1", results.value.isEmpty().toString())
+
             if (query.value == "") {
-                Button(onClick = {query.value = "hi"}) { Text(text = "Get results") }
+                Button(onClick = {
+                    query.value = "hi"
+                    viewModel.searchResults(query.value)
+                }) { Text(text = "Get results") }
                 FeedbackIcon(
                     icon = Icons.Default.Search,
                     title = "Start searching workspaces, projects, tasks and users"

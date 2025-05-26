@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
+import android.util.Log
 import com.ucapdm2025.taskspaces.data.dummy.tasksDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummy
@@ -15,6 +16,7 @@ class WorkspaceRepositoryImpl: WorkspaceRepository {
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummy)
 
     override fun getWorkspaces(): Flow<List<Workspace>> {
+        Log.d("test1", workspaces.value.toString())
         return workspaces.asStateFlow()
     }
 
