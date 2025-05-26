@@ -1,7 +1,9 @@
 package com.ucapdm2025.taskspaces.ui.screens.home
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,12 +31,12 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel()
+//    viewModel: HomeViewModel = viewModel()
 ) {
 //    Consume viewModel states here
 //    val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         Text("Home Screen", color = MaterialTheme.colorScheme.onBackground)
     }
 }

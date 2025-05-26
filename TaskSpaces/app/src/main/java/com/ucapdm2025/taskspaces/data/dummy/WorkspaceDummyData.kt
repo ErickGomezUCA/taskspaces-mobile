@@ -2,7 +2,7 @@ package com.ucapdm2025.taskspaces.data.dummy
 
 import com.ucapdm2025.taskspaces.data.model.Workspace
 
-val workspacesDummy: MutableList<Workspace> = mutableListOf(
+val workspacesDummy = listOf<Workspace>(
     Workspace(
         id = 1,
         title = "Workspace 1",

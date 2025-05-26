@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 // TODO: Implement RoomDatabase to this repository
 class WorkspaceRepositoryImpl: WorkspaceRepository {
-    private val workspaces = MutableStateFlow(workspacesDummy.toList())
+    private val workspaces = MutableStateFlow(workspacesDummy)
 
     override fun getWorkspaces(): Flow<List<Workspace>> {
         return workspaces.asStateFlow()
