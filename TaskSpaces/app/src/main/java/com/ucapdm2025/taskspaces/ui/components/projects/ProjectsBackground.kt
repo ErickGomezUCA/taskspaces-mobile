@@ -8,7 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ucapdm2025.taskspaces.ui.theme.ProjectScreenBackground
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
@@ -31,8 +32,8 @@ fun ProjectsBackground(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ProjectScreenBackground)
-            .padding(16.dp)
+            .background(ExtendedTheme.colors.projectBackground)
+            .padding(vertical = 16.dp, horizontal = 0.dp)
     ) {
         content()
     }
@@ -46,12 +47,28 @@ fun ProjectsBackground(
  */
 @Preview(showSystemUi = true)
 @Composable
-fun ProjectsBackgroundPreview() {
-    TaskSpacesTheme {
-        ProjectsBackground(
-            content = {
+fun ProjectsBackgroundPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            ProjectsBackground(
+                content = {
 
-            }
-        )
+                }
+            )
+        }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun ProjectsBackgroundPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            ProjectsBackground(
+                content = {
+
+                }
+            )
+        }
     }
 }
