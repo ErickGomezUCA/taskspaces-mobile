@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -26,11 +27,15 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = viewModel(),
 ) {
+    val results = viewModel.results.collectAsStateWithLifecycle()
+
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        FeedbackIcon(
-            icon = Icons.Default.Search,
-            title = "Start searching workspaces, projects, tasks and users"
-        )
+        if (results.value.isEmpty()) {
+            FeedbackIcon(
+                icon = Icons.Default.Search,
+                title = "Start searching workspaces, projects, tasks and users"
+            )
+        }
     }
 }
 
