@@ -8,9 +8,14 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class TaskRepositoryImpl: TaskRepository {
     private val tasks = MutableStateFlow(tasksDummy)
+    private val bookmarkedTasks = MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummy)
 
     override fun getTasks(): Flow<List<Task>> {
         return tasks.asStateFlow()
+    }
+
+    override fun getBookmarkedTasks(): Flow<List<Task>> {
+        return bookmarkedTasks.asStateFlow()
     }
 
     override suspend fun getTaskById(id: Int): Task? {
