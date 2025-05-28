@@ -15,7 +15,7 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
-fun UserCard(username: String) {
+fun UserCard(username: String, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally

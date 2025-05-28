@@ -24,9 +24,9 @@ class MainActivity : ComponentActivity() {
 //                just uncomment AppScaffold and comment the OnboardingNavigation
 
 //                    OnboardingNavigation()
-                AppScaffold()
+                //AppScaffold()
                     // Just testing the screen for now — will be replaced by real flow later.
-                    // WorkspaceScreen(workspaceName = "Workspace 1")
+                     //WorkspaceScreen(workspaceName = "Workspace 1")
 
                 }
             }

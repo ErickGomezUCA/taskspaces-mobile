@@ -28,7 +28,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * @param name The name of the project to display.
  */
 @Composable
-fun ProjectCard(name: String) {
+fun ProjectCard(name: String, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier
             .padding(8.dp)

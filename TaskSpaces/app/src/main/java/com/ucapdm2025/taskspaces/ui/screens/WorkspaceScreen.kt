@@ -2,13 +2,11 @@ package com.ucapdm2025.taskspaces.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,6 +15,10 @@ import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.theme.*
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import com.ucapdm2025.taskspaces.ui.components.Container
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.Alignment
 
 /**
  * Composable that renders a workspace screen with sections for projects and members.
@@ -32,73 +34,62 @@ fun WorkspaceScreen(workspaceName: String) {
     val projectNames = listOf("Project name", "Project name", "Project name", "Project name")
     val users = listOf("Username", "Username", "Username")
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 color = ExtendedTheme.colors.background05,
                 shape = RoundedCornerShape(size = 24.dp)
             )
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Workspace title
-        Text(
-            text = workspaceName,
-            style = OutfitTypography.headlineSmall,
-            color = Black100
-        )
+        item {
+            Text(
+                text = workspaceName,
+                style = OutfitTypography.headlineSmall,
+                color = Black100
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Projects Section
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Black05),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+        item {
+            Container(title = "Projects", showOptionsButton = true) {
+                val chunkedProjects = projectNames.chunked(2)
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Projects", style = OutfitTypography.titleSmall, color = Black100)
-                    TextButton(
-                        onClick = { /* TODO: This will become a button to open a menu (e.g., dropdown for project actions). */ },
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Text("...", style = OutfitTypography.titleSmall, color = Black100)
-                    }
-
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(projectNames) { name ->
-                        ProjectCard(name)
+                    chunkedProjects.forEach { rowItems ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(
+                                8.dp,
+                                Alignment.CenterHorizontally
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            rowItems.forEach { name ->
+                                ProjectCard(
+                                    name = name,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            if (rowItems.size < 2) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
 
                 // "Create new project" button
                 Button(
                     onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */ },
+                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
+                    },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = White10),
                     modifier = Modifier
@@ -117,7 +108,8 @@ fun WorkspaceScreen(workspaceName: String) {
                 // "See more" button
                 Button(
                     onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */ },
+                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
+                    },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryLight100),
                     modifier = Modifier.fillMaxWidth()
@@ -127,46 +119,39 @@ fun WorkspaceScreen(workspaceName: String) {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+
 
         // Members Section
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Black05),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+        item {
+
+            Container(title = "Members", showOptionsButton = true) {
+                val chunkedUsers = users.chunked(3)
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Members", style = OutfitTypography.titleSmall, color = Black100)
+                    chunkedUsers.forEach { rowItems ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            rowItems.forEach { username ->
+                                UserCard(
+                                    username,
+                                    modifier = Modifier
+                                        .width(80.dp)
+                                        .fillMaxHeight()
+                                )
+                            }
 
-                    TextButton(
-                        onClick = { /* TODO: This will become a button to open a menu (e.g., dropdown for member actions). */ },
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Text("...", style = OutfitTypography.titleSmall, color = Black100)
-                    }
-                }
-
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    users.forEach { username ->
-                        UserCard(username)
+                            repeat(3 - rowItems.size) {
+                                Spacer(modifier = Modifier.width(70.dp))
+                            }
+                        }
                     }
                 }
 
@@ -174,7 +159,8 @@ fun WorkspaceScreen(workspaceName: String) {
 
                 Button(
                     onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */ },
+                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
+                    },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryLight100),
                     modifier = Modifier.fillMaxWidth()
@@ -186,29 +172,30 @@ fun WorkspaceScreen(workspaceName: String) {
     }
 }
 
-/**
- * A preview composable for the [WorkspaceScreen] component.
- *
- * Displays the entire workspace screen with mock data and full system UI for design-time inspection.
- * Includes light and dark theme variants to test visual consistency across modes.
- */
-@Preview(showBackground = true)
-@Composable
-fun WorkspaceScreenPreviewLight() {
-    TaskSpacesTheme(darkTheme = false) {
-        ExtendedColors(darkTheme = false) {
-            WorkspaceScreen(workspaceName = "Design Team")
+    /**
+     * A preview composable for the [WorkspaceScreen] component.
+     *
+     * Displays the entire workspace screen with mock data and full system UI for design-time inspection.
+     * Includes light and dark theme variants to test visual consistency across modes.
+     */
+    @Preview(showBackground = true)
+    @Composable
+    fun WorkspaceScreenPreviewLight() {
+        TaskSpacesTheme(darkTheme = false) {
+            ExtendedColors(darkTheme = false) {
+                WorkspaceScreen(workspaceName = "Design Team")
+            }
         }
     }
-}
 
-@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-@Composable
-fun WorkspaceScreenPreviewDark() {
-    TaskSpacesTheme(darkTheme = true) {
-        ExtendedColors(darkTheme = true) {
-            WorkspaceScreen(workspaceName = "Design Team")
+    @Preview(showBackground = true, backgroundColor = 0xFF27272A)
+    @Composable
+    fun WorkspaceScreenPreviewDark() {
+        TaskSpacesTheme(darkTheme = true) {
+            ExtendedColors(darkTheme = true) {
+                WorkspaceScreen(workspaceName = "Design Team")
+            }
         }
     }
-}
+
 
