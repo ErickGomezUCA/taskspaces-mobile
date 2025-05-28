@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
 fun UserCard(username: String) {
@@ -24,5 +27,44 @@ fun UserCard(username: String) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(username, fontSize = 14.sp, color = Color.Black)
+    }
+}
+/**
+ * A preview composable for the [UserCard] component.
+ *
+ * Displays a mock user profile card in both light and dark UI modes
+ * to validate layout, alignment, and styling consistency.
+ */
+@Preview(showBackground = true)
+@Composable
+fun UserCardPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            Column(
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                UserCard(username = "Sample User")
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UserCardPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Column(
+                modifier = Modifier
+                    .background(Color.DarkGray)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                UserCard(username = "Sample User")
+            }
+        }
     }
 }

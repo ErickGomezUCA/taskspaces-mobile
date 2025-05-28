@@ -16,6 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight25
+import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
  * A reusable composable that represents a single project card.
@@ -53,3 +56,45 @@ fun ProjectCard(name: String) {
         Text(name, fontSize = 14.sp, color = Color.Black)
     }
 }
+
+/**
+ * A preview composable for the [ProjectCard] component.
+ *
+ * Displays a sample project card using mock data and background styling to simulate
+ * how the component appears within the UI. Previews are shown for both light and dark themes.
+ */
+@Preview(showBackground = true)
+@Composable
+fun ProjectCardPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            Column(
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                ProjectCard(name = "Sample Project")
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProjectCardPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Column(
+                modifier = Modifier
+                    .background(Color.DarkGray)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                ProjectCard(name = "Sample Project")
+            }
+        }
+    }
+}
+
+
