@@ -10,10 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.theme.*
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
  * Composable that renders a workspace screen with sections for projects and members.
@@ -32,7 +35,10 @@ fun WorkspaceScreen(workspaceName: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightBackground)
+            .background(
+                color = ExtendedTheme.colors.background05,
+                shape = RoundedCornerShape(size = 24.dp)
+            )
             .padding(16.dp)
     ) {
         // Workspace title
@@ -176,6 +182,32 @@ fun WorkspaceScreen(workspaceName: String) {
                     Text("Manage members", color = White100, style = OutfitTypography.bodySmall)
                 }
             }
+        }
+    }
+}
+
+/**
+ * A preview composable for the [WorkspaceScreen] component.
+ *
+ * Displays the entire workspace screen with mock data and full system UI for design-time inspection.
+ * Includes light and dark theme variants to test visual consistency across modes.
+ */
+@Preview(showBackground = true)
+@Composable
+fun WorkspaceScreenPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            WorkspaceScreen(workspaceName = "Design Team")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun WorkspaceScreenPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            WorkspaceScreen(workspaceName = "Design Team")
         }
     }
 }
