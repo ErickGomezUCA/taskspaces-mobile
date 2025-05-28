@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,7 +54,12 @@ fun ProjectCard(name: String, modifier: Modifier = Modifier) {
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(name, fontSize = 14.sp, color = Color.Black)
+        Text(
+            text = name,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
     }
 }
 

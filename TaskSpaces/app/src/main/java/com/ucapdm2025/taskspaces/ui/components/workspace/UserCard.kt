@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.ui.components.workspace
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +27,12 @@ fun UserCard(username: String, modifier: Modifier = Modifier) {
                 .background(Color(0xFFFFA726), CircleShape)
         )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(username, fontSize = 14.sp, color = Color.Black)
+        Text(
+            text = username,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
     }
 }
 /**
