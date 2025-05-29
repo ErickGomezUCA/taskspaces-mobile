@@ -17,10 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.ui.theme.White100
 
 /**
  * A composable function that displays a column of tasks grouped by their status.
@@ -41,7 +41,10 @@ fun TaskStatusColumn(
 ) {
     Column(
         modifier = Modifier
-            .background(color = ExtendedTheme.colors.projectColumn, shape = RoundedCornerShape(16.dp))
+            .background(
+                color = ExtendedTheme.colors.projectColumn,
+                shape = RoundedCornerShape(16.dp)
+            )
             .padding(16.dp)
             .width(200.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -118,7 +121,13 @@ fun TaskStatusColumnPreviewLight() {
     }
 }
 
-@Preview (showBackground = true)
+/**
+ * A preview composable for the [TaskStatusColumn] component using the dark theme.
+ *
+ * Displays a sample column with mock tasks under the "Pending" status to visualize
+ * its appearance and layout in dark mode.
+ */
+@Preview(showBackground = true)
 @Composable
 fun TaskStatusColumnPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
