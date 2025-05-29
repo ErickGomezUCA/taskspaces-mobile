@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.components
+package com.ucapdm2025.taskspaces.ui.components.general
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,6 +78,10 @@ fun FeedbackIcon(
     }
 }
 
+/**
+ * Previews for the [FeedbackIcon] composable in both light and dark themes.
+ * These previews help visualize how the component looks in different themes.
+ */
 @Preview(showBackground = true)
 @Composable
 fun FeedbackIconPreviewLightMode() {
@@ -92,6 +95,10 @@ fun FeedbackIconPreviewLightMode() {
     }
 }
 
+/**
+ * Preview for the [FeedbackIcon] composable in dark mode.
+ * This preview helps visualize how the component looks in a dark theme.
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun FeedbackIconPreviewDarkMode() {
