@@ -9,6 +9,7 @@ import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WorkspaceViewModel: ViewModel() {
@@ -17,10 +18,10 @@ class WorkspaceViewModel: ViewModel() {
     val id = 1;
 
     private val _workspace = MutableStateFlow<Workspace>(Workspace(id = 0, title = "", createdAt = "", updatedAt = ""))
-    val workspace = _workspace
+    val workspace: StateFlow<Workspace> = _workspace
 
     private val _projects = MutableStateFlow<List<Project>>(emptyList())
-    val projects = _projects
+    val projects: StateFlow<List<Project>> = _projects
 
     init {
         viewModelScope.launch {
