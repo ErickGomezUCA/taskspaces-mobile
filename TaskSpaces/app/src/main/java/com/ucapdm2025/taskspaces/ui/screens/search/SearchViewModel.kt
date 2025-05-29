@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.ui.screens.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Project
+import com.ucapdm2025.taskspaces.data.model.QueryResults
 import com.ucapdm2025.taskspaces.data.model.Task
 import com.ucapdm2025.taskspaces.data.model.User
 import com.ucapdm2025.taskspaces.data.model.Workspace
@@ -18,20 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-data class QueryResults(
-    val workspaces: List<Workspace>? = null,
-    val projects: List<Project>? = null,
-    val tasks: List<Task>? = null,
-    val users: List<User>? = null
-) {
-    fun isEmpty(): Boolean {
-        return workspaces.isNullOrEmpty() &&
-                projects.isNullOrEmpty() &&
-                tasks.isNullOrEmpty() &&
-                users.isNullOrEmpty()
-    }
-}
 
 class SearchViewModel : ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
