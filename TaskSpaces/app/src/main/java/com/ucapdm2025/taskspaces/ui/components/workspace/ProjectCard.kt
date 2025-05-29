@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight25
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.theme.Black100
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -49,7 +50,7 @@ fun ProjectCard(name: String, modifier: Modifier = Modifier) {
                 // TODO: Replace with the exact icon from Figma or import as SVG.
                 imageVector = Icons.Outlined.StarBorder,
                 contentDescription = "Project Icon",
-                tint = Color.Black,
+                tint = Black100,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -74,31 +75,21 @@ fun ProjectCard(name: String, modifier: Modifier = Modifier) {
 fun ProjectCardPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            Column(
-                modifier = Modifier
-                    .background(Color.Gray)
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                ProjectCard(name = "Sample Project")
-            }
+
+                ProjectCard(name = "Project Name")
+
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun ProjectCardPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            Column(
-                modifier = Modifier
-                    .background(Color.DarkGray)
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                ProjectCard(name = "Sample Project")
-            }
+
+                ProjectCard( name = "Project Name")
+
         }
     }
 }

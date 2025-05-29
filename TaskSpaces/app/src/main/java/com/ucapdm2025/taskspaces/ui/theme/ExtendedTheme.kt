@@ -18,6 +18,7 @@ data class ExtendedColors(
     val background50: Color,
     val background75: Color,
     val primary50: Color,
+    val primary25: Color,
     val projectColumn: Color,
     val tag: Color,
     val projectBackground: Color
@@ -32,6 +33,7 @@ val LocalExtendedColors = staticCompositionLocalOf {
         background50 = Color.Unspecified,
         background75 = Color.Unspecified,
         primary50 = Color.Unspecified,
+        primary25 = Color.Unspecified,
         projectColumn = Color.Unspecified,
         tag = Color.Unspecified,
         projectBackground = Color.Unspecified
@@ -46,6 +48,7 @@ val localExtendedColorsDark = staticCompositionLocalOf {
         background50 = White50,
         background75 = White75,
         primary50 = PrimaryDark50,
+        primary25 = PrimaryDark25,
         projectColumn = ProjectScreenColumnDark,
         tag = Black75,
         projectBackground = ProjectScreenBackgroundDark,
@@ -60,6 +63,7 @@ val localExtendedColorsLight = staticCompositionLocalOf {
         background50 = Black50,
         background75 = Black75,
         primary50 = PrimaryLight50,
+        primary25 = PrimaryLight25,
         projectColumn = ProjectScreenColumnLight,
         tag = White75,
         projectBackground = ProjectScreenBackgroundLight,

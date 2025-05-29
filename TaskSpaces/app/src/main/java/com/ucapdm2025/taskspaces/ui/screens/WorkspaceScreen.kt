@@ -49,7 +49,7 @@ fun WorkspaceScreen(workspaceName: String) {
             Text(
                 text = workspaceName,
                 style = OutfitTypography.headlineSmall,
-                color = Black100
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -61,7 +61,8 @@ fun WorkspaceScreen(workspaceName: String) {
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
                     chunkedProjects.forEach { rowItems ->
                         Row(
@@ -69,7 +70,8 @@ fun WorkspaceScreen(workspaceName: String) {
                                 8.dp,
                                 Alignment.CenterHorizontally
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                         ) {
                             rowItems.forEach { name ->
                                 ProjectCard(
@@ -86,12 +88,11 @@ fun WorkspaceScreen(workspaceName: String) {
 
 
                 // "Create new project" button
-                Button(
+                TextButton(
                     onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
                     //  This should be delegated to the ViewModel to follow proper architecture practices. */
                     },
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = White10),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp)
@@ -99,7 +100,7 @@ fun WorkspaceScreen(workspaceName: String) {
                     Text(
                         text = "Create new project  +",
                         style = OutfitTypography.bodyMedium,
-                        color = PrimaryLight100
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -110,11 +111,18 @@ fun WorkspaceScreen(workspaceName: String) {
                     onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
                     //  This should be delegated to the ViewModel to follow proper architecture practices. */
                     },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryLight100),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .background(
+                            color =  MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(size = 8.dp)
+                        )
+                        .fillMaxWidth()
                 ) {
-                    Text("See more", color = White100, style = OutfitTypography.bodySmall)
+                    Text(
+                        text = "See more",
+                        style = OutfitTypography.bodyMedium,
+                        color = MaterialTheme.colorScheme.background
+                    )
                 }
             }
         }
@@ -161,11 +169,17 @@ fun WorkspaceScreen(workspaceName: String) {
                     onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
                     //  This should be delegated to the ViewModel to follow proper architecture practices. */
                     },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryLight100),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .background(
+                            color =  MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(size = 8.dp)
+                        ).fillMaxWidth()
                 ) {
-                    Text("Manage members", color = White100, style = OutfitTypography.bodySmall)
+                    Text(
+                        text = "Manage members",
+                        style = OutfitTypography.bodyMedium,
+                        color = MaterialTheme.colorScheme.background
+                    )
                 }
             }
         }
@@ -183,7 +197,7 @@ fun WorkspaceScreen(workspaceName: String) {
     fun WorkspaceScreenPreviewLight() {
         TaskSpacesTheme(darkTheme = false) {
             ExtendedColors(darkTheme = false) {
-                WorkspaceScreen(workspaceName = "Design Team")
+                WorkspaceScreen(workspaceName = "Workspace")
             }
         }
     }
@@ -193,7 +207,7 @@ fun WorkspaceScreen(workspaceName: String) {
     fun WorkspaceScreenPreviewDark() {
         TaskSpacesTheme(darkTheme = true) {
             ExtendedColors(darkTheme = true) {
-                WorkspaceScreen(workspaceName = "Design Team")
+                WorkspaceScreen(workspaceName = "Workspace")
             }
         }
     }
