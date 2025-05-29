@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.data.model.Workspace
-import com.ucapdm2025.taskspaces.ui.components.Container
+import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -50,9 +50,7 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        Container {
-            Text(text = "Your workspaces")
-
+        Container(title = "Your workspaces") {
 //                Workspaces are being consumed here
             Column {
                 workspaces.value.forEach { workspace ->
@@ -76,8 +74,7 @@ fun HomeScreen(
             }
         }
 
-        Container {
-            Text(text = "Workspaces shared with me")
+        Container(title = "Workspaces shared with me") {
 
 //                Workspaces shared with me are being consumed here
             Column {
@@ -95,9 +92,7 @@ fun HomeScreen(
         }
 
 //                Assigned tasks are being consumed here
-        Container {
-            Text(text = "Assigned tasks")
-
+        Container(title = "Assigned tasks") {
             Column {
                 assignedTasks.value.forEach { task ->
                     Card {
