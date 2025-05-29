@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.screens.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Project
@@ -34,15 +33,29 @@ data class QueryResults(
     }
 }
 
-class SearchViewModel: ViewModel() {
+class SearchViewModel : ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
     private val userRepository: UserRepository = UserRepositoryImpl()
 
-    private val _results =  MutableStateFlow(QueryResults())
+    //    Results
+    private val _results = MutableStateFlow(QueryResults())
     val results: StateFlow<QueryResults> = _results.asStateFlow()
 
+    private val _workspacesResults = MutableStateFlow<List<Workspace>>(emptyList())
+    val workspacesResults: StateFlow<List<Workspace>> = _workspacesResults.asStateFlow()
+
+    private val _projectsResults = MutableStateFlow<List<Project>>(emptyList())
+    val projectsResults: StateFlow<List<Project>> = _projectsResults.asStateFlow()
+
+    private val _tasksResults = MutableStateFlow<List<Task>>(emptyList())
+    val tasksResults: StateFlow<List<Task>> = _tasksResults.asStateFlow()
+
+    private val _usersResults = MutableStateFlow<List<User>>(emptyList())
+    val usersResults: StateFlow<List<User>> = _usersResults.asStateFlow()
+
+    //    Data from repositories
     private val _workspaces = MutableStateFlow<List<Workspace>>(emptyList())
     private val workspaces: StateFlow<List<Workspace>> = _workspaces
 
@@ -81,14 +94,49 @@ class SearchViewModel: ViewModel() {
         }
     }
 
+    fun searchWorkspaces(query: String) {
+        val filteredWorkspaces = workspaces.value.filter { workspace ->
+            workspace.title.contains(query, ignoreCase = true)
+        }
+        _workspacesResults.value = filteredWorkspaces
+    }
+
+    fun searchProjects(query: String) {
+        val filteredProjects = projects.value.filter { project ->
+            project.title.contains(query, ignoreCase = true)
+        }
+        _projectsResults.value = filteredProjects
+    }
+
+    fun searchTasks(query: String) {
+        val filteredTasks = tasks.value.filter { task ->
+            task.title.contains(query, ignoreCase = true) ||
+                    task.description.contains(query, ignoreCase = true)
+        }
+        _tasksResults.value = filteredTasks
+    }
+
+    fun searchUsers(query: String) {
+        val filteredUsers = users.value.filter { user ->
+            user.fullname.contains(query, ignoreCase = true) ||
+                    user.username.contains(query, ignoreCase = true)
+            user.email.contains(query, ignoreCase = true)
+        }
+        _usersResults.value = filteredUsers
+    }
+
     fun searchResults(query: String) {
         // TODO: Implement search logic here
+        searchWorkspaces(query)
+        searchProjects(query)
+        searchTasks(query)
+        searchUsers(query)
 
         _results.value = QueryResults(
-            workspaces = workspaces.value,
-            projects = projects.value,
-            tasks = tasks.value,
-            users = users.value
+            workspaces = _workspacesResults.value,
+            projects = _projectsResults.value,
+            tasks = _tasksResults.value,
+            users = _usersResults.value
         )
     }
 }
