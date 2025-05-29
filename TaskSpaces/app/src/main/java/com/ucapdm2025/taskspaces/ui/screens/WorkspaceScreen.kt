@@ -2,23 +2,18 @@ package com.ucapdm2025.taskspaces.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.theme.*
-import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
-import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.ui.components.Container
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.ui.Alignment
 
 /**
  * Composable that renders a workspace screen with sections for projects and members.
@@ -113,7 +108,7 @@ fun WorkspaceScreen(workspaceName: String) {
                     },
                     modifier = Modifier
                         .background(
-                            color =  MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(size = 8.dp)
                         )
                         .fillMaxWidth()
@@ -126,7 +121,6 @@ fun WorkspaceScreen(workspaceName: String) {
                 }
             }
         }
-
 
 
         // Members Section
@@ -171,9 +165,10 @@ fun WorkspaceScreen(workspaceName: String) {
                     },
                     modifier = Modifier
                         .background(
-                            color =  MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(size = 8.dp)
-                        ).fillMaxWidth()
+                        )
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = "Manage members",
@@ -186,30 +181,30 @@ fun WorkspaceScreen(workspaceName: String) {
     }
 }
 
-    /**
-     * A preview composable for the [WorkspaceScreen] component.
-     *
-     * Displays the entire workspace screen with mock data and full system UI for design-time inspection.
-     * Includes light and dark theme variants to test visual consistency across modes.
-     */
-    @Preview(showBackground = true)
-    @Composable
-    fun WorkspaceScreenPreviewLight() {
-        TaskSpacesTheme(darkTheme = false) {
-            ExtendedColors(darkTheme = false) {
-                WorkspaceScreen(workspaceName = "Workspace")
-            }
+/**
+ * A preview composable for the [WorkspaceScreen] component.
+ *
+ * Displays the entire workspace screen with mock data and full system UI for design-time inspection.
+ * Includes light and dark theme variants to test visual consistency across modes.
+ */
+@Preview(showBackground = true)
+@Composable
+fun WorkspaceScreenPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            WorkspaceScreen(workspaceName = "Workspace")
         }
     }
+}
 
-    @Preview(showBackground = true, backgroundColor = 0xFF27272A)
-    @Composable
-    fun WorkspaceScreenPreviewDark() {
-        TaskSpacesTheme(darkTheme = true) {
-            ExtendedColors(darkTheme = true) {
-                WorkspaceScreen(workspaceName = "Workspace")
-            }
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun WorkspaceScreenPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            WorkspaceScreen(workspaceName = "Workspace")
         }
     }
+}
 
 
