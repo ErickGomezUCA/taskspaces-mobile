@@ -10,9 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
  * Data class representing a tag or label associated with a task.
@@ -46,5 +50,35 @@ fun Tag(tag: Tag) {
             color = tag.color,
             fontSize = 12.sp,
         )
+    }
+}
+
+/**
+ * A preview composable for the [Tag] component using the light theme.
+ *
+ * Displays a sample tag
+ */
+@Preview(showBackground = true)
+@Composable
+fun TagPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            Tag(tag = Tag("Backend", Color.Blue))
+        }
+    }
+}
+
+/**
+ * A preview composable for the [Tag] component using the light theme.
+ *
+ * Displays a sample tag
+ */
+@Preview(showBackground = true)
+@Composable
+fun TagPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Tag(tag = Tag("Backend", Color.Blue))
+        }
     }
 }
