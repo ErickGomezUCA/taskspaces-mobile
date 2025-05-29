@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import com.ucapdm2025.taskspaces.ui.screens.WorkspaceScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +24,12 @@ class MainActivity : ComponentActivity() {
 //                just uncomment AppScaffold and comment the OnboardingNavigation
 
 //                    OnboardingNavigation()
+
+                    // Just testing the screen for now — will be replaced by real flow later.
+//                    WorkspaceScreen(workspaceName = "Workspace 1")
+
                     AppScaffold()
+
                 }
             }
         }
