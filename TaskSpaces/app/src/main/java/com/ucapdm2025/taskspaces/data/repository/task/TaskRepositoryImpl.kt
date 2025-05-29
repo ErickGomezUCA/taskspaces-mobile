@@ -43,4 +43,16 @@ class TaskRepositoryImpl: TaskRepository {
 
         return exists
     }
+
+    override suspend fun bookmarkTask(id: Int): Boolean {
+        val task = tasks.value.find { it.id == id } ?: return false
+
+        if (bookmarkedTasks.value.any { it.id == id }) {
+            bookmarkedTasks.value = bookmarkedTasks.value.filter { it.id != id }
+        } else {
+            bookmarkedTasks.value = bookmarkedTasks.value + task
+        }
+
+        return true
+    }
 }
