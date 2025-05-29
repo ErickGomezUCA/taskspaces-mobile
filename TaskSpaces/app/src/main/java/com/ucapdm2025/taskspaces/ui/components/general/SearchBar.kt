@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.components
+package com.ucapdm2025.taskspaces.ui.components.general
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -149,7 +149,10 @@ fun SearchBar(
     }
 }
 
-// TODO: Check if IME actions work properly
+/**
+ * Previews for the SearchBar composable in both light and dark modes.
+ * These previews help visualize the search bar's appearance with and without a query value.
+ */
 @Preview(showBackground = true)
 @Composable
 fun SearchBarPreviewLightMode() {
@@ -164,6 +167,9 @@ fun SearchBarPreviewLightMode() {
     }
 }
 
+/** * Preview of the SearchBar with a value in light mode.
+ * This shows how the search bar looks when it has text input.
+ */
 @Preview(showBackground = true)
 @Composable
 fun SearchBarWithValuePreviewLightMode() {
@@ -178,6 +184,10 @@ fun SearchBarWithValuePreviewLightMode() {
     }
 }
 
+/**
+ * Previews for the SearchBar composable in dark mode.
+ * These previews help visualize the search bar's appearance with and without a query value in a dark theme.
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun SearchBarPreviewDarkMode() {
@@ -192,6 +202,9 @@ fun SearchBarPreviewDarkMode() {
     }
 }
 
+/** Preview of the SearchBar with a value in dark mode.
+ * This shows how the search bar looks when it has text input in a dark theme.
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun SearchBarWithValuePreviewDarkMode() {

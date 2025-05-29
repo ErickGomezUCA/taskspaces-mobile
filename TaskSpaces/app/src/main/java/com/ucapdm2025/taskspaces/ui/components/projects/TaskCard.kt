@@ -1,11 +1,8 @@
 package com.ucapdm2025.taskspaces.ui.components.projects
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -13,20 +10,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ucapdm2025.taskspaces.ui.theme.Black100
-import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight25
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.ui.theme.White100
 
 /**
  * A composable function that displays a task card with a title and a list of tags.
@@ -69,18 +63,10 @@ fun TaskCard(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 tags.forEach { tag ->
-                    Row(
-                        modifier = Modifier
-                            .border(1.dp, tag.color, RoundedCornerShape(8.dp))
-                            .background(ExtendedTheme.colors.tag, RoundedCornerShape(8.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = tag.title,
-                            color = tag.color,
-                            fontSize = 12.sp
-                        )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        tags.forEach {
+                            Tag(tag = tag)
+                        }
                     }
                 }
             }
@@ -92,12 +78,6 @@ fun TaskCard(
 data class Task(
     val title: String,
     val tags: List<Tag>,
-)
-
-// TODO: Replace with actual models
-data class Tag(
-    val title: String,
-    val color: Color
 )
 
 /**
@@ -122,6 +102,12 @@ fun TaskCardPreviewLight() {
     }
 }
 
+/**
+ * A preview composable for the [TaskCard] component using the dark theme.
+ *
+ * Displays a sample task card with mock tags to visualize its appearance
+ * in dark mode with a custom dark background color.
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun TaskCardPreviewDark() {

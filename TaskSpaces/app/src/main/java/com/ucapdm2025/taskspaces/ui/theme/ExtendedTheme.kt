@@ -78,7 +78,7 @@ fun ExtendedColors(
         localExtendedColorsLight.current
     }
 
-    CompositionLocalProvider (
+    CompositionLocalProvider(
         LocalExtendedColors provides extendedColors
     ) {
         MaterialTheme(
@@ -92,6 +92,6 @@ fun ExtendedColors(
 // Usage example: ExtendedTheme.colors.background05
 object ExtendedTheme {
     val colors: ExtendedColors
-    @Composable
-    get() = LocalExtendedColors.current
+        @Composable
+        get() = LocalExtendedColors.current
 }

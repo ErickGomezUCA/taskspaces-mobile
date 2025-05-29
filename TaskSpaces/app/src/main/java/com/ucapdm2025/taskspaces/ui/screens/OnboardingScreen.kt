@@ -24,7 +24,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun OnboardingScreen(navController: NavHostController) {
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            Text(text= "Onboarding Screen")
+            Text(text = "Onboarding Screen")
 //            Avoid returning to this screen when pressing back button
             Button(onClick = {
                 navController.navigate(LoginRoute) {

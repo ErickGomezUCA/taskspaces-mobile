@@ -3,16 +3,15 @@ package com.ucapdm2025.taskspaces.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
-import com.ucapdm2025.taskspaces.ui.components.projects.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.Task
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -103,6 +102,12 @@ fun ProjectsScreenPreviewLight() {
     }
 }
 
+/**
+ * A preview composable for the [ProjectScreen] component using the dark theme.
+ *
+ * Displays a sample Projects screen with mock tasks for each status category
+ * (Pending, Doing, Done) to visualize the layout and styling in dark mode.
+ */
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun ProjectsScreenPreviewDark() {
