@@ -41,7 +41,10 @@ fun TaskStatusColumn(
 ) {
     Column(
         modifier = Modifier
-            .background(color = ExtendedTheme.colors.projectColumn, shape = RoundedCornerShape(16.dp))
+            .background(
+                color = ExtendedTheme.colors.projectColumn,
+                shape = RoundedCornerShape(16.dp)
+            )
             .padding(16.dp)
             .width(200.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -124,7 +127,7 @@ fun TaskStatusColumnPreviewLight() {
  * Displays a sample column with mock tasks under the "Pending" status to visualize
  * its appearance and layout in dark mode.
  */
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun TaskStatusColumnPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {

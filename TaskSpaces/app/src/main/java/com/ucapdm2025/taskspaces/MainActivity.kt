@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
-import com.ucapdm2025.taskspaces.ui.navigation.OnboardingNavigation
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -23,7 +22,7 @@ class MainActivity : ComponentActivity() {
 //                just uncomment AppScaffold and comment the OnboardingNavigation
 
 //                    OnboardingNavigation()
-                AppScaffold()
+                    AppScaffold()
                 }
             }
         }
