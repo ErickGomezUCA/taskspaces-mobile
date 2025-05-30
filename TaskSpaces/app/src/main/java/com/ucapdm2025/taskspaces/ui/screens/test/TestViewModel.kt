@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
 import com.ucapdm2025.taskspaces.data.model.User
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,5 +24,17 @@ class TestViewModel: ViewModel() {
                 _users.value = userList
             }
         }
+    }
+
+    fun getUserById(id: Int): User? {
+        var user: User? = null
+
+        viewModelScope.launch {
+            usersRepository.getUserById(id).collect { foundUser ->
+                user = foundUser
+            }
+        }
+
+        return user
     }
 }
