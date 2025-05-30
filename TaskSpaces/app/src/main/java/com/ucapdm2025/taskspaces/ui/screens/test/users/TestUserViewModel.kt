@@ -37,15 +37,15 @@ class TestUserViewModel: ViewModel() {
         return user
     }
 
-    fun createUser(user: User) {
+    fun createUser(fullname: String, username: String, email: String, avatar: String) {
         viewModelScope.launch {
-            usersRepository.createUser(user)
+            usersRepository.createUser(fullname, username, email, avatar)
         }
     }
 
-    fun updateUser(user: User) {
+    fun updateUser(id: Int, fullname: String, username: String, email: String, avatar: String) {
         viewModelScope.launch {
-            usersRepository.updateUser(user)
+            usersRepository.updateUser(id, fullname, username, email, avatar)
         }
     }
 

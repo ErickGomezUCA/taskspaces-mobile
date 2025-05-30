@@ -5,10 +5,12 @@ import com.ucapdm2025.taskspaces.data.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.LocalDateTime
 
 // TODO: Replace dummy data with a real local database, or consuming from a remote API
-class UserRepositoryImpl: UserRepository {
+class UserRepositoryImpl : UserRepository {
     private val users = MutableStateFlow(usersDummy)
+    private var autoIncrementId = users.value.size + 1
 
     override fun getUsers(): Flow<List<User>> {
         return users.asStateFlow()
@@ -20,16 +22,47 @@ class UserRepositoryImpl: UserRepository {
             ?: MutableStateFlow(null)
     }
 
-    override suspend fun createUser(user: User): User {
-        users.value = users.value + user
-        return user
+    override suspend fun createUser(
+        fullname: String,
+        username: String,
+        email: String,
+        avatar: String
+    ): User {
+        val newUser = User(
+            id = autoIncrementId++,
+            fullname = fullname,
+            username = username,
+            email = email,
+            avatar = avatar,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString()
+        )
+
+        users.value = users.value + newUser
+        return newUser
     }
 
-    override suspend fun updateUser(user: User): User {
+    override suspend fun updateUser(
+        id: Int,
+        fullname: String,
+        username: String,
+        email: String,
+        avatar: String
+    ): User {
+        val updatedUser = User(
+            id = id,
+            fullname = fullname,
+            username = username,
+            email = email,
+            avatar = avatar,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString()
+        )
+
         users.value = users.value.map {
-            if (it.id == user.id) user else it
+            if (it.id == updatedUser.id) updatedUser else it
         }
-        return user
+        return updatedUser
     }
 
     override suspend fun deleteUser(id: Int): Boolean {

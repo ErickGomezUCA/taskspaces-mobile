@@ -30,13 +30,10 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 // Do not follow this code for production use, it's just a test screen to demonstrate the usage of ViewModel and StateFlow in Jetpack Compose.
 data class MutableUser(
-    val id: Int,
     var fullname: MutableState<String>,
     var username: MutableState<String>,
     var email: MutableState<String>,
-    var avatar: String,
-    var createdAt: String,
-    var updatedAt: String
+    var avatar: MutableState<String>,
 )
 
 /** * A composable function that displays a test user screen.
@@ -58,9 +55,15 @@ fun TestUserScreen(
     val user: MutableState<User?> = remember { mutableStateOf(null) }
 
 //    2. Create user
-    val autoIncrementId = remember { mutableStateOf(users.value.size + 1) } // For auto-incrementing ID
     val mutableUserInfo: MutableState<MutableUser> = remember {
-        mutableStateOf(MutableUser(id = autoIncrementId.value, fullname = mutableStateOf(""), username = mutableStateOf(""), email = mutableStateOf(""), avatar = "", createdAt = "", updatedAt = ""))
+        mutableStateOf(
+            MutableUser(
+                fullname = mutableStateOf(""),
+                username = mutableStateOf(""),
+                email = mutableStateOf(""),
+                avatar = mutableStateOf(""),
+            )
+        )
     }
 
 
@@ -148,26 +151,18 @@ fun TestUserScreen(
 
             Button(
                 onClick = {
-                    val createUserInfo = User(
-                        id = autoIncrementId.value,
+                    viewModel.createUser(
                         fullname = mutableUserInfo.value.fullname.value,
                         username = mutableUserInfo.value.username.value,
                         email = mutableUserInfo.value.email.value,
-                        avatar = mutableUserInfo.value.avatar,
-                        createdAt = mutableUserInfo.value.createdAt,
-                        updatedAt = mutableUserInfo.value.updatedAt
+                        avatar = mutableUserInfo.value.avatar.value
                     )
 
-                    viewModel.createUser(createUserInfo)
-
                     mutableUserInfo.value = MutableUser(
-                        id = ++autoIncrementId.value,
                         fullname = mutableStateOf(""),
                         username = mutableStateOf(""),
                         email = mutableStateOf(""),
-                        avatar = "",
-                        createdAt = "",
-                        updatedAt = ""
+                        avatar = mutableStateOf(""),
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -207,26 +202,21 @@ fun TestUserScreen(
 
             Button(
                 onClick = {
-                    val updateUserInfo = User(
+                    viewModel.updateUser(
                         id = searchUserById.value.toInt(),
                         fullname = mutableUserInfo.value.fullname.value,
                         username = mutableUserInfo.value.username.value,
                         email = mutableUserInfo.value.email.value,
-                        avatar = mutableUserInfo.value.avatar,
-                        createdAt = mutableUserInfo.value.createdAt,
-                        updatedAt = mutableUserInfo.value.updatedAt
+                        avatar = mutableUserInfo.value.avatar.value
                     )
 
-                    viewModel.updateUser(updateUserInfo)
+                    searchUserById.value = ""
 
                     mutableUserInfo.value = MutableUser(
-                        id = autoIncrementId.value,
                         fullname = mutableStateOf(""),
                         username = mutableStateOf(""),
                         email = mutableStateOf(""),
-                        avatar = "",
-                        createdAt = "",
-                        updatedAt = ""
+                        avatar = mutableStateOf(""),
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
