@@ -28,6 +28,7 @@ class ProjectViewModel: ViewModel() {
             id = 0,
             title = "",
             icon = "",
+            workspaceId = 0,
             createdAt = "",
             updatedAt = ""
         )

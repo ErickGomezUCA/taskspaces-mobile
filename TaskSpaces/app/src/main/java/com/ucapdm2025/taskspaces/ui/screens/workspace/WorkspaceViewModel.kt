@@ -12,12 +12,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class WorkspaceViewModel: ViewModel() {
+class WorkspaceViewModel : ViewModel() {
     val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     val projectRepository: ProjectRepository = ProjectRepositoryImpl()
     val id = 1;
 
-    private val _workspace = MutableStateFlow<Workspace>(Workspace(id = 0, title = "", createdAt = "", updatedAt = ""))
+    private val _workspace = MutableStateFlow<Workspace>(
+        Workspace(
+            id = 0,
+            title = "",
+            ownerId = 0,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
     val workspace: StateFlow<Workspace> = _workspace
 
     private val _projects = MutableStateFlow<List<Project>>(emptyList())

@@ -36,7 +36,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun Container(
-    title: String,
+    title: String = "",
     modifier: Modifier = Modifier,
     showOptionsButton: Boolean = true,
     content: @Composable () -> Unit
@@ -56,33 +56,38 @@ fun Container(
             .padding(24.dp)
     ) {
 //        Container title
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                title,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
 
-            if (showOptionsButton) {
-                IconButton(
-                    onClick = { /* TODO: This will become a button to open a menu (e.g., dropdown for project actions). */ },
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(0.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreHoriz, contentDescription = "More options",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
+        if (title.isNotEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    title,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+
+                if (showOptionsButton) {
+                    IconButton(
+                        onClick = { /* TODO: This will become a button to open a menu (e.g., dropdown for project actions). */ },
+                        modifier = Modifier
+                            .height(24.dp)
+                            .padding(0.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreHoriz,
+                            contentDescription = "More options",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
 //        Container body
         content()

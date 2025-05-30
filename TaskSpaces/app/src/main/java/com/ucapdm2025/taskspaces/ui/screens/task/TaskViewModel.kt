@@ -15,13 +15,12 @@ class TaskViewModel: ViewModel() {
 
     private val _task = MutableStateFlow<Task>(Task(
         id = 0,
+        breadcrumb = "",
         title = "",
         description = "",
-        date = "",
-        timer = 0,
+        deadline = "",
         status = "PENDING",
-        tags = emptyList(),
-        assignedMembers = emptyList(),
+        projectId = 0,
         createdAt = "",
         updatedAt = ""
     ))

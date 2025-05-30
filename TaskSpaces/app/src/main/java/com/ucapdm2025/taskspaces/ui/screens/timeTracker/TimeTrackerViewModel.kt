@@ -15,13 +15,12 @@ class TimeTrackerViewModel: ViewModel() {
 
     private val _task = MutableStateFlow<Task>(Task(
         id = 0,
+        breadcrumb = "",
         title = "",
         description = "",
-        date = "",
-        timer = 0,
+        deadline = "",
         status = "PENDING",
-        tags = emptyList(),
-        assignedMembers = emptyList(),
+        projectId = 0,
         createdAt = "",
         updatedAt = ""
     ))
@@ -31,9 +30,5 @@ class TimeTrackerViewModel: ViewModel() {
         viewModelScope.launch {
             _task.value = taskRepository.getTaskById(id)!!
         }
-    }
-
-    fun getTAskTimer(): Int {
-        return task.value.timer
     }
 }
