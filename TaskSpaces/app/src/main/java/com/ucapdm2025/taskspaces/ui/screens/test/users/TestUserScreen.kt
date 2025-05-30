@@ -253,7 +253,7 @@ fun TestUserScreen(
  */
 @Preview(showBackground = true)
 @Composable
-fun TestScreenLightPreview() {
+fun TestUserScreenLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
             Scaffold { innerPadding ->
@@ -270,7 +270,7 @@ fun TestScreenLightPreview() {
  */
 @Preview(showBackground = true)
 @Composable
-fun TestScreenDarkPreview() {
+fun TestUserScreenDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             Scaffold { innerPadding ->

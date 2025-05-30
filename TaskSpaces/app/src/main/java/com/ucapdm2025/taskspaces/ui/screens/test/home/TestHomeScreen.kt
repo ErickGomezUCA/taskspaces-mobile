@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -18,11 +19,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.screens.test.users.TestUserScreen
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 data class MutableWorkspace(
     var title: MutableState<String>,
@@ -188,6 +193,40 @@ fun TestHomeScreen(
                         Text(text = "id: ${item?.id}")
                         Text(text = "title: ${item?.title}")
                     }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Preview function for the TestHomeScreen composable in light mode. This function allows you to see how the screen looks in light theme.
+ */
+@Preview(showBackground = true)
+@Composable
+fun TestHomeScreenLightPreview() {
+    TaskSpacesTheme {
+        ExtendedColors {
+            Scaffold { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    TestHomeScreen()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Preview function for the TestHomeScreen composable in dark mode. This function allows you to see how the screen looks in dark theme.
+ */
+@Preview(showBackground = true)
+@Composable
+fun TestHomeScreenDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Scaffold { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    TestHomeScreen()
                 }
             }
         }
