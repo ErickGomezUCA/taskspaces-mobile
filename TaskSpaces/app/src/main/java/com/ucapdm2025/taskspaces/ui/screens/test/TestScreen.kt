@@ -180,7 +180,7 @@ fun TestScreen(
             TextField(
                 value = searchUserById.value,
                 onValueChange = { searchUserById.value = it },
-                placeholder = { Text(text = "Id") },
+                placeholder = { Text(text = "ID") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -232,6 +232,28 @@ fun TestScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Update")
+            }
+        }
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(text = "- Delete user")
+
+            TextField(
+                value = searchUserById.value,
+                onValueChange = { searchUserById.value = it },
+                placeholder = { Text(text = "ID") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.deleteUser(searchUserById.value.toInt())
+
+                    searchUserById.value = ""
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Delete")
             }
         }
 

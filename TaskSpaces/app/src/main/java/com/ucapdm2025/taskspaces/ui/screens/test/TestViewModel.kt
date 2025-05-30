@@ -49,4 +49,10 @@ class TestViewModel: ViewModel() {
             usersRepository.updateUser(user)
         }
     }
+
+    fun deleteUser(id: Int) {
+        viewModelScope.launch {
+            usersRepository.deleteUser(id)
+        }
+    }
 }
