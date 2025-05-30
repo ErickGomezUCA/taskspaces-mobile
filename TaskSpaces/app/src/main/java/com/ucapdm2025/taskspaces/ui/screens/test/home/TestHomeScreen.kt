@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
-import com.ucapdm2025.taskspaces.ui.screens.test.users.TestUserScreen
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -34,6 +33,9 @@ data class MutableWorkspace(
     var ownerId: MutableState<Int>
 )
 
+/**
+ * A composable function that displays the test home screen for testing the TestHomeViewModel.
+ */
 @Composable
 fun TestHomeScreen(
     viewModel: TestHomeViewModel = viewModel()
