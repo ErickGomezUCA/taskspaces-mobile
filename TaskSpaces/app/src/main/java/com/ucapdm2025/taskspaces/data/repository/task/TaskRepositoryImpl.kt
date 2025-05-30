@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.repository.task
 
+import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummy
 import com.ucapdm2025.taskspaces.data.dummy.tasksDummy
 import com.ucapdm2025.taskspaces.data.model.Task
 import kotlinx.coroutines.flow.Flow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class TaskRepositoryImpl: TaskRepository {
     private val tasks = MutableStateFlow(tasksDummy)
     private val bookmarkedTasks = MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummy)
+    private val assignedTasks = MutableStateFlow(assignedTasksDummy)
 
     override fun getTasks(): Flow<List<Task>> {
         return tasks.asStateFlow()
@@ -16,6 +18,10 @@ class TaskRepositoryImpl: TaskRepository {
 
     override fun getBookmarkedTasks(): Flow<List<Task>> {
         return bookmarkedTasks.asStateFlow()
+    }
+
+    override fun getAssignedTasks(userId: Int): Flow<List<Task>> {
+        return assignedTasks.asStateFlow()
     }
 
     override suspend fun getTaskById(id: Int): Task? {

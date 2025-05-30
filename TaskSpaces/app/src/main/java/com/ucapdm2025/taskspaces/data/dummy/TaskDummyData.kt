@@ -64,3 +64,28 @@ val bookmarkedTasksDummy: List<Task> = listOf(
         updatedAt = "2023-10-01T00:00:00Z"
     )
 )
+
+val assignedTasksDummy: List<Task> = listOf(
+    Task(
+        id = 6,
+        breadcrumb = "Workspace 1 / Project 1",
+        title = "Task 6",
+        description = "Description of Task 6",
+        deadline = "2023-10-01",
+        status = "In Progress",
+        projectId = 1,
+        createdAt = "2023-10-01T00:00:00Z",
+        updatedAt = "2023-10-01T00:00:00Z"
+    ),
+    Task(
+        id = 7,
+        breadcrumb = "Workspace 2 / Project 2",
+        title = "Task 7",
+        description = "Description of Task 7",
+        deadline = "2023-10-02",
+        status = "Completed",
+        projectId = 2,
+        createdAt = "2023-10-02T00:00:00Z",
+        updatedAt = "2023-10-02T00:00:00Z"
+    )
+)

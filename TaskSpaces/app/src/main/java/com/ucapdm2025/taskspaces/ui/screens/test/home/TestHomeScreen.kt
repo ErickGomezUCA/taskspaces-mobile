@@ -35,6 +35,8 @@ fun TestHomeScreen(
 ) {
 //    Variables and states
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
+    val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
+    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
 
 //    Other states:
 //    1. IDs
@@ -152,6 +154,41 @@ fun TestHomeScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Delete")
+            }
+        }
+
+        Container(title = "- Get shared workspaces", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                workspacesSharedWithMe.value.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item?.id}")
+                        Text(text = "title: ${item?.title}")
+                        Text(text = "ownerId: ${item?.ownerId}")
+                    }
+                }
+            }
+        }
+
+        Container(title = "- Get assigned tasks", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                assignedTasks.value.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item?.id}")
+                        Text(text = "title: ${item?.title}")
+                    }
+                }
             }
         }
     }
