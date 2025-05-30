@@ -28,7 +28,7 @@ class UserRepositoryImpl : UserRepository {
         email: String,
         avatar: String
     ): User {
-        val newUser = User(
+        val createdUser = User(
             id = autoIncrementId++,
             fullname = fullname,
             username = username,
@@ -38,8 +38,8 @@ class UserRepositoryImpl : UserRepository {
             updatedAt = LocalDateTime.now().toString()
         )
 
-        users.value = users.value + newUser
-        return newUser
+        users.value = users.value + createdUser
+        return createdUser
     }
 
     override suspend fun updateUser(
