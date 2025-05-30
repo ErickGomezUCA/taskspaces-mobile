@@ -48,17 +48,17 @@ class HomeViewModel(): ViewModel() {
         }
     }
 
-    fun createWorkspace(workspace: Workspace) {
-        viewModelScope.launch {
-            workspaceRepository.createWorkspace(workspace)
-        }
-    }
+//    fun createWorkspace(workspace: Workspace) {
+//        viewModelScope.launch {
+//            workspaceRepository.createWorkspace(workspace)
+//        }
+//    }
 
-    fun updateWorkspace(workspace: Workspace) {
-        viewModelScope.launch {
-            workspaceRepository.updateWorkspace(workspace)
-        }
-    }
+//    fun updateWorkspace(workspace: Workspace) {
+//        viewModelScope.launch {
+//            workspaceRepository.updateWorkspace(workspace)
+//        }
+//    }
 
     fun deleteWorkspace(id: Int) {
         viewModelScope.launch {

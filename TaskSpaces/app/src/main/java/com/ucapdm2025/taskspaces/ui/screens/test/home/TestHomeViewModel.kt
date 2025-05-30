@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TestHomeViewModel: ViewModel() {
-    val userId = 1;
+    val userId = 1
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
 
     private val _workspaces: MutableStateFlow<List<Workspace?>> = MutableStateFlow(emptyList())
@@ -23,6 +23,24 @@ class TestHomeViewModel: ViewModel() {
             workspaceRepository.getWorkspacesByUserId(userId).collect { workspaceList ->
                 _workspaces.value = workspaceList
             }
+        }
+    }
+
+    fun createWorkspace(title: String) {
+        viewModelScope.launch {
+            workspaceRepository.createWorkspace(title, userId)
+        }
+    }
+
+    fun updateWorkspace(id: Int, title: String) {
+        viewModelScope.launch {
+            workspaceRepository.updateWorkspace(id, title, userId)
+        }
+    }
+
+    fun deleteWorkspace(id: Int) {
+        viewModelScope.launch {
+            workspaceRepository.deleteWorkspace(id)
         }
     }
 }
