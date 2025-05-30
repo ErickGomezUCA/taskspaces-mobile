@@ -37,4 +37,10 @@ class TestViewModel: ViewModel() {
 
         return user
     }
+
+    fun createUser(user: User) {
+        viewModelScope.launch {
+            usersRepository.createUser(user)
+        }
+    }
 }
