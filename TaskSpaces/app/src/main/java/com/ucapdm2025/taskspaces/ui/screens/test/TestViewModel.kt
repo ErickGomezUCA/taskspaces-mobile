@@ -43,4 +43,10 @@ class TestViewModel: ViewModel() {
             usersRepository.createUser(user)
         }
     }
+
+    fun updateUser(user: User) {
+        viewModelScope.launch {
+            usersRepository.updateUser(user)
+        }
+    }
 }

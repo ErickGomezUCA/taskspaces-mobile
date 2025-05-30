@@ -27,7 +27,7 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 // Do not follow this code for production use, it's just a test screen to demonstrate the usage of ViewModel and StateFlow in Jetpack Compose.
-data class NewUser(
+data class MutableUser(
     val id: Int,
     var fullname: MutableState<String>,
     var username: MutableState<String>,
@@ -52,8 +52,8 @@ fun TestScreen(
 
 //    2. Create user
     val autoIncrementId = remember { mutableStateOf(users.value.size + 1) } // For auto-incrementing ID
-    val newUserInfo: MutableState<NewUser> = remember {
-        mutableStateOf(NewUser(id = autoIncrementId.value, fullname = mutableStateOf(""), username = mutableStateOf(""), email = mutableStateOf(""), avatar = "", createdAt = "", updatedAt = ""))
+    val mutableUserInfo: MutableState<MutableUser> = remember {
+        mutableStateOf(MutableUser(id = autoIncrementId.value, fullname = mutableStateOf(""), username = mutableStateOf(""), email = mutableStateOf(""), avatar = "", createdAt = "", updatedAt = ""))
     }
 
 
@@ -124,22 +124,22 @@ fun TestScreen(
             Text(text = "- Create user")
 
             TextField(
-                value = newUserInfo.value.fullname.value,
-                onValueChange = { newUserInfo.value.fullname.value = it },
+                value = mutableUserInfo.value.fullname.value,
+                onValueChange = { mutableUserInfo.value.fullname.value = it },
                 placeholder = { Text(text = "Fullname") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             TextField(
-                value = newUserInfo.value.username.value,
-                onValueChange = { newUserInfo.value.username.value = it },
+                value = mutableUserInfo.value.username.value,
+                onValueChange = { mutableUserInfo.value.username.value = it },
                 placeholder = { Text(text = "Username") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             TextField(
-                value = newUserInfo.value.email.value,
-                onValueChange = { newUserInfo.value.email.value = it },
+                value = mutableUserInfo.value.email.value,
+                onValueChange = { mutableUserInfo.value.email.value = it },
                 placeholder = { Text(text = "Email") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -148,17 +148,17 @@ fun TestScreen(
                 onClick = {
                     val createUserInfo = User(
                         id = autoIncrementId.value,
-                        fullname = newUserInfo.value.fullname.value,
-                        username = newUserInfo.value.username.value,
-                        email = newUserInfo.value.email.value,
-                        avatar = newUserInfo.value.avatar,
-                        createdAt = newUserInfo.value.createdAt,
-                        updatedAt = newUserInfo.value.updatedAt
+                        fullname = mutableUserInfo.value.fullname.value,
+                        username = mutableUserInfo.value.username.value,
+                        email = mutableUserInfo.value.email.value,
+                        avatar = mutableUserInfo.value.avatar,
+                        createdAt = mutableUserInfo.value.createdAt,
+                        updatedAt = mutableUserInfo.value.updatedAt
                     )
 
                     viewModel.createUser(createUserInfo)
 
-                    newUserInfo.value = NewUser(
+                    mutableUserInfo.value = MutableUser(
                         id = ++autoIncrementId.value,
                         fullname = mutableStateOf(""),
                         username = mutableStateOf(""),
@@ -170,9 +170,71 @@ fun TestScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Search")
+                Text(text = "Create")
             }
         }
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(text = "- Update user")
+
+            TextField(
+                value = searchUserById.value,
+                onValueChange = { searchUserById.value = it },
+                placeholder = { Text(text = "Id") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = mutableUserInfo.value.fullname.value,
+                onValueChange = { mutableUserInfo.value.fullname.value = it },
+                placeholder = { Text(text = "Fullname") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = mutableUserInfo.value.username.value,
+                onValueChange = { mutableUserInfo.value.username.value = it },
+                placeholder = { Text(text = "Username") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = mutableUserInfo.value.email.value,
+                onValueChange = { mutableUserInfo.value.email.value = it },
+                placeholder = { Text(text = "Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    val updateUserInfo = User(
+                        id = searchUserById.value.toInt(),
+                        fullname = mutableUserInfo.value.fullname.value,
+                        username = mutableUserInfo.value.username.value,
+                        email = mutableUserInfo.value.email.value,
+                        avatar = mutableUserInfo.value.avatar,
+                        createdAt = mutableUserInfo.value.createdAt,
+                        updatedAt = mutableUserInfo.value.updatedAt
+                    )
+
+                    viewModel.updateUser(updateUserInfo)
+
+                    mutableUserInfo.value = MutableUser(
+                        id = autoIncrementId.value,
+                        fullname = mutableStateOf(""),
+                        username = mutableStateOf(""),
+                        email = mutableStateOf(""),
+                        avatar = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Update")
+            }
+        }
+
     }
 }
 
