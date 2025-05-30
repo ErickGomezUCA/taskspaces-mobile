@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.ucapdm2025.taskspaces.ui.screens.bookmarks.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
+import com.ucapdm2025.taskspaces.ui.screens.test.home.TestHomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.test.users.TestUserScreen
 
 
