@@ -38,24 +38,24 @@ class WorkspaceViewModel : ViewModel() {
             }
         }
 
-        viewModelScope.launch {
-            projectRepository.getProjects().collect { list ->
-                _projects.value = list
-            }
-        }
+//        viewModelScope.launch {
+//            projectRepository.getProjects().collect { list ->
+//                _projects.value = list
+//            }
+//        }
     }
 
-    fun createProject(project: Project) {
-        viewModelScope.launch {
-            projectRepository.createProject(project)
-        }
-    }
+//    fun createProject(project: Project) {
+//        viewModelScope.launch {
+//            projectRepository.createProject(project)
+//        }
+//    }
 
-    fun updateProject(project: Project) {
-        viewModelScope.launch {
-            projectRepository.updateProject(project)
-        }
-    }
+//    fun updateProject(project: Project) {
+//        viewModelScope.launch {
+//            projectRepository.updateProject(project)
+//        }
+//    }
 
     fun deleteProject(projectId: Int) {
         viewModelScope.launch {

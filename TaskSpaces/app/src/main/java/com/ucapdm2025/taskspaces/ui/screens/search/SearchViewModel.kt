@@ -62,11 +62,11 @@ class SearchViewModel : ViewModel() {
 //            }
 //        }
 
-        viewModelScope.launch {
-            projectRepository.getProjects().collect { list ->
-                _projects.value = list
-            }
-        }
+//        viewModelScope.launch {
+//            projectRepository.getProjects().collect { list ->
+//                _projects.value = list
+//            }
+//        }
 
         viewModelScope.launch {
             taskRepository.getTasks().collect { list ->
