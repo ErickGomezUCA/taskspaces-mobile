@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -72,7 +73,7 @@ fun TestUserScreen(
     ) {
         Text(text = "UserRepository example", fontWeight = FontWeight.Medium, fontSize = 20.sp)
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Container {
             Text(text = "- All users")
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,7 +93,7 @@ fun TestUserScreen(
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Container {
             Text(text = "- Get user by ID")
 
             TextField(
@@ -126,7 +127,7 @@ fun TestUserScreen(
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Container {
             Text(text = "- Create user")
 
             TextField(
@@ -180,7 +181,7 @@ fun TestUserScreen(
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Container {
             Text(text = "- Update user")
 
             TextField(
@@ -241,7 +242,7 @@ fun TestUserScreen(
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Container {
             Text(text = "- Delete user")
 
             TextField(
