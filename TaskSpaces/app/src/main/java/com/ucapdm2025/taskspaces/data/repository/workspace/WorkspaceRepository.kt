@@ -8,7 +8,7 @@ interface WorkspaceRepository {
     fun getWorkspacesByUserId(ownerId: Int): Flow<List<Workspace?>>
     fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<Workspace?>>
     fun getWorkspaceById(id: Int): Flow<Workspace?>
-    suspend fun createWorkspace(workspace: Workspace): Workspace
-    suspend fun updateWorkspace(workspace: Workspace): Workspace
+    suspend fun createWorkspace(title: String, ownerId: Int): Workspace
+    suspend fun updateWorkspace(id: Int, title: String, ownerId: Int): Workspace
     suspend fun deleteWorkspace(id: Int): Boolean
 }

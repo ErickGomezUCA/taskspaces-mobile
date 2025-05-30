@@ -9,15 +9,19 @@ import com.ucapdm2025.taskspaces.data.model.Workspace
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
 
 // TODO: Implement RoomDatabase to this repository
 class WorkspaceRepositoryImpl: WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummy)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummy)
 
+    private var autoIncrementId = workspaces.value.size + 1
+
     override fun getWorkspacesByUserId(ownerId: Int): Flow<List<Workspace?>> {
-        return workspaces.value.filter { it.ownerId == ownerId }
-            .let { MutableStateFlow(it) }
+        return workspaces
+            .map { list -> list.filter { it.ownerId == ownerId } }
     }
 
     // TODO: Refactor workspacesShared with a relational approach
@@ -31,20 +35,34 @@ class WorkspaceRepositoryImpl: WorkspaceRepository {
             ?: MutableStateFlow(null)
     }
 
-    override suspend fun createWorkspace(workspace: Workspace): Workspace {
-//        delay(1000) // Simulate network delay
-        workspaces.value = workspaces.value + workspace
-        return workspace
+    override suspend fun createWorkspace(title: String, ownerId: Int): Workspace {
+        val createdWorkspace = Workspace(
+            id = autoIncrementId++,
+            title = title,
+            ownerId = ownerId,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString()
+        )
+
+        workspaces.value = workspaces.value + createdWorkspace
+
+        return createdWorkspace
     }
 
-    override suspend fun updateWorkspace(workspace: Workspace): Workspace {
-//        delay(1000) // Simulate network delay
+    override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int): Workspace {
+        val updatedWorkspace = Workspace(
+            id = id,
+            title = title,
+            ownerId = ownerId,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString()
+        )
 
         workspaces.value = workspaces.value.map {
-            if (it.id == workspace.id) workspace else it
+            if (it.id == updatedWorkspace.id) updatedWorkspace else it
         }
 
-        return workspace
+        return updatedWorkspace
     }
 
     override suspend fun deleteWorkspace(id: Int): Boolean {
