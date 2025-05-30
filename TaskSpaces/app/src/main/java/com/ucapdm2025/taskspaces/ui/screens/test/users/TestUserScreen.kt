@@ -51,7 +51,7 @@ fun TestUserScreen(
 
 //    Other states:
 //    1. Get user by ID
-    val searchUserById: MutableState<String> = remember { mutableStateOf("") }
+    val selectedUserId: MutableState<String> = remember { mutableStateOf("") }
     val user: MutableState<User?> = remember { mutableStateOf(null) }
 
 //    2. Create user
@@ -97,15 +97,15 @@ fun TestUserScreen(
 
         Container(title = "- Get user by ID", showOptionsButton = false) {
             TextField(
-                value = searchUserById.value,
-                onValueChange = { searchUserById.value = it },
+                value = selectedUserId.value,
+                onValueChange = { selectedUserId.value = it },
                 placeholder = { Text(text = "Search user by ID") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Button(
                 onClick = {
-                    user.value = viewModel.getUserById(searchUserById.value.toInt())
+                    user.value = viewModel.getUserById(selectedUserId.value.toInt())
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -173,8 +173,8 @@ fun TestUserScreen(
 
         Container(title = "- Update user", showOptionsButton = false) {
             TextField(
-                value = searchUserById.value,
-                onValueChange = { searchUserById.value = it },
+                value = selectedUserId.value,
+                onValueChange = { selectedUserId.value = it },
                 placeholder = { Text(text = "ID") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -203,14 +203,14 @@ fun TestUserScreen(
             Button(
                 onClick = {
                     viewModel.updateUser(
-                        id = searchUserById.value.toInt(),
+                        id = selectedUserId.value.toInt(),
                         fullname = mutableUserInfo.value.fullname.value,
                         username = mutableUserInfo.value.username.value,
                         email = mutableUserInfo.value.email.value,
                         avatar = mutableUserInfo.value.avatar.value
                     )
 
-                    searchUserById.value = ""
+                    selectedUserId.value = ""
 
                     mutableUserInfo.value = MutableUser(
                         fullname = mutableStateOf(""),
@@ -227,17 +227,17 @@ fun TestUserScreen(
 
         Container(title = "- Delete user", showOptionsButton = false) {
             TextField(
-                value = searchUserById.value,
-                onValueChange = { searchUserById.value = it },
+                value = selectedUserId.value,
+                onValueChange = { selectedUserId.value = it },
                 placeholder = { Text(text = "ID") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Button(
                 onClick = {
-                    viewModel.deleteUser(searchUserById.value.toInt())
+                    viewModel.deleteUser(selectedUserId.value.toInt())
 
-                    searchUserById.value = ""
+                    selectedUserId.value = ""
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
