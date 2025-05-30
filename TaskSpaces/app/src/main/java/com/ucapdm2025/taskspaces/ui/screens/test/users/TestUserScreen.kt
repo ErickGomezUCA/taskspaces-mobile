@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.screens.test
+package com.ucapdm2025.taskspaces.ui.screens.test.users
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -37,9 +38,14 @@ data class MutableUser(
     var updatedAt: String
 )
 
+/** * A composable function that displays a test user screen.
+ * It allows you to perform CRUD operations on users using a ViewModel.
+ *
+ * @param viewModel The ViewModel instance for managing user data.
+ */
 @Composable
-fun TestScreen(
-    viewModel: TestViewModel = viewModel() // Assuming UsersViewModel is defined elsewhere
+fun TestUserScreen(
+    viewModel: TestUserViewModel = viewModel() // Assuming UsersViewModel is defined elsewhere
 ) {
 //    Test viewModel here
     val users =
@@ -260,12 +266,36 @@ fun TestScreen(
     }
 }
 
+/**
+ * Preview functions for the TestUserScreen composable. These functions allow you to see how the screen looks in both light and dark themes.**
+ */
 @Preview(showBackground = true)
 @Composable
-fun TestScreenPreview() {
+fun TestScreenLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            TestScreen()
+            Scaffold { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    TestUserScreen()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Preview function for the TestUserScreen composable in dark mode. This function allows you to see how the screen looks in dark theme.
+ */
+@Preview(showBackground = true)
+@Composable
+fun TestScreenDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Scaffold { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    TestUserScreen()
+                }
+            }
         }
     }
 }

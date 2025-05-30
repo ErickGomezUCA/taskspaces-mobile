@@ -1,17 +1,16 @@
-package com.ucapdm2025.taskspaces.ui.screens.test
+package com.ucapdm2025.taskspaces.ui.screens.test.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ucapdm2025.taskspaces.data.model.User
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
-import com.ucapdm2025.taskspaces.data.model.User
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TestViewModel: ViewModel() {
+class TestUserViewModel: ViewModel() {
     private val usersRepository: UserRepository = UserRepositoryImpl()
 
     private val _users: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
