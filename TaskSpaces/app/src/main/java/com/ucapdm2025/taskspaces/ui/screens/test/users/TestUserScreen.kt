@@ -29,7 +29,7 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 // Do not follow this code for production use, it's just a test screen to demonstrate the usage of ViewModel and StateFlow in Jetpack Compose.
-data class MutableUser(
+private data class MutableUser(
     var fullname: MutableState<String>,
     var username: MutableState<String>,
     var email: MutableState<String>,
@@ -65,7 +65,6 @@ fun TestUserScreen(
             )
         )
     }
-
 
     Column(
         modifier = Modifier

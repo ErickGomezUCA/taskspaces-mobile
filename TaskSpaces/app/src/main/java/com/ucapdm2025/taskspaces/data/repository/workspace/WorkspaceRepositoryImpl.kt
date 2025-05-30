@@ -19,13 +19,13 @@ class WorkspaceRepositoryImpl: WorkspaceRepository {
 
     private var autoIncrementId = workspaces.value.size + 1
 
-    override fun getWorkspacesByUserId(ownerId: Int): Flow<List<Workspace?>> {
+    override fun getWorkspacesByUserId(ownerId: Int): Flow<List<Workspace>> {
         return workspaces
             .map { list -> list.filter { it.ownerId == ownerId } }
     }
 
     // TODO: Refactor workspacesShared with a relational approach
-    override fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<Workspace?>> {
+    override fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<Workspace>> {
         return workspacesSharedWithMe.asStateFlow()
     }
 

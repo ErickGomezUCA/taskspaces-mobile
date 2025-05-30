@@ -28,7 +28,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
-data class MutableWorkspace(
+private data class MutableWorkspace(
     var title: MutableState<String>,
     var ownerId: MutableState<Int>
 )
@@ -78,9 +78,9 @@ fun TestHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Text(text = "id: ${item?.id}")
-                        Text(text = "title: ${item?.title}")
-                        Text(text = "ownerId: ${item?.ownerId}")
+                        Text(text = "id: ${item.id}")
+                        Text(text = "title: ${item.title}")
+                        Text(text = "ownerId: ${item.ownerId}")
                     }
                 }
             }
@@ -174,9 +174,9 @@ fun TestHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Text(text = "id: ${item?.id}")
-                        Text(text = "title: ${item?.title}")
-                        Text(text = "ownerId: ${item?.ownerId}")
+                        Text(text = "id: ${item.id}")
+                        Text(text = "title: ${item.title}")
+                        Text(text = "ownerId: ${item.ownerId}")
                     }
                 }
             }
@@ -192,8 +192,8 @@ fun TestHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Text(text = "id: ${item?.id}")
-                        Text(text = "title: ${item?.title}")
+                        Text(text = "id: ${item.id}")
+                        Text(text = "title: ${item.title}")
                     }
                 }
             }
