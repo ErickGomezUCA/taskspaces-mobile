@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+// TODO: Replace dummy data with a real local database, or consuming from a remote API
 class UserRepositoryImpl: UserRepository {
     private val users = MutableStateFlow(usersDummy)
 
@@ -13,8 +14,10 @@ class UserRepositoryImpl: UserRepository {
         return users.asStateFlow()
     }
 
-    override suspend fun getUserById(id: Int): User? {
+    override fun getUserById(id: Int): Flow<User?> {
         return users.value.find { it.id == id }
+            ?.let { MutableStateFlow(it) }
+            ?: MutableStateFlow(null)
     }
 
     override suspend fun createUser(user: User): User {
