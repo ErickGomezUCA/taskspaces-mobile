@@ -33,7 +33,9 @@ class WorkspaceViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            _workspace.value = workspaceRepository.getWorkspaceById(id)!!
+            workspaceRepository.getWorkspaceById(id).collect {
+                _workspace.value = it!!
+            }
         }
 
         viewModelScope.launch {

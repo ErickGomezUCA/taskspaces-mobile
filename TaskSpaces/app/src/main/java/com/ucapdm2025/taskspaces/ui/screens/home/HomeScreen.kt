@@ -38,11 +38,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
 ) {
-//    Consume viewModel states here
-    val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
-    val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
-    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,62 +45,7 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        Container(title = "Your workspaces") {
-//                Workspaces are being consumed here
-            Column {
-                workspaces.value.forEach { workspace ->
-                    Card {
-                        Text(
-                            text = workspace.title
-                        )
-                    }
-                }
-            }
-
-//            Create workspace action will go here
-//            TODO: Implement a dialog to create a workspace
-            Button(onClick = {}) {
-                Text(text = "Create workspace")
-            }
-
-//            TODO: Add pagination loading here
-            Button(onClick = {}) {
-                Text(text = "See more")
-            }
-        }
-
-        Container(title = "Workspaces shared with me") {
-
-//                Workspaces shared with me are being consumed here
-            Column {
-                workspacesSharedWithMe.value.forEach { workspace ->
-                    Card {
-                        Text(text = workspace.title)
-                    }
-                }
-            }
-
-//            TODO: Add pagination loading here
-            Button(onClick = {}) {
-                Text(text = "See more")
-            }
-        }
-
-//                Assigned tasks are being consumed here
-        Container(title = "Assigned tasks") {
-            Column {
-                assignedTasks.value.forEach { task ->
-                    Card {
-                        Text(text = task.title)
-                    }
-                }
-            }
-
-//            TODO: Add pagination loading here
-            Button(onClick = {}) {
-                Text(text = "See more")
-            }
-        }
+        Text(text = "Home Screen")
     }
 }
 

@@ -5,9 +5,9 @@ import com.ucapdm2025.taskspaces.data.model.Workspace
 import kotlinx.coroutines.flow.Flow
 
 interface WorkspaceRepository {
-    fun getWorkspaces(): Flow<List<Workspace>>
-    fun getWorkspacesSharedWithMe(): Flow<List<Workspace>>
-    suspend fun getWorkspaceById(id: Int): Workspace?
+    fun getWorkspacesByUserId(ownerId: Int): Flow<List<Workspace?>>
+    fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<Workspace?>>
+    fun getWorkspaceById(id: Int): Flow<Workspace?>
     suspend fun createWorkspace(workspace: Workspace): Workspace
     suspend fun updateWorkspace(workspace: Workspace): Workspace
     suspend fun deleteWorkspace(id: Int): Boolean

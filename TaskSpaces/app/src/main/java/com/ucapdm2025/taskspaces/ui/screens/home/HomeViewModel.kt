@@ -19,24 +19,24 @@ class HomeViewModel(): ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
-    private val _workspaces = MutableStateFlow<List<Workspace>>(emptyList())
-    val workspaces: StateFlow<List<Workspace>> = _workspaces
+    private val _workspaces = MutableStateFlow<List<Workspace?>>(emptyList())
+    val workspaces: StateFlow<List<Workspace?>> = _workspaces
 
-    private val _workspacesSharedWithMe = MutableStateFlow<List<Workspace>>(emptyList())
-    val workspacesSharedWithMe: StateFlow<List<Workspace>> = _workspacesSharedWithMe
+    private val _workspacesSharedWithMe = MutableStateFlow<List<Workspace?>>(emptyList())
+    val workspacesSharedWithMe: StateFlow<List<Workspace?>> = _workspacesSharedWithMe
 
     private val _assignedTasks = MutableStateFlow<List<Task>>(emptyList())
     val assignedTasks: StateFlow<List<Task>> = _assignedTasks
 
     init {
         viewModelScope.launch {
-            workspaceRepository.getWorkspaces().collect { list ->
+            workspaceRepository.getWorkspacesByUserId(1).collect { list ->
                 _workspaces.value = list
             }
         }
 
         viewModelScope.launch {
-            workspaceRepository.getWorkspacesSharedWithMe().collect { list ->
+            workspaceRepository.getWorkspacesSharedWithMe(1).collect { list ->
                 _workspacesSharedWithMe.value = list
             }
         }

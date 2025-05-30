@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel : ViewModel() {
-    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
+//    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
     private val userRepository: UserRepository = UserRepositoryImpl()
@@ -30,8 +30,8 @@ class SearchViewModel : ViewModel() {
     private val _results = MutableStateFlow(QueryResults())
     val results: StateFlow<QueryResults> = _results.asStateFlow()
 
-    private val _workspacesResults = MutableStateFlow<List<Workspace>>(emptyList())
-    val workspacesResults: StateFlow<List<Workspace>> = _workspacesResults.asStateFlow()
+//    private val _workspacesResults = MutableStateFlow<List<Workspace>>(emptyList())
+//    val workspacesResults: StateFlow<List<Workspace>> = _workspacesResults.asStateFlow()
 
     private val _projectsResults = MutableStateFlow<List<Project>>(emptyList())
     val projectsResults: StateFlow<List<Project>> = _projectsResults.asStateFlow()
@@ -43,8 +43,8 @@ class SearchViewModel : ViewModel() {
     val usersResults: StateFlow<List<User>> = _usersResults.asStateFlow()
 
     //    Data from repositories
-    private val _workspaces = MutableStateFlow<List<Workspace>>(emptyList())
-    private val workspaces: StateFlow<List<Workspace>> = _workspaces
+//    private val _workspaces = MutableStateFlow<List<Workspace>>(emptyList())
+//    private val workspaces: StateFlow<List<Workspace>> = _workspaces
 
     private val _projects = MutableStateFlow<List<Project>>(emptyList())
     private val projects: StateFlow<List<Project>> = _projects
@@ -56,11 +56,11 @@ class SearchViewModel : ViewModel() {
     private val users: StateFlow<List<User>> = _users
 
     init {
-        viewModelScope.launch {
-            workspaceRepository.getWorkspaces().collect { list ->
-                _workspaces.value = list
-            }
-        }
+//        viewModelScope.launch {
+//            workspaceRepository.getWorkspaces().collect { list ->
+//                _workspaces.value = list
+//            }
+//        }
 
         viewModelScope.launch {
             projectRepository.getProjects().collect { list ->
@@ -81,12 +81,12 @@ class SearchViewModel : ViewModel() {
         }
     }
 
-    fun searchWorkspaces(query: String) {
-        val filteredWorkspaces = workspaces.value.filter { workspace ->
-            workspace.title.contains(query, ignoreCase = true)
-        }
-        _workspacesResults.value = filteredWorkspaces
-    }
+//    fun searchWorkspaces(query: String) {
+//        val filteredWorkspaces = workspaces.value.filter { workspace ->
+//            workspace.title.contains(query, ignoreCase = true)
+//        }
+//        _workspacesResults.value = filteredWorkspaces
+//    }
 
     fun searchProjects(query: String) {
         val filteredProjects = projects.value.filter { project ->
@@ -114,13 +114,13 @@ class SearchViewModel : ViewModel() {
 
     fun searchResults(query: String) {
         // TODO: Implement search logic here
-        searchWorkspaces(query)
+//        searchWorkspaces(query)
         searchProjects(query)
         searchTasks(query)
         searchUsers(query)
 
         _results.value = QueryResults(
-            workspaces = _workspacesResults.value,
+            workspaces = null,
             projects = _projectsResults.value,
             tasks = _tasksResults.value,
             users = _usersResults.value

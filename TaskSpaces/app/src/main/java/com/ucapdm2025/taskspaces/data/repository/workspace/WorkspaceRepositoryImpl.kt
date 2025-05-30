@@ -15,17 +15,20 @@ class WorkspaceRepositoryImpl: WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummy)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummy)
 
-    override fun getWorkspaces(): Flow<List<Workspace>> {
-        return workspaces.asStateFlow()
+    override fun getWorkspacesByUserId(ownerId: Int): Flow<List<Workspace?>> {
+        return workspaces.value.filter { it.ownerId == ownerId }
+            .let { MutableStateFlow(it) }
     }
 
-    override fun getWorkspacesSharedWithMe(): Flow<List<Workspace>> {
+    // TODO: Refactor workspacesShared with a relational approach
+    override fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<Workspace?>> {
         return workspacesSharedWithMe.asStateFlow()
     }
 
-    override suspend fun getWorkspaceById(id: Int): Workspace? {
-//        delay(1000) // Simulate network delay
+    override fun getWorkspaceById(id: Int): Flow<Workspace?> {
         return workspaces.value.find { it.id == id }
+            ?.let { MutableStateFlow(it) }
+            ?: MutableStateFlow(null)
     }
 
     override suspend fun createWorkspace(workspace: Workspace): Workspace {
