@@ -4,6 +4,7 @@ data class Project (
     override val id: Int,
     val title: String,
     val icon: String,
+    val workspaceId: Int,
     override val createdAt: String,
     override val updatedAt: String
 ): BaseModel(id, createdAt, updatedAt)
