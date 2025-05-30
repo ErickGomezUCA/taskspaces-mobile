@@ -7,29 +7,23 @@ import com.ucapdm2025.taskspaces.data.model.User
 val tasksDummy: List<Task> = listOf(
     Task(
         id = 1,
+        breadcrumb = "Workspace 1 / Project 1",
         title = "Task 1",
         description = "Description of Task 1",
-        date = "2023-10-01",
-        timer = 120,
+        deadline = "2023-10-01",
         status = "In Progress",
-        tags = tagsDummy,
-        assignedMembers = usersDummy,
+        projectId = 1,
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
     Task(
         id = 2,
+        breadcrumb = "Workspace 2 / Project 2",
         title = "Task 2",
         description = "Description of Task 2",
-        date = "2023-10-02",
-        timer = 60,
+        deadline = "2023-10-02",
         status = "Completed",
-        tags = listOf<Tag>(
-            tagsDummy.first()
-        ),
-        assignedMembers = listOf<User>(
-            usersDummy.first()
-        ),
+        projectId = 2,
         createdAt = "2023-10-02T00:00:00Z",
         updatedAt = "2023-10-02T00:00:00Z"
     )
@@ -38,37 +32,34 @@ val tasksDummy: List<Task> = listOf(
 val bookmarkedTasksDummy: List<Task> = listOf(
     Task(
         id = 3,
+        breadcrumb = "Workspace 3 / Project 3",
         title = "Task 3",
         description = "Description of Task 3",
-        date = "2023-10-01",
-        timer = 120,
+        deadline = "2023-10-01",
         status = "In Progress",
-        tags = tagsDummy,
-        assignedMembers = usersDummy,
+        projectId = 3,
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
     Task(
         id = 4,
+        breadcrumb = "Workspace 1 / Project 1",
         title = "Task 4",
         description = "Description of Task 4",
-        date = "2023-10-01",
-        timer = 120,
+        deadline = "2023-10-01",
         status = "In Progress",
-        tags = tagsDummy,
-        assignedMembers = usersDummy,
+        projectId = 1,
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
     Task(
         id = 5,
+        breadcrumb = "Workspace 2 / Project 2",
         title = "Task 5",
         description = "Description of Task 5",
-        date = "2023-10-01",
-        timer = 120,
+        deadline = "2023-10-01",
         status = "In Progress",
-        tags = tagsDummy,
-        assignedMembers = usersDummy,
+        projectId = 2,
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     )

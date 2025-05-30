@@ -7,6 +7,7 @@ data class Task (
     val description: String,
     val deadline: String, // TODO: See if it is needed to parse into Date object or DateTime instead of String
     val status: String, // TODO: Set enum class for status
+    val projectId: Int,
     override val createdAt: String,
     override val updatedAt: String,
 ): BaseModel(id, createdAt, updatedAt)
