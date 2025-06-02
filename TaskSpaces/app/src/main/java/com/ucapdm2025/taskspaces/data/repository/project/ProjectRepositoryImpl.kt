@@ -17,8 +17,10 @@ class ProjectRepositoryImpl: ProjectRepository {
         return projects.map {list -> list.filter {it.workspaceId == workspaceId }}
     }
 
-    override suspend fun getProjectById(id: Int): Project? {
+    override suspend fun getProjectById(id: Int): Flow<Project?> {
         return projects.value.find { it.id == id }
+            ?.let { MutableStateFlow(it) }
+            ?: MutableStateFlow(null)
     }
 
     override suspend fun createProject(title: String, icon: String, workspaceId: Int): Project {

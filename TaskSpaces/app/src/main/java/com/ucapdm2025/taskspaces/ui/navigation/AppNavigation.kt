@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import com.ucapdm2025.taskspaces.ui.screens.bookmarks.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
-import com.ucapdm2025.taskspaces.ui.screens.test.workspace.TestWorkspaceScreen
+import com.ucapdm2025.taskspaces.ui.screens.test.project.TestProjectScreen
 
 
 @Composable
@@ -17,7 +17,7 @@ fun AppNavigation(navController: NavHostController) {
         composable<HomeRoute> {
 //            HomeScreen()
             // TODO: Remove this later
-            TestWorkspaceScreen()
+            TestProjectScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
