@@ -4,7 +4,7 @@ import com.ucapdm2025.taskspaces.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
-    fun getTasks(): Flow<List<Task>>
+    fun getTasksByProjectId(projectId: Int): Flow<List<Task>>
     fun getBookmarkedTasks(): Flow<List<Task>>
     fun getAssignedTasks(userId: Int): Flow<List<Task>>
     suspend fun getTaskById(id: Int): Task?

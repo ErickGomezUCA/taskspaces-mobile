@@ -6,14 +6,15 @@ import com.ucapdm2025.taskspaces.data.model.Task
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 
 class TaskRepositoryImpl: TaskRepository {
     private val tasks = MutableStateFlow(tasksDummy)
     private val bookmarkedTasks = MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummy)
     private val assignedTasks = MutableStateFlow(assignedTasksDummy)
 
-    override fun getTasks(): Flow<List<Task>> {
-        return tasks.asStateFlow()
+    override fun getTasksByProjectId(projectId: Int): Flow<List<Task>> {
+        return tasks.map {list -> list.filter {it.projectId == projectId }}
     }
 
     override fun getBookmarkedTasks(): Flow<List<Task>> {

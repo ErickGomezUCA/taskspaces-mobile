@@ -3,9 +3,11 @@ package com.ucapdm2025.taskspaces.ui.screens.test.project
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ fun TestProjectScreen(
     viewModel: TestProjectViewModel = viewModel()
 ) {
     val project = viewModel.project.collectAsStateWithLifecycle()
+    val tasks = viewModel.tasks.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -44,6 +47,75 @@ fun TestProjectScreen(
             Text(text = "Title: ${project.value?.title ?: "Loading..."}")
             Text(text = "Icon: ${project.value?.icon ?: "Loading..."}")
             Text(text = "Workspace ID: ${project.value?.workspaceId ?: "Loading..."}")
+        }
+
+        Container(title = "- Get all tasks by status: PENDING", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val pendingTasks = tasks.value.filter { it.status == "PENDING" }
+
+                pendingTasks.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item.id}")
+                        Text(text = "title: ${item.title}")
+                        Text(text = "breadcrumb: ${item.breadcrumb}")
+                        Text(text = "deadline: ${item.deadline}")
+                        Text(text = "status: ${item.status}")
+                        Text(text = "projectId: ${item.projectId}")
+                    }
+                }
+            }
+        }
+
+        Container(title = "- Get all tasks by status: DOING", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val doingTasks = tasks.value.filter { it.status == "DOING" }
+
+                doingTasks.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item.id}")
+                        Text(text = "title: ${item.title}")
+                        Text(text = "breadcrumb: ${item.breadcrumb}")
+                        Text(text = "deadline: ${item.deadline}")
+                        Text(text = "status: ${item.status}")
+                        Text(text = "projectId: ${item.projectId}")
+                    }
+                }
+            }
+        }
+
+        Container(title = "- Get all tasks by status: DONE", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val doneTasks = tasks.value.filter { it.status == "DONE" }
+
+                doneTasks.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item.id}")
+                        Text(text = "title: ${item.title}")
+                        Text(text = "breadcrumb: ${item.breadcrumb}")
+                        Text(text = "deadline: ${item.deadline}")
+                        Text(text = "status: ${item.status}")
+                        Text(text = "projectId: ${item.projectId}")
+                    }
+                }
+            }
         }
     }
 }

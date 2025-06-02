@@ -38,9 +38,9 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = viewModel(),
+//    viewModel: SearchViewModel = viewModel(),
 ) {
-    val results = viewModel.results.collectAsStateWithLifecycle()
+//    val results = viewModel.results.collectAsStateWithLifecycle()
 
 //    TODO: Replace this method into a proper query handler
     val query = remember { mutableStateOf("") }
@@ -53,76 +53,76 @@ fun SearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        if (results.value.isEmpty()) {
-            if (query.value == "") {
-                Button(onClick = {
-                    query.value = "hi"
-                    viewModel.searchResults(query.value)
-                }) { Text(text = "Get results") }
-                    FeedbackIcon(
-                        icon = Icons.Default.Search,
-                        title = "Start searching workspaces, projects, tasks and users"
-                    )
-            } else {
-                    FeedbackIcon(
-                        icon = Icons.Default.Close,
-                        title = "There are no results with that term, try with another one"
-                    )
-            }
-        } else {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(32.dp)
-            ) {
-                Container {
-                    Text(text = "Workspaces")
-
-                    Row {
-                        results.value.workspaces?.forEach { workspace ->
-                            Card {
-                                Text(text = workspace.title)
-                            }
-                        }
-                    }
-                }
-
-                Container {
-                    Text(text = "Projects")
-
-                    Row {
-                        results.value.projects?.forEach { project ->
-                            Card {
-                                Text(text = project.title)
-                            }
-                        }
-                    }
-                }
-
-                Container {
-                    Text(text = "Tasks")
-
-                    Row {
-                        results.value.tasks?.forEach { task ->
-                            Card {
-                                Text(text = task.title)
-                            }
-                        }
-                    }
-                }
-
-                Container {
-                    Text(text = "Users")
-
-                    Row {
-                        results.value.users?.forEach { user ->
-                            Card {
-                                Text(text = user.username)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        if (results.value.isEmpty()) {
+//            if (query.value == "") {
+//                Button(onClick = {
+//                    query.value = "hi"
+////                    viewModel.searchResults(query.value)
+//                }) { Text(text = "Get results") }
+//                    FeedbackIcon(
+//                        icon = Icons.Default.Search,
+//                        title = "Start searching workspaces, projects, tasks and users"
+//                    )
+//            } else {
+//                    FeedbackIcon(
+//                        icon = Icons.Default.Close,
+//                        title = "There are no results with that term, try with another one"
+//                    )
+//            }
+//        } else {
+//            Column(
+//                modifier = Modifier.fillMaxSize(),
+//                verticalArrangement = Arrangement.spacedBy(32.dp)
+//            ) {
+//                Container {
+//                    Text(text = "Workspaces")
+//
+//                    Row {
+//                        results.value.workspaces?.forEach { workspace ->
+//                            Card {
+//                                Text(text = workspace.title)
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                Container {
+//                    Text(text = "Projects")
+//
+//                    Row {
+//                        results.value.projects?.forEach { project ->
+//                            Card {
+//                                Text(text = project.title)
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                Container {
+//                    Text(text = "Tasks")
+//
+//                    Row {
+//                        results.value.tasks?.forEach { task ->
+//                            Card {
+//                                Text(text = task.title)
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                Container {
+//                    Text(text = "Users")
+//
+//                    Row {
+//                        results.value.users?.forEach { user ->
+//                            Card {
+//                                Text(text = user.username)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
 
