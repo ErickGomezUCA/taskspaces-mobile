@@ -7,14 +7,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
 
-class TaskRepositoryImpl: TaskRepository {
+class TaskRepositoryImpl : TaskRepository {
     private val tasks = MutableStateFlow(tasksDummy)
-    private val bookmarkedTasks = MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummy)
+    private val bookmarkedTasks =
+        MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummy)
     private val assignedTasks = MutableStateFlow(assignedTasksDummy)
 
+    private var autoIncrementId = tasks.value.size + 1;
+
     override fun getTasksByProjectId(projectId: Int): Flow<List<Task>> {
-        return tasks.map {list -> list.filter {it.projectId == projectId }}
+        return tasks.map { list -> list.filter { it.projectId == projectId } }
     }
 
     override fun getBookmarkedTasks(): Flow<List<Task>> {
@@ -29,16 +33,54 @@ class TaskRepositoryImpl: TaskRepository {
         return tasks.value.find { it.id == id }
     }
 
-    override suspend fun createTask(task: Task): Task {
-        tasks.value = tasks.value + task
-        return task
+    override suspend fun createTask(
+        title: String,
+        description: String,
+        deadline: String,
+        status: String,
+        breadcrumb: String,
+        projectId: Int
+    ): Task {
+        val createdTask = Task(
+            id = autoIncrementId++,
+            title = title,
+            description = description,
+            deadline = deadline,
+            status = status,
+            breadcrumb = breadcrumb,
+            projectId = projectId,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString()
+        )
+
+        tasks.value = tasks.value + createdTask
+        return createdTask
     }
 
-    override suspend fun updateTask(task: Task): Task {
+    override suspend fun updateTask(
+        id: Int, title: String,
+        description: String,
+        deadline: String,
+        status: String,
+        breadcrumb: String,
+        projectId: Int
+    ): Task {
+        val updatedTask = Task(
+            id = id,
+            title = title,
+            description = description,
+            deadline = deadline,
+            status = status,
+            breadcrumb = breadcrumb,
+            projectId = projectId,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString()
+        )
+
         tasks.value = tasks.value.map {
-            if (it.id == task.id) task else it
+            if (it.id == updatedTask.id) updatedTask else it
         }
-        return task
+        return updatedTask
     }
 
     override suspend fun deleteTask(id: Int): Boolean {

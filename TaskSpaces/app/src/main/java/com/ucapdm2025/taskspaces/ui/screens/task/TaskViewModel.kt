@@ -34,7 +34,7 @@ class TaskViewModel: ViewModel() {
 
     fun updateTask(task: Task) {
         viewModelScope.launch {
-            taskRepository.updateTask(task)
+//            taskRepository.updateTask(task)
         }
     }
 
