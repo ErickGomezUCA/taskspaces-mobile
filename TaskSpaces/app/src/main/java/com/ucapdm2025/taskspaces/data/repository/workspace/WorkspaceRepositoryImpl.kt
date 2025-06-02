@@ -1,10 +1,12 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
 import android.util.Log
+import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
 import com.ucapdm2025.taskspaces.data.dummy.tasksDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummy
 import com.ucapdm2025.taskspaces.data.model.Task
+import com.ucapdm2025.taskspaces.data.model.User
 import com.ucapdm2025.taskspaces.data.model.Workspace
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +18,7 @@ import java.time.LocalDateTime
 class WorkspaceRepositoryImpl: WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummy)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummy)
+    private val members = MutableStateFlow(workspaceMembersDummy)
 
     private var autoIncrementId = workspaces.value.size + 1
 
@@ -75,5 +78,34 @@ class WorkspaceRepositoryImpl: WorkspaceRepository {
         }
 
         return exists
+    }
+
+//    Members
+    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<User>> {
+        return members.asStateFlow()
+    }
+
+    override suspend fun addMember(username: String, memberRole: String, workspaceId: Int): Boolean {
+        val userExists = members.value.find { it.username == username }
+        val workspaceExists = workspaces.value.any { it.id == workspaceId }
+
+        if (userExists != null && workspaceExists) {
+            members.value = members.value + userExists
+            return true
+        }
+
+        return false
+    }
+
+    override suspend fun removeMember(username: String, workspaceId: Int): Boolean {
+        val userExists = members.value.find { it.username == username }
+        val workspaceExists = workspaces.value.any { it.id == workspaceId }
+
+        if (userExists != null && workspaceExists) {
+            members.value = members.value.filter { it.username != username }
+            return true
+        }
+
+        return false
     }
 }

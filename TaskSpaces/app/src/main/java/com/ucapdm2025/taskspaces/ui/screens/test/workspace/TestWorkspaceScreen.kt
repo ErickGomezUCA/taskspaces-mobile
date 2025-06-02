@@ -34,11 +34,19 @@ private data class MutableProject(
     var workspaceId: MutableState<Int>
 )
 
+private data class MutableMember(
+    var username: MutableState<String>,
+    var memberRole: MutableState<String>
+)
+
 @Composable
 fun TestWorkspaceScreen(
     viewModel: TestWorkspaceViewModel = viewModel()
 ) {
+    val workspaceId = 1;
+
     val projects = viewModel.projects.collectAsStateWithLifecycle()
+    val members = viewModel.members.collectAsStateWithLifecycle()
 
     val selectedProjectId = remember { mutableStateOf("") }
 
@@ -48,6 +56,15 @@ fun TestWorkspaceScreen(
                 title = mutableStateOf(""),
                 icon = mutableStateOf(""),
                 workspaceId = mutableIntStateOf(0)
+            )
+        )
+    }
+
+    val mutableMemberInfo: MutableState<MutableMember> = remember {
+        mutableStateOf(
+            MutableMember(
+                username = mutableStateOf(""),
+                memberRole = mutableStateOf("")
             )
         )
     }
@@ -102,7 +119,8 @@ fun TestWorkspaceScreen(
                 onClick = {
                     viewModel.createProject(
                         title = mutableProjectInfo.value.title.value,
-                        icon = mutableProjectInfo.value.icon.value
+                        icon = mutableProjectInfo.value.icon.value,
+                        workspaceId = workspaceId
                     )
 
                     mutableProjectInfo.value = MutableProject(
@@ -144,7 +162,8 @@ fun TestWorkspaceScreen(
                     viewModel.updateProject(
                         id = selectedProjectId.value.toInt(),
                         title = mutableProjectInfo.value.title.value,
-                        icon = mutableProjectInfo.value.icon.value
+                        icon = mutableProjectInfo.value.icon.value,
+                        workspaceId = workspaceId
                     )
 
                     selectedProjectId.value = ""
@@ -179,6 +198,85 @@ fun TestWorkspaceScreen(
             ) {
                 Text(text = "Delete")
             }
+        }
+
+        Container(title = "- Get all members", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                members.value.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item.id}")
+                        Text(text = "username: ${item.username}")
+                    }
+                }
+            }
+        }
+
+        Container(title = "- Add member", showOptionsButton = false) {
+            TextField(
+                value = mutableMemberInfo.value.username.value,
+                onValueChange = { mutableMemberInfo.value.username.value = it },
+                placeholder = { Text(text = "Username") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = mutableMemberInfo.value.memberRole.value,
+                onValueChange = { mutableMemberInfo.value.memberRole.value = it },
+                placeholder = { Text(text = "Member role") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.addMember(
+                        username = mutableMemberInfo.value.username.value,
+                        memberRole = mutableMemberInfo.value.memberRole.value,
+                        workspaceId = workspaceId
+                    )
+
+                    mutableMemberInfo.value = MutableMember(
+                        username = mutableStateOf(""),
+                        memberRole = mutableStateOf("")
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Create")
+            }
+
+        }
+
+        Container(title = "- Remove member", showOptionsButton = false) {
+            TextField(
+                value = mutableMemberInfo.value.username.value,
+                onValueChange = { mutableMemberInfo.value.username.value = it },
+                placeholder = { Text(text = "Username") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.removeMember(
+                        username = mutableMemberInfo.value.username.value,
+                        workspaceId = workspaceId
+                    )
+
+                    mutableMemberInfo.value = MutableMember(
+                        username = mutableStateOf(""),
+                        memberRole = mutableStateOf("")
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Create")
+            }
+
         }
 
     }
