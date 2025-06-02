@@ -1,6 +1,5 @@
-package com.ucapdm2025.taskspaces.ui.screens.test.workspace
+package com.ucapdm2025.taskspaces.ui.screens.workspace
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Project
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TestWorkspaceViewModel: ViewModel() {
+class WorkspaceViewModel: ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
 //    This ID should be included as a parameter when the ViewModel is initialized

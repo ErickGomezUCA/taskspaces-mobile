@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -41,7 +42,7 @@ private class MutableComment(
 
 @Composable
 fun TestTaskScreen(
-    viewModel: TestTaskViewModel = viewModel()
+    viewModel: TaskViewModel = viewModel()
 ) {
     val task = viewModel.task.collectAsStateWithLifecycle()
     val comments = viewModel.comments.collectAsStateWithLifecycle()

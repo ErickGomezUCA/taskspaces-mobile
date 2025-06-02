@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -41,7 +42,7 @@ private data class MutableMember(
 
 @Composable
 fun TestWorkspaceScreen(
-    viewModel: TestWorkspaceViewModel = viewModel()
+    viewModel: WorkspaceViewModel = viewModel()
 ) {
     val workspaceId = 1;
 

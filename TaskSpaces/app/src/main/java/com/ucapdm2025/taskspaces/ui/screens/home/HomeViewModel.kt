@@ -1,6 +1,5 @@
-package com.ucapdm2025.taskspaces.ui.screens.test.home
+package com.ucapdm2025.taskspaces.ui.screens.home
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Task
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TestHomeViewModel: ViewModel() {
+class HomeViewModel: ViewModel() {
     val userId = 1
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
@@ -22,7 +21,8 @@ class TestHomeViewModel: ViewModel() {
     private val _workspaces: MutableStateFlow<List<Workspace>> = MutableStateFlow(emptyList())
     val workspaces: StateFlow<List<Workspace>> = _workspaces.asStateFlow()
 
-    private val _workspacesSharedWithMe: MutableStateFlow<List<Workspace>> = MutableStateFlow(emptyList())
+    private val _workspacesSharedWithMe: MutableStateFlow<List<Workspace>> =
+        MutableStateFlow(emptyList())
     val workspacesSharedWithMe: StateFlow<List<Workspace>> = _workspacesSharedWithMe.asStateFlow()
 
     private val _assignedTasks: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())

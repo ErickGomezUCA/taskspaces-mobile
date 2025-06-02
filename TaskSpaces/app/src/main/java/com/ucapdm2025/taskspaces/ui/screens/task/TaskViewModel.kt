@@ -1,8 +1,7 @@
-package com.ucapdm2025.taskspaces.ui.screens.test.task
+package com.ucapdm2025.taskspaces.ui.screens.task
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.data.model.Comment
 import com.ucapdm2025.taskspaces.data.model.Task
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TestTaskViewModel: ViewModel() {
+class TaskViewModel: ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
 

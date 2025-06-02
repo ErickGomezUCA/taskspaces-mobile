@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.screens.home.HomeViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -38,7 +39,7 @@ private data class MutableWorkspace(
  */
 @Composable
 fun TestHomeScreen(
-    viewModel: TestHomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel()
 ) {
 //    Variables and states
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.screens.project.ProjectViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -37,7 +38,7 @@ private class MutableTask(
 
 @Composable
 fun TestProjectScreen(
-    viewModel: TestProjectViewModel = viewModel()
+    viewModel: ProjectViewModel = viewModel()
 ) {
     val projectId = 1
 

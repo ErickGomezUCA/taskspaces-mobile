@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.screens.test.project
+package com.ucapdm2025.taskspaces.ui.screens.project
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class TestProjectViewModel : ViewModel() {
+class ProjectViewModel : ViewModel() {
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
