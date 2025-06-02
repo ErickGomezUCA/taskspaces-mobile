@@ -16,8 +16,6 @@ fun AppNavigation(navController: NavHostController) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
 //            HomeScreen()
-            // TODO: Remove this later
-            TestTaskScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
