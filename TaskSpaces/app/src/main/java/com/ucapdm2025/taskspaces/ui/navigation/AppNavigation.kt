@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ucapdm2025.taskspaces.ui.screens.bookmarks.BookmarksScreen
-import com.ucapdm2025.taskspaces.ui.screens.search.SearchScreen
+import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
+import com.ucapdm2025.taskspaces.ui.screens.HomeScreen
+import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
-import com.ucapdm2025.taskspaces.ui.screens.test.task.TestTaskScreen
 
 
 @Composable
@@ -15,7 +15,7 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
-//            HomeScreen()
+            HomeScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
