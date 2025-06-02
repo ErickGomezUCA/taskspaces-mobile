@@ -228,6 +228,17 @@ fun TestTaskScreen(
                 Text(text = "Delete")
             }
         }
+
+        Container(title = "- Bookmark", showOptionsButton = false) {
+            Button(
+                onClick = {
+                    viewModel.bookmarkTask()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Bookmark")
+            }
+        }
     }
 }
 

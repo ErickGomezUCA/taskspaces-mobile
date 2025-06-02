@@ -71,4 +71,13 @@ class TestTaskViewModel: ViewModel() {
             commentRepository.deleteComment(id)
         }
     }
+
+//    TODO: Define how this function should work in the viewmodel
+    fun bookmarkTask() {
+        viewModelScope.launch {
+            task.value?.let { task ->
+                taskRepository.bookmarkTask(task.id)
+            }
+        }
+    }
 }
