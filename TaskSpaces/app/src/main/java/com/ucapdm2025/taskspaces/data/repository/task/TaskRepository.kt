@@ -7,7 +7,7 @@ interface TaskRepository {
     fun getTasksByProjectId(projectId: Int): Flow<List<Task>>
     fun getBookmarkedTasks(): Flow<List<Task>>
     fun getAssignedTasks(userId: Int): Flow<List<Task>>
-    suspend fun getTaskById(id: Int): Task?
+    fun getTaskById(id: Int): Flow<Task?>
     suspend fun createTask(
         title: String,
         description: String,

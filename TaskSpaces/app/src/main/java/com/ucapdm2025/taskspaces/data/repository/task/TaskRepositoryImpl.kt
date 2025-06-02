@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.repository.task
 
+import android.util.Log
 import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummy
 import com.ucapdm2025.taskspaces.data.dummy.tasksDummy
 import com.ucapdm2025.taskspaces.data.model.Task
@@ -29,8 +30,8 @@ class TaskRepositoryImpl : TaskRepository {
         return assignedTasks.asStateFlow()
     }
 
-    override suspend fun getTaskById(id: Int): Task? {
-        return tasks.value.find { it.id == id }
+    override fun getTaskById(id: Int): Flow<Task?> {
+        return tasks.map { list -> list.find { it.id == id } }
     }
 
     override suspend fun createTask(
@@ -80,6 +81,9 @@ class TaskRepositoryImpl : TaskRepository {
         tasks.value = tasks.value.map {
             if (it.id == updatedTask.id) updatedTask else it
         }
+
+        Log.d("test1", tasks.value.toString())
+
         return updatedTask
     }
 

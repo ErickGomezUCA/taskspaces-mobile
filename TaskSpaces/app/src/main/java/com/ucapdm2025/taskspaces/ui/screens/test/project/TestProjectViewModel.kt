@@ -52,20 +52,6 @@ class TestProjectViewModel : ViewModel() {
         }
     }
 
-    fun updateTask(id: Int, title: String, description: String, status: String, projectId: Int) {
-        viewModelScope.launch {
-            taskRepository.updateTask(
-                id = id,
-                title = title,
-                description = description,
-                deadline = "",
-                status = status,
-                breadcrumb = "Workspace 1 / ${project.value?.title}",
-                projectId = projectId
-            )
-        }
-    }
-
     fun deleteTask(id: Int) {
         viewModelScope.launch {
             taskRepository.deleteTask(id)

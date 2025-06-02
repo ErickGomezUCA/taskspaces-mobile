@@ -28,7 +28,7 @@ class TimeTrackerViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            _task.value = taskRepository.getTaskById(id)!!
+//            _task.value = taskRepository.getTaskById(id)!!
         }
     }
 }
