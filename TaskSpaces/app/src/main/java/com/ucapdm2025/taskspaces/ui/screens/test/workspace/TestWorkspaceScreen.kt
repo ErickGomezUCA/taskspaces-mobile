@@ -84,9 +84,9 @@ fun TestWorkspaceScreen(
         )
 
         Container(title = "- Workspace info", showOptionsButton = false) {
-            Text(text = "ID: $workspaceId")
-            Text(text = "Title: Test Workspace")
-            Text(text = "Owner ID: 1")
+            Text(text = "ID: ${workspace.value?.id ?: "Loading..."}")
+            Text(text = "Title: ${workspace.value?.title ?: "Loading..."}")
+            Text(text = "Owner ID: ${workspace.value?.ownerId ?: "Loading..."}")
         }
 
         Container(title = "- Get all projects by workspace id", showOptionsButton = false) {
