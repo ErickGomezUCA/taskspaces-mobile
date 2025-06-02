@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -34,13 +35,23 @@ private class MutableTask(
     var projectId: MutableState<Int>
 )
 
+private class MutableComment(
+    var content: MutableState<String>
+)
+
 @Composable
 fun TestTaskScreen(
     viewModel: TestTaskViewModel = viewModel()
 ) {
     val task = viewModel.task.collectAsStateWithLifecycle()
+    val comments = viewModel.comments.collectAsStateWithLifecycle()
 
     val taskId = 1
+
+    val selectedCommentId = remember {mutableStateOf("")}
+    val mutableCommentInfo = remember { mutableStateOf(MutableComment(
+        content = mutableStateOf("")
+    )) }
 
     val mutableTaskInfo = remember {
         mutableStateOf(
@@ -117,6 +128,104 @@ fun TestTaskScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Update")
+            }
+        }
+
+        Container(title = "- Get all Comments by Task ID", showOptionsButton = false) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                comments.value.forEach { item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "id: ${item.id}")
+                        Text(text = "content: ${item.content}")
+                        Text(text = "authorId: ${item.authorId}")
+                    }
+                }
+            }
+        }
+
+        Container(title = "- Create Comment", showOptionsButton = false) {
+            TextField(
+                value = mutableCommentInfo.value.content.value,
+                onValueChange = { mutableCommentInfo.value.content.value = it },
+                placeholder = { Text(text = "Content") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.createComment(
+                        content = mutableCommentInfo.value.content.value,
+                    )
+
+                    mutableCommentInfo.value = MutableComment(
+                        content = mutableStateOf(""),
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Create")
+            }
+        }
+
+        Container(title = "- Update Comment", showOptionsButton = false) {
+            TextField(
+                value = selectedCommentId.value,
+                onValueChange = { selectedCommentId.value = it },
+                placeholder = { Text(text = "ID") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            TextField(
+                value = mutableCommentInfo.value.content.value,
+                onValueChange = { mutableCommentInfo.value.content.value = it },
+                placeholder = { Text(text = "Content") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.updateComment(
+                        id = selectedCommentId.value.toInt(),
+                        content = mutableCommentInfo.value.content.value,
+                    )
+
+                    selectedCommentId.value = ""
+
+                    mutableCommentInfo.value = MutableComment(
+                        content = mutableStateOf(""),
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Update")
+            }
+        }
+
+        Container(title = "- Delete Comment", showOptionsButton = false) {
+            TextField(
+                value = selectedCommentId.value,
+                onValueChange = { selectedCommentId.value = it },
+                placeholder = { Text(text = "ID") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    viewModel.deleteComment(
+                        id = selectedCommentId.value.toInt(),
+                    )
+
+                    selectedCommentId.value = ""
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Delete")
             }
         }
     }
