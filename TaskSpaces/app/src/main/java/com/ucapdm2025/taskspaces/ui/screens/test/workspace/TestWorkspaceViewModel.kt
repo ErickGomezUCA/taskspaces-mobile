@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Project
 import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.data.model.Workspace
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
@@ -20,6 +21,9 @@ class TestWorkspaceViewModel: ViewModel() {
 //    This ID should be included as a parameter when the ViewModel is initialized
     val workspaceId = 1
 
+    private val _workspace: MutableStateFlow<Workspace?> = MutableStateFlow(null)
+    val workspace: StateFlow<Workspace?> = _workspace.asStateFlow()
+
     private val _projects: MutableStateFlow<List<Project>> = MutableStateFlow(emptyList())
     val projects: StateFlow<List<Project>> = _projects.asStateFlow()
 
@@ -27,6 +31,12 @@ class TestWorkspaceViewModel: ViewModel() {
     val members: StateFlow<List<User>> = _members.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            workspaceRepository.getWorkspaceById(workspaceId).collect { workspace ->
+                _workspace.value = workspace
+            }
+        }
+
         viewModelScope.launch {
             projectRepository.getProjectsByWorkspaceId(workspaceId).collect { projectList ->
                 _projects.value = projectList

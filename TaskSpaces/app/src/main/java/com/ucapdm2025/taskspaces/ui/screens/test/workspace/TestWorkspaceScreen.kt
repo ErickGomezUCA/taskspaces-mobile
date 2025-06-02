@@ -45,6 +45,7 @@ fun TestWorkspaceScreen(
 ) {
     val workspaceId = 1;
 
+    val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
 
@@ -81,6 +82,12 @@ fun TestWorkspaceScreen(
             fontWeight = FontWeight.Medium,
             fontSize = 20.sp
         )
+
+        Container(title = "- Workspace info", showOptionsButton = false) {
+            Text(text = "ID: $workspaceId")
+            Text(text = "Title: Test Workspace")
+            Text(text = "Owner ID: 1")
+        }
 
         Container(title = "- Get all projects by workspace id", showOptionsButton = false) {
             Column(
