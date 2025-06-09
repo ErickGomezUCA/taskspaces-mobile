@@ -13,12 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
-import com.ucapdm2025.taskspaces.ui.theme.DoingStatusColor
-import com.ucapdm2025.taskspaces.ui.theme.DoneStatusColor
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -87,8 +86,8 @@ data class Task(
 @Composable
 fun TaskCardPreviewLight() {
     val tagsTest = listOf(
-        Tag("Tag", DoingStatusColor),
-        Tag("Tag", DoneStatusColor)
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
     )
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
@@ -110,8 +109,8 @@ fun TaskCardPreviewLight() {
 @Composable
 fun TaskCardPreviewDark() {
     val tagsTest = listOf(
-        Tag("Tag", DoingStatusColor),
-        Tag("Tag", DoneStatusColor)
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
     )
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
