@@ -24,8 +24,6 @@ import com.ucapdm2025.taskspaces.ui.components.general.SortOption
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.Task
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
-import com.ucapdm2025.taskspaces.ui.theme.DoingStatusColor
-import com.ucapdm2025.taskspaces.ui.theme.DoneStatusColor
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
