@@ -4,6 +4,7 @@ import android.util.Log
 import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
 import com.ucapdm2025.taskspaces.data.dummy.tasksDummies
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,8 +38,8 @@ class TaskRepositoryImpl : TaskRepository {
     override suspend fun createTask(
         title: String,
         description: String,
-        deadline: String,
-        status: String,
+        deadline: LocalDateTime,
+        status: StatusVariations,
         breadcrumb: String,
         projectId: Int
     ): TaskModel {
@@ -49,6 +50,9 @@ class TaskRepositoryImpl : TaskRepository {
             deadline = deadline,
             status = status,
             breadcrumb = breadcrumb,
+            tags = emptyList(), // Assuming no tags are set initially
+            assignedMembers = emptyList(), // Assuming no members are assigned initially
+            comments = emptyList(),
             projectId = projectId,
             createdAt = LocalDateTime.now().toString(),
             updatedAt = LocalDateTime.now().toString()
@@ -59,10 +63,11 @@ class TaskRepositoryImpl : TaskRepository {
     }
 
     override suspend fun updateTask(
-        id: Int, title: String,
+        id: Int,
+        title: String,
         description: String,
-        deadline: String,
-        status: String,
+        deadline: LocalDateTime,
+        status: StatusVariations,
         breadcrumb: String,
         projectId: Int
     ): TaskModel {
@@ -73,6 +78,9 @@ class TaskRepositoryImpl : TaskRepository {
             deadline = deadline,
             status = status,
             breadcrumb = breadcrumb,
+            tags = emptyList(), // Assuming no tags are set initially
+            assignedMembers = emptyList(), // Assuming no members are assigned initially
+            comments = emptyList(),
             projectId = projectId,
             createdAt = LocalDateTime.now().toString(),
             updatedAt = LocalDateTime.now().toString()

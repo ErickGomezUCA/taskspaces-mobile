@@ -1,7 +1,9 @@
 package com.ucapdm2025.taskspaces.data.repository.task
 
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 interface TaskRepository {
     fun getTasksByProjectId(projectId: Int): Flow<List<TaskModel>>
@@ -11,8 +13,8 @@ interface TaskRepository {
     suspend fun createTask(
         title: String,
         description: String,
-        deadline: String,
-        status: String,
+        deadline: LocalDateTime,
+        status: StatusVariations,
         breadcrumb: String,
         projectId: Int
     ): TaskModel
@@ -21,8 +23,8 @@ interface TaskRepository {
         id: Int,
         title: String,
         description: String,
-        deadline: String,
-        status: String,
+        deadline: LocalDateTime,
+        status: StatusVariations,
         breadcrumb: String,
         projectId: Int
     ): TaskModel

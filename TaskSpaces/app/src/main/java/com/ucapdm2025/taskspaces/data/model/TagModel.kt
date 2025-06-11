@@ -7,6 +7,6 @@ data class TagModel (
     val title: String,
     val color: Color,
     val projectId: Int,
-    override val createdAt: String,
-    override val updatedAt: String,
+    override val createdAt: String = "",
+    override val updatedAt: String = "",
 ): BaseModel(id, createdAt, updatedAt)

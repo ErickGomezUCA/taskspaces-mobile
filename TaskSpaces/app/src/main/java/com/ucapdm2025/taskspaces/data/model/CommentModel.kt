@@ -5,6 +5,6 @@ data class CommentModel(
     val content: String,
     val authorId: Int,
     val taskId: Int,
-    override val createdAt: String,
-    override val updatedAt: String,
+    override val createdAt: String = "",
+    override val updatedAt: String = "",
 ): BaseModel(id, createdAt, updatedAt)

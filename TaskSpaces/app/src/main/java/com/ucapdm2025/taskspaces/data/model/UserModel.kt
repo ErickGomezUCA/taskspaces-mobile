@@ -5,7 +5,7 @@ data class UserModel (
     val fullname: String,
     val username: String,
     val email: String,
-    val avatar: String,
-    override val createdAt: String,
-    override val updatedAt: String,
+    val avatar: String? = null,
+    override val createdAt: String = "",
+    override val updatedAt: String = "",
 ): BaseModel(id, createdAt, updatedAt)
