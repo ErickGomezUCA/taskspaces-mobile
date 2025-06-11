@@ -40,9 +40,8 @@ fun WorkspaceScreen(
     // I'll connect it through a ViewModel and Repository once the backend is ready.
 
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
-
-    val projectNames = listOf("Project name", "Project name", "Project name", "Project name")
-    val users = listOf("Username", "Username", "Username")
+    val projects = viewModel.projects.collectAsStateWithLifecycle()
+    val members = viewModel.members.collectAsStateWithLifecycle()
 
     if (workspace.value == null) {
         Column(
@@ -81,7 +80,7 @@ fun WorkspaceScreen(
         // Projects Section
         item {
             Container(title = "Projects", showOptionsButton = true) {
-                val chunkedProjects = projectNames.chunked(2)
+                val chunkedProjects = projects.value.chunked(2)
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -97,14 +96,11 @@ fun WorkspaceScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
-                            rowItems.forEach { name ->
+                            rowItems.forEach { project ->
                                 ProjectCard(
-                                    name = name,
+                                    name = project.title,
                                     modifier = Modifier.weight(1f)
                                 )
-                            }
-                            if (rowItems.size < 2) {
-                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
@@ -156,7 +152,7 @@ fun WorkspaceScreen(
         item {
 
             Container(title = "Members", showOptionsButton = true) {
-                val chunkedUsers = users.chunked(3)
+                val chunkedUsers = members.value.chunked(3)
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -170,17 +166,13 @@ fun WorkspaceScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            rowItems.forEach { username ->
+                            rowItems.forEach { member ->
                                 UserCard(
-                                    username,
+                                    member.username,
                                     modifier = Modifier
                                         .width(80.dp)
                                         .fillMaxHeight()
                                 )
-                            }
-
-                            repeat(3 - rowItems.size) {
-                                Spacer(modifier = Modifier.width(70.dp))
                             }
                         }
                     }
