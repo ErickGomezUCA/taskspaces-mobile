@@ -21,7 +21,7 @@ object HomeRoute
 data class WorkspaceRoute(val workspaceId: Int)
 
 @Serializable
-data class ProjectRout(val projectId: Int)
+data class ProjectRoute(val projectId: Int)
 
 // TODO: See if this is correct, because tasks are handled by a dialog instead of a view
 @Serializable
