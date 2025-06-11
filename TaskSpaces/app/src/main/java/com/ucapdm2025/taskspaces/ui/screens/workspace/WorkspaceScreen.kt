@@ -26,9 +26,12 @@ import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.theme.*
 
 /**
- * Composable that renders a workspace screen with sections for projects and members.
+ * Displays the workspace details screen, including sections for projects and members.
  *
- * @param workspaceName The name of the workspace, shown as the screen title.
+ * Fetches workspace, project, and member data using the provided [workspaceId] and displays them
+ * in a structured layout. If the workspace is not found, a feedback message is shown.
+ *
+ * @param workspaceId The unique identifier of the workspace to display.
  */
 @Composable
 fun WorkspaceScreen(
@@ -203,27 +206,61 @@ fun WorkspaceScreen(
 }
 
 /**
- * A preview composable for the [WorkspaceScreen] component.
+ * Preview of [WorkspaceScreen] in light theme with a valid workspace ID.
  *
- * Displays the entire workspace screen with mock data and full system UI for design-time inspection.
- * Includes light and dark theme variants to test visual consistency across modes.
+ * Shows the workspace screen as it would appear in light mode.
  */
 @Preview(showBackground = true)
 @Composable
 fun WorkspaceScreenPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-//            WorkspaceScreen(workspaceName = "Workspace")
+            WorkspaceScreen(workspaceId = 1)
         }
     }
 }
 
+/**
+ * Preview of [WorkspaceScreen] in light theme when the workspace is not found.
+ *
+ * Demonstrates the not-found state in light mode.
+ */
+@Preview(showBackground = true)
+@Composable
+fun WorkspaceScreenNotFoundPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            WorkspaceScreen(workspaceId = 0)
+        }
+    }
+}
+
+/**
+ * Preview of [WorkspaceScreen] in dark theme with a valid workspace ID.
+ *
+ * Shows the workspace screen as it would appear in dark mode.
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun WorkspaceScreenPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-//            WorkspaceScreen(workspaceName = "Workspace")
+            WorkspaceScreen(workspaceId = 1)
+        }
+    }
+}
+
+/**
+ * Preview of [WorkspaceScreen] in dark theme when the workspace is not found.
+ *
+ * Demonstrates the not-found state in dark mode.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun WorkspaceScreenNotFoundPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            WorkspaceScreen(workspaceId = 0)
         }
     }
 }

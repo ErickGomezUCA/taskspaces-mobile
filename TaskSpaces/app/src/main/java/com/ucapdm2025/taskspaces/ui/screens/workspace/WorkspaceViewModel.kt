@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for managing a single workspace's data, including its projects and members.
+ *
+ * @param workspaceId The unique identifier for the workspace to be managed.
+ */
 class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
@@ -80,6 +85,11 @@ class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     }
 }
 
+/**
+ * Factory for creating instances of [WorkspaceViewModel] with a specific workspaceId.
+ *
+ * @param workspaceId The unique identifier for the workspace.
+ */
 class WorkspaceViewModelFactory(private val workspaceId: Int) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WorkspaceViewModel::class.java)) {

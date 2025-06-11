@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.screens
+package com.ucapdm2025.taskspaces.ui.screens.project
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
