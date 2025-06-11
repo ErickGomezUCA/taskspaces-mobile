@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,15 +32,14 @@ import com.ucapdm2025.taskspaces.ui.theme.*
  */
 @Composable
 fun WorkspaceScreen(
-    workspaceId: Int,
-    viewModel: WorkspaceViewModel = viewModel()
+    workspaceId: Int
 ) {
+    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId))
 
     // TODO: I'm using mock data for now, but this will be replaced with real data from an API.
     // I'll connect it through a ViewModel and Repository once the backend is ready.
 
-//    val workspace = viewModel.workspace.collectAsStateWithLifecycle()
-    val workspace: MutableState<Workspace?> = remember { mutableStateOf(null) }
+    val workspace = viewModel.workspace.collectAsStateWithLifecycle()
 
     val projectNames = listOf("Project name", "Project name", "Project name", "Project name")
     val users = listOf("Username", "Username", "Username")
@@ -52,7 +52,7 @@ fun WorkspaceScreen(
         ) {
             FeedbackIcon(
                 icon = Icons.Default.Close,
-                title = "Workspace not found",
+                title = "Sorry, we couldn't find this workspace.",
             )
             return
         }

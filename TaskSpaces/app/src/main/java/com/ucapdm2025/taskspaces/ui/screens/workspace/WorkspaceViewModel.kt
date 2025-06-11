@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.Project
 import com.ucapdm2025.taskspaces.data.model.User
@@ -14,11 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class WorkspaceViewModel: ViewModel() {
+class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
 //    This ID should be included as a parameter when the ViewModel is initialized
-    val workspaceId = 1
 
     private val _workspace: MutableStateFlow<Workspace?> = MutableStateFlow(null)
     val workspace: StateFlow<Workspace?> = _workspace.asStateFlow()
@@ -77,5 +77,14 @@ class WorkspaceViewModel: ViewModel() {
         viewModelScope.launch {
             workspaceRepository.removeMember(username, workspaceId)
         }
+    }
+}
+
+class WorkspaceViewModelFactory(private val workspaceId: Int) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(WorkspaceViewModel::class.java)) {
+            return WorkspaceViewModel(workspaceId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
