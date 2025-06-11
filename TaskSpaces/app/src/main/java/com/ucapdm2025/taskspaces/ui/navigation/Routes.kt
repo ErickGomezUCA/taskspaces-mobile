@@ -18,17 +18,17 @@ object AppRoute
 object HomeRoute
 
 @Serializable
-data class WorkspaceRoute(val workspaceId: String)
+data class WorkspaceRoute(val workspaceId: Int)
 
 @Serializable
-data class ProjectRout(val projectId: String)
+data class ProjectRout(val projectId: Int)
 
 // TODO: See if this is correct, because tasks are handled by a dialog instead of a view
 @Serializable
-data class TaskRoute(val taskId: String)
+data class TaskRoute(val taskId: Int)
 
 @Serializable
-data class TimeTrackerRoute(val taskId: String)
+data class TimeTrackerRoute(val taskId: Int)
 
 @Serializable
 object SearchRoute

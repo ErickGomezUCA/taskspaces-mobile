@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.ui.screens.WorkspaceScreen
 
 
 class MainActivity : ComponentActivity() {

@@ -1,16 +1,25 @@
-package com.ucapdm2025.taskspaces.ui.screens
+package com.ucapdm2025.taskspaces.ui.screens.workspace
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.data.model.Workspace
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.theme.*
@@ -21,13 +30,33 @@ import com.ucapdm2025.taskspaces.ui.theme.*
  * @param workspaceName The name of the workspace, shown as the screen title.
  */
 @Composable
-fun WorkspaceScreen(workspaceName: String) {
+fun WorkspaceScreen(
+    workspaceId: Int,
+    viewModel: WorkspaceViewModel = viewModel()
+) {
 
     // TODO: I'm using mock data for now, but this will be replaced with real data from an API.
     // I'll connect it through a ViewModel and Repository once the backend is ready.
 
+//    val workspace = viewModel.workspace.collectAsStateWithLifecycle()
+    val workspace: MutableState<Workspace?> = remember { mutableStateOf(null) }
+
     val projectNames = listOf("Project name", "Project name", "Project name", "Project name")
     val users = listOf("Username", "Username", "Username")
+
+    if (workspace.value == null) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            FeedbackIcon(
+                icon = Icons.Default.Close,
+                title = "Workspace not found",
+            )
+            return
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -42,7 +71,7 @@ fun WorkspaceScreen(workspaceName: String) {
         // Workspace title
         item {
             Text(
-                text = workspaceName,
+                text = workspace.value?.title ?: "",
                 style = OutfitTypography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -192,7 +221,7 @@ fun WorkspaceScreen(workspaceName: String) {
 fun WorkspaceScreenPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            WorkspaceScreen(workspaceName = "Workspace")
+//            WorkspaceScreen(workspaceName = "Workspace")
         }
     }
 }
@@ -202,7 +231,7 @@ fun WorkspaceScreenPreviewLight() {
 fun WorkspaceScreenPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            WorkspaceScreen(workspaceName = "Workspace")
+//            WorkspaceScreen(workspaceName = "Workspace")
         }
     }
 }

@@ -8,6 +8,7 @@ import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
+import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 
 @Composable
@@ -20,8 +21,9 @@ fun AppNavigation(navController: NavHostController) {
 
         composable<WorkspaceRoute> { backStackEntry ->
 //                Use this ID to get the workspace
-            backStackEntry.arguments?.getString("workspaceId") ?: 0
+            val workspaceId: Int = backStackEntry.arguments?.getString("workspaceId")?.toInt() ?: 0
 //            Workspace screen goes here
+            WorkspaceScreen(workspaceId = workspaceId)
         }
 
         composable<ProjectRout> { backStackEntry ->
