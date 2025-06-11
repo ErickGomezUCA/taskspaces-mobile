@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
@@ -32,11 +34,18 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun ProjectScreen(
-    pendingTasks: List<Task>,
-    doingTasks: List<Task>,
-    doneTasks: List<Task>,
+    projectId: Int,
     onAddTaskClick: (StatusVariations) -> Unit
 ) {
+    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId))
+
+    val project = viewModel.project.collectAsStateWithLifecycle()
+    val tasks = viewModel.tasks.collectAsStateWithLifecycle()
+
+    val pendingTasks = tasks.value.filter { it.status == "PENDING" }
+    val doingTasks = tasks.value.filter { it.status == "DOING" }
+    val doneTasks = tasks.value.filter { it.status == "DONE" }
+
     ProjectsBackground {
         LazyRow(
             modifier = Modifier
@@ -78,6 +87,7 @@ fun ProjectScreen(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun ProjectsScreenPreviewLight() {
+//    TODO: Resolve these problems with task tag in model
     val pendingTasks = listOf(
         Task("Revisar requisitos", listOf(Tag("Análisis", Color(0xFF2E88DD)))),
         Task("Diseñar UI", listOf(Tag("UI", Color(0xFF2E88DD))))
@@ -93,6 +103,7 @@ fun ProjectsScreenPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
             ProjectScreen(
+                projectId = 1,
                 pendingTasks = pendingTasks,
                 doingTasks = doingTasks,
                 doneTasks = doneTasks,
@@ -126,6 +137,7 @@ fun ProjectsScreenPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             ProjectScreen(
+                projectId = 1,
                 pendingTasks = pendingTasks,
                 doingTasks = doingTasks,
                 doneTasks = doneTasks,

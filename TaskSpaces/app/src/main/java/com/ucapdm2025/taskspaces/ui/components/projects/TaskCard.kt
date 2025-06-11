@@ -71,12 +71,6 @@ fun TaskCard(
     }
 }
 
-// TODO: Replace with actual models
-data class Task(
-    val title: String,
-    val tags: List<Tag>,
-)
-
 /**
  * A preview composable for the [TaskCard] component.
  *
