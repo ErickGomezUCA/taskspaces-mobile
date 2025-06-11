@@ -1,9 +1,9 @@
 package com.ucapdm2025.taskspaces.data.dummy.catalog
 
-import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.data.model.UserModel
 
-val workspaceMembersDummy: List<User> = listOf(
-    User(
+val workspaceMembersDummy: List<UserModel> = listOf(
+    UserModel(
         id = 1,
         fullname = "John Doe",
         username = "johndoe",
@@ -12,7 +12,7 @@ val workspaceMembersDummy: List<User> = listOf(
         createdAt = "2023-10-01T12:00:00Z",
         updatedAt = "2023-10-01T12:00:00Z"
     ),
-    User(
+    UserModel(
         id = 2,
         fullname = "John Doe 2",
         username = "johndoe2",

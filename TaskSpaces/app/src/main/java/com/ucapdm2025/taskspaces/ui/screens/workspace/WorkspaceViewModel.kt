@@ -3,9 +3,9 @@ package com.ucapdm2025.taskspaces.ui.screens.workspace
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.ucapdm2025.taskspaces.data.model.Project
-import com.ucapdm2025.taskspaces.data.model.User
-import com.ucapdm2025.taskspaces.data.model.Workspace
+import com.ucapdm2025.taskspaces.data.model.ProjectModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
+import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
@@ -25,19 +25,19 @@ class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
 //    This ID should be included as a parameter when the ViewModel is initialized
 
-    private val _workspace: MutableStateFlow<Workspace?> = MutableStateFlow(null)
-    val workspace: StateFlow<Workspace?> = _workspace.asStateFlow()
+    private val _workspaceModel: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
+    val workspaceModel: StateFlow<WorkspaceModel?> = _workspaceModel.asStateFlow()
 
-    private val _projects: MutableStateFlow<List<Project>> = MutableStateFlow(emptyList())
-    val projects: StateFlow<List<Project>> = _projects.asStateFlow()
+    private val _projects: MutableStateFlow<List<ProjectModel>> = MutableStateFlow(emptyList())
+    val projects: StateFlow<List<ProjectModel>> = _projects.asStateFlow()
 
-    private val _members: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
-    val members: StateFlow<List<User>> = _members.asStateFlow()
+    private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
+    val members: StateFlow<List<UserModel>> = _members.asStateFlow()
 
     init {
         viewModelScope.launch {
             workspaceRepository.getWorkspaceById(workspaceId).collect { workspace ->
-                _workspace.value = workspace
+                _workspaceModel.value = workspace
             }
         }
 

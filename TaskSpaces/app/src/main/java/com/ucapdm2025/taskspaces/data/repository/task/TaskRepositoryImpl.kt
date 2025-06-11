@@ -1,9 +1,9 @@
 package com.ucapdm2025.taskspaces.data.repository.task
 
 import android.util.Log
-import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummy
-import com.ucapdm2025.taskspaces.data.dummy.tasksDummy
-import com.ucapdm2025.taskspaces.data.model.Task
+import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
+import com.ucapdm2025.taskspaces.data.dummy.tasksDummies
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,26 +11,26 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 class TaskRepositoryImpl : TaskRepository {
-    private val tasks = MutableStateFlow(tasksDummy)
+    private val tasks = MutableStateFlow(tasksDummies)
     private val bookmarkedTasks =
-        MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummy)
-    private val assignedTasks = MutableStateFlow(assignedTasksDummy)
+        MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummies)
+    private val assignedTasks = MutableStateFlow(assignedTasksDummies)
 
     private var autoIncrementId = tasks.value.size + 1;
 
-    override fun getTasksByProjectId(projectId: Int): Flow<List<Task>> {
+    override fun getTasksByProjectId(projectId: Int): Flow<List<TaskModel>> {
         return tasks.map { list -> list.filter { it.projectId == projectId } }
     }
 
-    override fun getBookmarkedTasks(): Flow<List<Task>> {
+    override fun getBookmarkedTasks(): Flow<List<TaskModel>> {
         return bookmarkedTasks.asStateFlow()
     }
 
-    override fun getAssignedTasks(userId: Int): Flow<List<Task>> {
+    override fun getAssignedTasks(userId: Int): Flow<List<TaskModel>> {
         return assignedTasks.asStateFlow()
     }
 
-    override fun getTaskById(id: Int): Flow<Task?> {
+    override fun getTaskById(id: Int): Flow<TaskModel?> {
         return tasks.map { list -> list.find { it.id == id } }
     }
 
@@ -41,8 +41,8 @@ class TaskRepositoryImpl : TaskRepository {
         status: String,
         breadcrumb: String,
         projectId: Int
-    ): Task {
-        val createdTask = Task(
+    ): TaskModel {
+        val createdTaskModel = TaskModel(
             id = autoIncrementId++,
             title = title,
             description = description,
@@ -54,8 +54,8 @@ class TaskRepositoryImpl : TaskRepository {
             updatedAt = LocalDateTime.now().toString()
         )
 
-        tasks.value = tasks.value + createdTask
-        return createdTask
+        tasks.value = tasks.value + createdTaskModel
+        return createdTaskModel
     }
 
     override suspend fun updateTask(
@@ -65,8 +65,8 @@ class TaskRepositoryImpl : TaskRepository {
         status: String,
         breadcrumb: String,
         projectId: Int
-    ): Task {
-        val updatedTask = Task(
+    ): TaskModel {
+        val updatedTaskModel = TaskModel(
             id = id,
             title = title,
             description = description,
@@ -79,12 +79,12 @@ class TaskRepositoryImpl : TaskRepository {
         )
 
         tasks.value = tasks.value.map {
-            if (it.id == updatedTask.id) updatedTask else it
+            if (it.id == updatedTaskModel.id) updatedTaskModel else it
         }
 
         Log.d("test1", tasks.value.toString())
 
-        return updatedTask
+        return updatedTaskModel
     }
 
     override suspend fun deleteTask(id: Int): Boolean {

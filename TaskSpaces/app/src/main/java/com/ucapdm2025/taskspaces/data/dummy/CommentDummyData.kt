@@ -1,9 +1,9 @@
 package com.ucapdm2025.taskspaces.data.dummy
 
-import com.ucapdm2025.taskspaces.data.model.Comment
+import com.ucapdm2025.taskspaces.data.model.CommentModel
 
-val commentsDummy: List<Comment> = listOf(
-    Comment(
+val commentsDummies: List<CommentModel> = listOf(
+    CommentModel(
         id = 1,
         content = "This is the first comment.",
         authorId = 1,
@@ -11,7 +11,7 @@ val commentsDummy: List<Comment> = listOf(
         createdAt = "2023-10-01T12:00:00Z",
         updatedAt = "2023-10-01T12:00:00Z"
     ),
-    Comment(
+    CommentModel(
         id = 2,
         content = "This is the second comment.",
         authorId = 2,
@@ -19,7 +19,7 @@ val commentsDummy: List<Comment> = listOf(
         createdAt = "2023-10-02T12:00:00Z",
         updatedAt = "2023-10-02T12:00:00Z"
     ),
-    Comment(
+    CommentModel(
         id = 3,
         content = "This is the third comment.",
         authorId = 3,

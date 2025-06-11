@@ -1,11 +1,9 @@
 package com.ucapdm2025.taskspaces.data.dummy
 
-import com.ucapdm2025.taskspaces.data.model.Tag
-import com.ucapdm2025.taskspaces.data.model.Task
-import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 
-val tasksDummy: List<Task> = listOf(
-    Task(
+val tasksDummies: List<TaskModel> = listOf(
+    TaskModel(
         id = 1,
         breadcrumb = "Workspace 1 / Project 1",
         title = "Task 1",
@@ -16,7 +14,7 @@ val tasksDummy: List<Task> = listOf(
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
-    Task(
+    TaskModel(
         id = 2,
         breadcrumb = "Workspace 1 / Project 1",
         title = "Task 2",
@@ -27,7 +25,7 @@ val tasksDummy: List<Task> = listOf(
         createdAt = "2023-10-02T00:00:00Z",
         updatedAt = "2023-10-02T00:00:00Z"
     ),
-    Task(
+    TaskModel(
         id = 3,
         breadcrumb = "Workspace 1 / Project 1",
         title = "Task 3",
@@ -40,8 +38,8 @@ val tasksDummy: List<Task> = listOf(
     )
 )
 
-val bookmarkedTasksDummy: List<Task> = listOf(
-    Task(
+val bookmarkedTasksDummies: List<TaskModel> = listOf(
+    TaskModel(
         id = 3,
         breadcrumb = "Workspace 3 / Project 3",
         title = "Task 3",
@@ -52,7 +50,7 @@ val bookmarkedTasksDummy: List<Task> = listOf(
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
-    Task(
+    TaskModel(
         id = 4,
         breadcrumb = "Workspace 1 / Project 1",
         title = "Task 4",
@@ -63,7 +61,7 @@ val bookmarkedTasksDummy: List<Task> = listOf(
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
-    Task(
+    TaskModel(
         id = 5,
         breadcrumb = "Workspace 2 / Project 2",
         title = "Task 5",
@@ -76,8 +74,8 @@ val bookmarkedTasksDummy: List<Task> = listOf(
     )
 )
 
-val assignedTasksDummy: List<Task> = listOf(
-    Task(
+val assignedTasksDummies: List<TaskModel> = listOf(
+    TaskModel(
         id = 6,
         breadcrumb = "Workspace 1 / Project 1",
         title = "Task 6",
@@ -88,7 +86,7 @@ val assignedTasksDummy: List<Task> = listOf(
         createdAt = "2023-10-01T00:00:00Z",
         updatedAt = "2023-10-01T00:00:00Z"
     ),
-    Task(
+    TaskModel(
         id = 7,
         breadcrumb = "Workspace 2 / Project 2",
         title = "Task 7",

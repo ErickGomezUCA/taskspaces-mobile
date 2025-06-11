@@ -1,9 +1,9 @@
 package com.ucapdm2025.taskspaces.data.dummy
 
-import com.ucapdm2025.taskspaces.data.model.Project
+import com.ucapdm2025.taskspaces.data.model.ProjectModel
 
-val projectsDummy: List<Project> = listOf(
-    Project(
+val projectsDummies: List<ProjectModel> = listOf(
+    ProjectModel(
         id = 1,
         title = "Project 1",
         workspaceId = 1,
@@ -11,7 +11,7 @@ val projectsDummy: List<Project> = listOf(
         createdAt = "2023-10-01T12:00:00Z",
         updatedAt = "2023-10-01T12:00:00Z"
     ),
-    Project(
+    ProjectModel(
         id = 2,
         title = "Project 2",
         workspaceId = 2,
@@ -19,7 +19,7 @@ val projectsDummy: List<Project> = listOf(
         createdAt = "2023-10-02T12:00:00Z",
         updatedAt = "2023-10-02T12:00:00Z"
     ),
-    Project(
+    ProjectModel(
         id = 3,
         title = "Project 3",
         workspaceId = 3,

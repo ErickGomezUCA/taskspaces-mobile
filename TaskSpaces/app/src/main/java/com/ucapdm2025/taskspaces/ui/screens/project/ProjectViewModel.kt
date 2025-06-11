@@ -3,13 +3,12 @@ package com.ucapdm2025.taskspaces.ui.screens.project
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.ucapdm2025.taskspaces.data.model.Project
-import com.ucapdm2025.taskspaces.data.model.Task
+import com.ucapdm2025.taskspaces.data.model.ProjectModel
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
-import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,16 +24,16 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
-    private val _project: MutableStateFlow<Project?> = MutableStateFlow(null)
-    val project: StateFlow<Project?> = _project
+    private val _projectModel: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
+    val projectModel: StateFlow<ProjectModel?> = _projectModel
 
-    private val _tasks: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
-    val tasks: StateFlow<List<Task>> = _tasks
+    private val _tasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
+    val tasks: StateFlow<List<TaskModel>> = _tasks
 
     init {
         viewModelScope.launch {
             projectRepository.getProjectById(projectId).collect { project ->
-                _project.value = project
+                _projectModel.value = project
             }
         }
 
@@ -53,7 +52,7 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
                 description = description,
                 deadline = "",
                 status = status,
-                breadcrumb = "Workspace 1 / ${project.value?.title}",
+                breadcrumb = "Workspace 1 / ${projectModel.value?.title}",
                 projectId = projectId
             )
         }

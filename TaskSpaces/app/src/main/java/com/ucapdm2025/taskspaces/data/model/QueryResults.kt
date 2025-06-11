@@ -1,15 +1,15 @@
 package com.ucapdm2025.taskspaces.data.model
 
 data class QueryResults(
-    val workspaces: List<Workspace>? = null,
-    val projects: List<Project>? = null,
-    val tasks: List<Task>? = null,
-    val users: List<User>? = null
+    val workspaceModels: List<WorkspaceModel>? = null,
+    val projectModels: List<ProjectModel>? = null,
+    val taskModels: List<TaskModel>? = null,
+    val userModels: List<UserModel>? = null
 ) {
     fun isEmpty(): Boolean {
-        return workspaces.isNullOrEmpty() &&
-                projects.isNullOrEmpty() &&
-                tasks.isNullOrEmpty() &&
-                users.isNullOrEmpty()
+        return workspaceModels.isNullOrEmpty() &&
+                projectModels.isNullOrEmpty() &&
+                taskModels.isNullOrEmpty() &&
+                userModels.isNullOrEmpty()
     }
 }

@@ -1,6 +1,6 @@
 package com.ucapdm2025.taskspaces.data.model
 
-data class Workspace(
+data class WorkspaceModel(
     override val id: Int,
     val title: String,
     val ownerId: Int,

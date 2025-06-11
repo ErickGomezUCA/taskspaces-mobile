@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -36,7 +37,7 @@ data class Tag(
  * @param tag The [Tag] object containing the title and color to be displayed.
  */
 @Composable
-fun Tag(tag: Tag) {
+fun Tag(tag: TagModel) {
     Row(
         modifier = Modifier
             .border(1.dp, tag.color, RoundedCornerShape(8.dp))
@@ -62,7 +63,16 @@ fun Tag(tag: Tag) {
 fun TagPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            Tag(tag = Tag("Backend", Color.Blue))
+            Tag(
+                tag = TagModel(
+                    id = 1,
+                    title = "Backend",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
+            )
         }
     }
 }
@@ -77,7 +87,16 @@ fun TagPreviewLight() {
 fun TagPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            Tag(tag = Tag("Backend", Color.Blue))
+            Tag(
+                tag = TagModel(
+                    id = 2,
+                    title = "Backend",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
+            )
         }
     }
 }

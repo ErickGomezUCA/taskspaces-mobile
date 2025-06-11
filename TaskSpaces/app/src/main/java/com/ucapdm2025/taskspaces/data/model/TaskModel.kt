@@ -1,6 +1,6 @@
 package com.ucapdm2025.taskspaces.data.model
 
-data class Task (
+data class TaskModel (
     override val id: Int,
     val breadcrumb: String,
     val title: String,

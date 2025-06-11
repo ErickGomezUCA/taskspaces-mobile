@@ -2,8 +2,8 @@ package com.ucapdm2025.taskspaces.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucapdm2025.taskspaces.data.model.Task
-import com.ucapdm2025.taskspaces.data.model.Workspace
+import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
@@ -18,15 +18,15 @@ class HomeViewModel: ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
-    private val _workspaces: MutableStateFlow<List<Workspace>> = MutableStateFlow(emptyList())
-    val workspaces: StateFlow<List<Workspace>> = _workspaces.asStateFlow()
+    private val _workspaces: MutableStateFlow<List<WorkspaceModel>> = MutableStateFlow(emptyList())
+    val workspaces: StateFlow<List<WorkspaceModel>> = _workspaces.asStateFlow()
 
-    private val _workspacesSharedWithMe: MutableStateFlow<List<Workspace>> =
+    private val _workspacesSharedWithMe: MutableStateFlow<List<WorkspaceModel>> =
         MutableStateFlow(emptyList())
-    val workspacesSharedWithMe: StateFlow<List<Workspace>> = _workspacesSharedWithMe.asStateFlow()
+    val workspacesSharedWithMe: StateFlow<List<WorkspaceModel>> = _workspacesSharedWithMe.asStateFlow()
 
-    private val _assignedTasks: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
-    val assignedTasks: StateFlow<List<Task>> = _assignedTasks.asStateFlow()
+    private val _assignedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
+    val assignedTasks: StateFlow<List<TaskModel>> = _assignedTasks.asStateFlow()
 
     init {
         viewModelScope.launch {

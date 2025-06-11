@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ucapdm2025.taskspaces.data.model.Task
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
@@ -31,13 +31,13 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * and a button to add a new task.
  *
  * @param status The current status category represented by this column.
- * @param tasks A list of [Task] objects to be displayed under the given status.
+ * @param tasks A list of [TaskModel] objects to be displayed under the given status.
  * @param onAddTaskClick A lambda function triggered when the "Add New Task" button is clicked.
  */
 @Composable
 fun TaskStatusColumn(
     status: StatusVariations,
-    tasks: List<Task>,
+    tasks: List<TaskModel>,
     onAddTaskClick: () -> Unit,
 ) {
     Column(
@@ -101,14 +101,14 @@ fun TaskStatusColumnPreviewLight() {
                 TaskStatusColumn(
                     status = StatusVariations.PENDING,
                     tasks = listOf(
-                        Task(
+                        TaskModel(
                             title = "Design login screen",
                             tags = listOf(
                                 Tag("UI", Color(0xFF2E88DD)),
                                 Tag("Priority", Color(0xFFDD972E))
                             )
                         ),
-                        Task(
+                        TaskModel(
                             title = "Connect API",
                             tags = listOf(
                                 Tag("Backend", Color(0xFF26AA5D))
@@ -142,14 +142,14 @@ fun TaskStatusColumnPreviewDark() {
                 TaskStatusColumn(
                     status = StatusVariations.PENDING,
                     tasks = listOf(
-                        Task(
+                        TaskModel(
                             title = "Design login screen",
                             tags = listOf(
                                 Tag("UI", Color(0xFF2E88DD)),
                                 Tag("Priority", Color(0xFFDD972E))
                             )
                         ),
-                        Task(
+                        TaskModel(
                             title = "Connect API",
                             tags = listOf(
                                 Tag("Backend", Color(0xFF26AA5D))

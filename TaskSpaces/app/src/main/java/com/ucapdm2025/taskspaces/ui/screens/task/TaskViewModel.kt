@@ -2,8 +2,8 @@ package com.ucapdm2025.taskspaces.ui.screens.task
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucapdm2025.taskspaces.data.model.Comment
-import com.ucapdm2025.taskspaces.data.model.Task
+import com.ucapdm2025.taskspaces.data.model.CommentModel
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
@@ -19,16 +19,16 @@ class TaskViewModel: ViewModel() {
 
     private val taskId = 1
 
-    private val _task: MutableStateFlow<Task?> = MutableStateFlow(null)
-    val task: StateFlow<Task?> = _task.asStateFlow()
+    private val _taskModel: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
+    val taskModel: StateFlow<TaskModel?> = _taskModel.asStateFlow()
 
-    private val _comments: MutableStateFlow<List<Comment>> = MutableStateFlow(emptyList())
-    val comments: StateFlow<List<Comment>> = _comments.asStateFlow()
+    private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
+    val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
     init {
         viewModelScope.launch {
             taskRepository.getTaskById(taskId).collect { task ->
-                _task.value = task
+                _taskModel.value = task
             }
         }
 
@@ -74,7 +74,7 @@ class TaskViewModel: ViewModel() {
 //    TODO: Define how this function should work in the viewmodel
     fun bookmarkTask() {
         viewModelScope.launch {
-            task.value?.let { task ->
+            taskModel.value?.let { task ->
                 taskRepository.bookmarkTask(task.id)
             }
         }

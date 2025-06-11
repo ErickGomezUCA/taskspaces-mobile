@@ -1,23 +1,23 @@
 package com.ucapdm2025.taskspaces.data.repository.comment
 
-import com.ucapdm2025.taskspaces.data.dummy.commentsDummy
-import com.ucapdm2025.taskspaces.data.model.Comment
+import com.ucapdm2025.taskspaces.data.dummy.commentsDummies
+import com.ucapdm2025.taskspaces.data.model.CommentModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 class CommentRepositoryImpl: CommentRepository {
-    private val comments = MutableStateFlow(commentsDummy)
+    private val comments = MutableStateFlow(commentsDummies)
 
     private var autoIncrementId = comments.value.size + 1
 
-    override fun getCommentsByTaskId(taskId: Int): Flow<List<Comment>> {
+    override fun getCommentsByTaskId(taskId: Int): Flow<List<CommentModel>> {
         return comments.map { list -> list.filter { it.taskId == taskId } }
     }
 
-    override suspend fun createComment(content: String, authorId: Int, taskId: Int): Comment {
-        val createdComment = Comment(
+    override suspend fun createComment(content: String, authorId: Int, taskId: Int): CommentModel {
+        val createdCommentModel = CommentModel(
             id = autoIncrementId++,
             content = content,
             authorId = authorId,
@@ -26,13 +26,13 @@ class CommentRepositoryImpl: CommentRepository {
             updatedAt = LocalDateTime.now().toString()
         )
 
-        comments.value = comments.value + createdComment
+        comments.value = comments.value + createdCommentModel
 
-        return createdComment
+        return createdCommentModel
     }
 
-    override suspend fun updateComment(id: Int, content: String, authorId: Int, taskId: Int): Comment {
-        val updatedComment = Comment(
+    override suspend fun updateComment(id: Int, content: String, authorId: Int, taskId: Int): CommentModel {
+        val updatedCommentModel = CommentModel(
             id = id,
             content = content,
             authorId = authorId,
@@ -42,10 +42,10 @@ class CommentRepositoryImpl: CommentRepository {
         )
 
         comments.value = comments.value.map {
-            if (it.id == updatedComment.id) updatedComment else it
+            if (it.id == updatedCommentModel.id) updatedCommentModel else it
         }
 
-        return updatedComment
+        return updatedCommentModel
     }
 
     override suspend fun deleteComment(id: Int): Boolean {

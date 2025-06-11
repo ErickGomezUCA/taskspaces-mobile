@@ -1,11 +1,12 @@
 package com.ucapdm2025.taskspaces.data.model
 
-data class User (
+import androidx.compose.ui.graphics.Color
+
+data class TagModel (
     override val id: Int,
-    val fullname: String,
-    val username: String,
-    val email: String,
-    val avatar: String,
+    val title: String,
+    val color: Color,
+    val projectId: Int,
     override val createdAt: String,
     override val updatedAt: String,
 ): BaseModel(id, createdAt, updatedAt)

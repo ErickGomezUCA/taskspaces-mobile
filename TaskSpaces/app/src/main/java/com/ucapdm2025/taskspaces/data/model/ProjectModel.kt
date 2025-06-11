@@ -1,10 +1,10 @@
 package com.ucapdm2025.taskspaces.data.model
 
-data class Comment(
+data class ProjectModel (
     override val id: Int,
-    val content: String,
-    val authorId: Int,
-    val taskId: Int,
+    val title: String,
+    val icon: String,
+    val workspaceId: Int,
     override val createdAt: String,
-    override val updatedAt: String,
+    override val updatedAt: String
 ): BaseModel(id, createdAt, updatedAt)

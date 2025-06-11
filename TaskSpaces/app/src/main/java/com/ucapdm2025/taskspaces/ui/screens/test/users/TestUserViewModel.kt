@@ -2,7 +2,7 @@ package com.ucapdm2025.taskspaces.ui.screens.test.users
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 class TestUserViewModel: ViewModel() {
     private val usersRepository: UserRepository = UserRepositoryImpl()
 
-    private val _users: MutableStateFlow<List<User>> = MutableStateFlow(emptyList())
-    val users: StateFlow<List<User>> = _users.asStateFlow()
+    private val _users: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
+    val users: StateFlow<List<UserModel>> = _users.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -25,16 +25,16 @@ class TestUserViewModel: ViewModel() {
         }
     }
 
-    fun getUserById(id: Int): User? {
-        var user: User? = null
+    fun getUserById(id: Int): UserModel? {
+        var userModel: UserModel? = null
 
         viewModelScope.launch {
             usersRepository.getUserById(id).collect { foundUser ->
-                user = foundUser
+                userModel = foundUser
             }
         }
 
-        return user
+        return userModel
     }
 
     fun createUser(fullname: String, username: String, email: String, avatar: String) {

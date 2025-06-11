@@ -39,7 +39,7 @@ fun ProjectScreen(
 ) {
     val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId))
 
-    val project = viewModel.project.collectAsStateWithLifecycle()
+    val project = viewModel.projectModel.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
 
     val pendingTasks = tasks.value.filter { it.status == "PENDING" }

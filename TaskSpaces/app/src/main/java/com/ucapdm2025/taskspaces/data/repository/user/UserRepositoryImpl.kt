@@ -1,7 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.user
 
-import com.ucapdm2025.taskspaces.data.dummy.usersDummy
-import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.data.dummy.usersDummies
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -9,14 +9,14 @@ import java.time.LocalDateTime
 
 // TODO: Replace dummy data with a real local database, or consuming from a remote API
 class UserRepositoryImpl : UserRepository {
-    private val users = MutableStateFlow(usersDummy)
+    private val users = MutableStateFlow(usersDummies)
     private var autoIncrementId = users.value.size + 1
 
-    override fun getUsers(): Flow<List<User>> {
+    override fun getUsers(): Flow<List<UserModel>> {
         return users.asStateFlow()
     }
 
-    override fun getUserById(id: Int): Flow<User?> {
+    override fun getUserById(id: Int): Flow<UserModel?> {
         return users.value.find { it.id == id }
             ?.let { MutableStateFlow(it) }
             ?: MutableStateFlow(null)
@@ -27,8 +27,8 @@ class UserRepositoryImpl : UserRepository {
         username: String,
         email: String,
         avatar: String
-    ): User {
-        val createdUser = User(
+    ): UserModel {
+        val createdUserModel = UserModel(
             id = autoIncrementId++,
             fullname = fullname,
             username = username,
@@ -38,8 +38,8 @@ class UserRepositoryImpl : UserRepository {
             updatedAt = LocalDateTime.now().toString()
         )
 
-        users.value = users.value + createdUser
-        return createdUser
+        users.value = users.value + createdUserModel
+        return createdUserModel
     }
 
     override suspend fun updateUser(
@@ -48,8 +48,8 @@ class UserRepositoryImpl : UserRepository {
         username: String,
         email: String,
         avatar: String
-    ): User {
-        val updatedUser = User(
+    ): UserModel {
+        val updatedUserModel = UserModel(
             id = id,
             fullname = fullname,
             username = username,
@@ -60,9 +60,9 @@ class UserRepositoryImpl : UserRepository {
         )
 
         users.value = users.value.map {
-            if (it.id == updatedUser.id) updatedUser else it
+            if (it.id == updatedUserModel.id) updatedUserModel else it
         }
-        return updatedUser
+        return updatedUserModel
     }
 
     override suspend fun deleteUser(id: Int): Boolean {

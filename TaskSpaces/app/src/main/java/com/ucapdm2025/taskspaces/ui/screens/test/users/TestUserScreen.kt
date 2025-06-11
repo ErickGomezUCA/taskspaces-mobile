@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ucapdm2025.taskspaces.data.model.User
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -52,7 +52,7 @@ fun TestUserScreen(
 //    Other states:
 //    1. Get user by ID
     val selectedUserId: MutableState<String> = remember { mutableStateOf("") }
-    val user: MutableState<User?> = remember { mutableStateOf(null) }
+    val userModel: MutableState<UserModel?> = remember { mutableStateOf(null) }
 
 //    2. Create user
     val mutableUserInfo: MutableState<MutableUser> = remember {
@@ -104,22 +104,22 @@ fun TestUserScreen(
 
             Button(
                 onClick = {
-                    user.value = viewModel.getUserById(selectedUserId.value.toInt())
+                    userModel.value = viewModel.getUserById(selectedUserId.value.toInt())
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Search")
             }
 
-            if (user.value != null) {
+            if (userModel.value != null) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Text(text = "id: ${user.value!!.id}")
-                    Text(text = "fullname: ${user.value!!.fullname}")
-                    Text(text = "username: ${user.value!!.username}")
-                    Text(text = "email: ${user.value!!.email}")
+                    Text(text = "id: ${userModel.value!!.id}")
+                    Text(text = "fullname: ${userModel.value!!.fullname}")
+                    Text(text = "username: ${userModel.value!!.username}")
+                    Text(text = "email: ${userModel.value!!.email}")
                 }
             } else {
                 Text(text = "User not found")

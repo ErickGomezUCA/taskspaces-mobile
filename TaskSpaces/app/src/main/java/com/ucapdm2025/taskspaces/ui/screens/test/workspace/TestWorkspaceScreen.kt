@@ -46,7 +46,7 @@ fun TestWorkspaceScreen(
 ) {
     val workspaceId = 1;
 
-    val workspace = viewModel.workspace.collectAsStateWithLifecycle()
+    val workspace = viewModel.workspaceModel.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
 
