@@ -17,11 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * A composable function that displays a column of tasks grouped by their status.
@@ -102,17 +105,58 @@ fun TaskStatusColumnPreviewLight() {
                     status = StatusVariations.PENDING,
                     tasks = listOf(
                         TaskModel(
+                            id = 1,
+                            breadcrumb = "",
                             title = "Design login screen",
+                            description = "",
+                            deadline = LocalDateTime.now(),
+                            status = StatusVariations.PENDING,
                             tags = listOf(
-                                Tag("UI", Color(0xFF2E88DD)),
-                                Tag("Priority", Color(0xFFDD972E))
-                            )
+                                TagModel(
+                                    id = 1,
+                                    title = "UI",
+                                    color = Color(0xFF2E88DD),
+                                    projectId = 1,
+                                    createdAt = "",
+                                    updatedAt = ""
+                                ),
+                                TagModel(
+                                    id = 2,
+                                    title = "Priority",
+                                    color = Color(0xFFDD972E),
+                                    projectId = 1,
+                                    createdAt = "",
+                                    updatedAt = ""
+                                )
+                            ),
+                            assignedMembers = emptyList(),
+                            comments = emptyList(),
+                            projectId = 1,
+                            createdAt = "",
+                            updatedAt = ""
                         ),
                         TaskModel(
+                            id = 2,
+                            breadcrumb = "",
                             title = "Connect API",
+                            description = "",
+                            deadline = LocalDateTime.now(),
+                            status = StatusVariations.PENDING,
                             tags = listOf(
-                                Tag("Backend", Color(0xFF26AA5D))
-                            )
+                                TagModel(
+                                    id = 1,
+                                    title = "Backend",
+                                    color = Color(0xFF26AA5D),
+                                    projectId = 1,
+                                    createdAt = "",
+                                    updatedAt = ""
+                                )
+                            ),
+                            assignedMembers = emptyList(),
+                            comments = emptyList(),
+                            projectId = 1,
+                            createdAt = "",
+                            updatedAt = ""
                         )
                     ),
                     onAddTaskClick = {},
@@ -143,17 +187,58 @@ fun TaskStatusColumnPreviewDark() {
                     status = StatusVariations.PENDING,
                     tasks = listOf(
                         TaskModel(
+                            id = 1,
+                            breadcrumb = "",
                             title = "Design login screen",
+                            description = "",
+                            deadline = LocalDateTime.now(),
+                            status = StatusVariations.PENDING,
                             tags = listOf(
-                                Tag("UI", Color(0xFF2E88DD)),
-                                Tag("Priority", Color(0xFFDD972E))
-                            )
+                                TagModel(
+                                    id = 1,
+                                    title = "UI",
+                                    color = Color(0xFF2E88DD),
+                                    projectId = 1,
+                                    createdAt = "",
+                                    updatedAt = ""
+                                ),
+                                TagModel(
+                                    id = 2,
+                                    title = "Priority",
+                                    color = Color(0xFFDD972E),
+                                    projectId = 1,
+                                    createdAt = "",
+                                    updatedAt = ""
+                                )
+                            ),
+                            assignedMembers = emptyList(),
+                            comments = emptyList(),
+                            projectId = 1,
+                            createdAt = "",
+                            updatedAt = ""
                         ),
                         TaskModel(
+                            id = 2,
+                            breadcrumb = "",
                             title = "Connect API",
+                            description = "",
+                            deadline = LocalDateTime.now(),
+                            status = StatusVariations.PENDING,
                             tags = listOf(
-                                Tag("Backend", Color(0xFF26AA5D))
-                            )
+                                TagModel(
+                                    id = 1,
+                                    title = "Backend",
+                                    color = Color(0xFF26AA5D),
+                                    projectId = 1,
+                                    createdAt = "",
+                                    updatedAt = ""
+                                )
+                            ),
+                            assignedMembers = emptyList(),
+                            comments = emptyList(),
+                            projectId = 1,
+                            createdAt = "",
+                            updatedAt = ""
                         )
                     ),
                     onAddTaskClick = {},

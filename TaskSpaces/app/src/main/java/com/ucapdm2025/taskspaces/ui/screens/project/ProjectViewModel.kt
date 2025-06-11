@@ -9,9 +9,11 @@ import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
+import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 /**
  * ViewModel for managing a single project's data and its associated tasks.
@@ -45,12 +47,12 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     }
 
     // Add more fields here
-    fun createTask(title: String, description: String, status: String, projectId: Int) {
+    fun createTask(title: String, description: String, status: StatusVariations, projectId: Int) {
         viewModelScope.launch {
             taskRepository.createTask(
                 title = title,
                 description = description,
-                deadline = "",
+                deadline = LocalDateTime.now(),
                 status = status,
                 breadcrumb = "Workspace 1 / ${projectModel.value?.title}",
                 projectId = projectId

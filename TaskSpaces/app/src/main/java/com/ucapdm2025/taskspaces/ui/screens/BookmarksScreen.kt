@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.data.model.TagModel
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.SortBySelector
 import com.ucapdm2025.taskspaces.ui.components.general.SortOption
-import com.ucapdm2025.taskspaces.ui.components.general.Tag
-import com.ucapdm2025.taskspaces.ui.components.projects.Task
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -40,65 +40,66 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun BookmarksScreen(
-    bookmarks: List<Task> = sampleTasks(),
-    searchQuery: String = "" ) { //change to show no results
+    bookmarks: List<TaskModel> = sampleTasks(),
+    searchQuery: String = ""
+) { //change to show no results
     val filtered = bookmarks.filter {
         it.title.contains(searchQuery, ignoreCase = true)
     }
-        when {
-            bookmarks.isEmpty() -> {
-                EmptyBookmarks()
-            }
-
-            filtered.isEmpty() -> {
-                NoResults()
-            }
-
-            else -> {
-                BookmarkList(filtered)
-            }
+    when {
+        bookmarks.isEmpty() -> {
+            EmptyBookmarks()
         }
-        // TODO: Replace sampleTasks() with actual ViewModel-backed state
-        // TODO: Hook into navigation when a task is clicked (from TaskCard)
+
+        filtered.isEmpty() -> {
+            NoResults()
+        }
+
+        else -> {
+            BookmarkList(filtered)
+        }
     }
+    // TODO: Replace sampleTasks() with actual ViewModel-backed state
+    // TODO: Hook into navigation when a task is clicked (from TaskCard)
+}
 
 /**
  * Displays a centered icon and message indicating that no bookmarks have been saved.
  */
 @Composable
 fun EmptyBookmarks() {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FeedbackIcon(
-                icon = Icons.Default.BookmarkBorder,
-                title = "Navigate through your tasks easily with your bookmarks"
-            )
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        FeedbackIcon(
+            icon = Icons.Default.BookmarkBorder,
+            title = "Navigate through your tasks easily with your bookmarks"
+        )
     }
+}
 
 /**
  * Displays a centered icon and message indicating that no bookmarks have been saved.
  */
 @Composable
 fun NoResults() {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FeedbackIcon(
-                icon = Icons.Outlined.Close,
-                title = "There are no results with that term, try with another one"
-            )
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        FeedbackIcon(
+            icon = Icons.Outlined.Close,
+            title = "There are no results with that term, try with another one"
+        )
     }
+}
 
 /**
  * Displays a list of bookmarked tasks inside a styled container.
@@ -106,52 +107,52 @@ fun NoResults() {
  * @param bookmarks List of tasks to display as cards
  */
 @Composable
-fun BookmarkList(bookmarks: List<Task>) {
+fun BookmarkList(bookmarks: List<TaskModel>) {
     var sortOption by remember { mutableStateOf(SortOption.NAME) }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
-        ) {
-            SortBySelector(
-                selected = sortOption,
-                onSelect = { sortOption = it }
-            )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+    ) {
+        SortBySelector(
+            selected = sortOption,
+            onSelect = { sortOption = it }
+        )
 
-            // TODO: Apply real sorting logic later based on sortOption
+        // TODO: Apply real sorting logic later based on sortOption
 
-            Container(title = "Workspace 1 / Project 1") {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    bookmarks.forEach { task ->
-                        TaskCard(
-                            title = task.title,
-                            tags = task.tags
-                            // TODO: Add onClick to navigate to task details
-                        )
-                    }
+        Container(title = "Workspace 1 / Project 1") {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                bookmarks.forEach { task ->
+                    TaskCard(
+                        title = task.title,
+                        tags = task.tags
+                        // TODO: Add onClick to navigate to task details
+                    )
                 }
             }
         }
     }
+}
 
 
-    // Simulated data
-    fun sampleTasks(): List<Task> = listOf(
-        Task(
-            title = "Task Title",
-            tags = listOf(
-                Tag("Tag", Color.Red),
-                Tag("Tag", Color.Blue)
-            )
+// Simulated data
+fun sampleTasks(): List<TaskModel> = listOf<TaskModel>(
+    TaskModel(
+        id = 1,
+        title = "Task Title",
+        projectId = 1
+    ),
+    TaskModel(
+        id = 2,
+        title = "Task Title",
+        tags = listOf<TagModel>(
+            TagModel(id = 1, title = "Tag", color = Color.Red, projectId = 1),
+            TagModel(id = 2, title = "Tag", color = Color.Blue, projectId = 2)
         ),
-        Task(
-            title = "Task Title",
-            tags = listOf(
-                Tag("Tag", Color.Red),
-                Tag("Tag", Color.Blue)
-            )
-        )
+        projectId = 2
     )
+)
 
 /**
  * Preview of the bookmarks screen with content.

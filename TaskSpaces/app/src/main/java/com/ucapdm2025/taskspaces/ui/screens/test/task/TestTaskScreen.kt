@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -115,7 +116,12 @@ fun TestTaskScreen(
                         id = taskId,
                         title = mutableTaskInfo.value.title.value,
                         description = mutableTaskInfo.value.description.value,
-                        status = mutableTaskInfo.value.status.value,
+                        status = when (mutableTaskInfo.value.status.value) {
+                            "PENDING" -> StatusVariations.PENDING
+                            "DOING" -> StatusVariations.DOING
+                            "DONE" -> StatusVariations.DONE
+                            else -> StatusVariations.PENDING
+                        },
                         projectId = mutableTaskInfo.value.projectId.value
                     )
 

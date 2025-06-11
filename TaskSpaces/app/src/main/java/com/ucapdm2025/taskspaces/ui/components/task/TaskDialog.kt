@@ -43,6 +43,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.data.dummy.tasksDummies
+import com.ucapdm2025.taskspaces.data.dummy.usersDummies
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatus
@@ -52,18 +55,6 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-/**
- * Data class representing a user in the system.
- *
- * @property id Unique identifier of the user.
- * @property name Display name of the user.
- * @property avatarResId Resource ID for the user's avatar image.
- */
-data class User(
-    val id: Int,
-    val name: String,
-    val avatarResId: Int
-)
 
 /**
  * Data class representing a timer associated with a user.
@@ -75,80 +66,6 @@ data class UserTimer(
     val time: String,
     val isRunning: Boolean
 )
-
-/**
- * Data class representing a comment made on a task.
- *
- * @property userId ID of the user who made the comment.
- * @property time Timestamp or relative time when the comment was posted (e.g., "2h ago").
- * @property content The textual content of the comment.
- */
-data class Comment(
-    val userId: Int,
-    val time: String,
-    val content: String
-)
-
-/**
- * Data class representing a task within a project.
- *
- * @property breadcrumb A string representing the task's location or category path (e.g., "Marketing / Landing Page").
- * @property title The title or name of the task.
- * @property status The current status of the task, represented by [StatusVariations].
- * @property description A detailed description of the task.
- * @property tags A list of [Tag] objects used to label or categorize the task.
- * @property images A list of drawable resource IDs representing images attached to the task.
- * @property deadline The deadline for the task, represented as a [LocalDateTime].
- * @property userTimer Optional [UserTimer] object tracking time spent on the task.
- * @property assignedMembersIds A list of user IDs assigned to the task.
- * @property comments A list of [Comment] objects associated with the task.
- */
-data class Task(
-    val breadcrumb: String,
-    val title: String,
-    val status: StatusVariations,
-    val description: String,
-    val tags: List<Tag>,
-    val images: List<Int>,
-    val deadline: LocalDateTime,
-    val userTimer: UserTimer?,
-    val assignedMembersIds: List<Int>,
-    val comments: List<Comment>
-)
-
-/**
- * A list of dummy [User] objects used for testing or preview purposes.
- *
- * Each user includes a unique ID, name, and a placeholder avatar resource.
- */
-val dummyUsers = listOf(
-    User(id = 1, name = "Laura", avatarResId = android.R.drawable.ic_menu_camera),
-    User(id = 2, name = "Marco", avatarResId = android.R.drawable.ic_menu_camera),
-    User(id = 3, name = "Juan", avatarResId = android.R.drawable.ic_menu_camera)
-)
-
-/**
- * A dummy [Task] object used for testing or preview purposes.
- *
- * This task includes sample data such as title, description, tags, deadline,
- * assigned users, and comments to simulate a real task in the UI.
- */
-val dummyTask = Task(
-    breadcrumb = "Marketing / Landing Page",
-    title = "Design Hero Section",
-    status = StatusVariations.PENDING,
-    description = "Create an engaging hero section for the new landing page including images and a catchy headline.",
-    tags = listOf(Tag("UI", Color(0xFF2E88DD)), Tag("Urgent", Color(0xFFDD2E2E))),
-    images = listOf(/* TODO: Replace with drawable resource ids */),
-    deadline = LocalDateTime.of(2025, 12, 7, 22, 0),
-    userTimer = UserTimer(time = "12:34", isRunning = true),
-    assignedMembersIds = listOf(1, 2),
-    comments = listOf(
-        Comment(userId = 1, time = "2h ago", content = "Looks great so far!"),
-        Comment(userId = 2, time = "1h ago", content = "I'll handle the animation part.")
-    )
-)
-
 
 /**
  * Composable that displays a detailed dialog for a given [Task].
@@ -168,7 +85,7 @@ val dummyTask = Task(
  * @param task The [Task] to display and edit in the dialog.
  */
 @Composable
-fun TaskDialog(task: Task) {
+fun TaskDialog(task: TaskModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -226,7 +143,7 @@ fun TaskDialog(task: Task) {
                 )
             }
             TextField(
-                value = task.description,
+                value = task.description ?: "",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth()
             )
@@ -282,15 +199,15 @@ fun TaskDialog(task: Task) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                task.images.forEach {
-                    Image(
-                        painter = painterResource(id = it),
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-            }
+//            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+//                task.images.forEach {
+//                    Image(
+//                        painter = painterResource(id = it),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(48.dp)
+//                    )
+//                }
+//            }
             OutlinedButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier.fillMaxWidth(),
@@ -319,7 +236,7 @@ fun TaskDialog(task: Task) {
             }
             Column {
                 val formatter = DateTimeFormatter.ofPattern("d/MMM/yyyy - hh:mm a")
-                val dateText = task.deadline.format(formatter)
+                val dateText = task.deadline?.format(formatter)
                 val weeksLeft =
                     java.time.Duration.between(LocalDateTime.now(), task.deadline).toDays() / 7
                 Row(
@@ -333,7 +250,7 @@ fun TaskDialog(task: Task) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        dateText,
+                        dateText ?: "",
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(4.dp),
                         color = MaterialTheme.colorScheme.onBackground
@@ -371,43 +288,43 @@ fun TaskDialog(task: Task) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-            if (task.userTimer == null) {
-                OutlinedButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                ) {
-                    Text("+ Add Timer")
-                }
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            1.dp,
-                            MaterialTheme.colorScheme.onBackground,
-                            RoundedCornerShape(8.dp)
-                        ),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = task.userTimer.time,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                OutlinedButton(
-                    onClick = { /* TODO: Pause, resume */ },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(if (task.userTimer.isRunning) "Pause" else "Resume")
-                }
-            }
+//            if (task.userTimer == null) {
+//                OutlinedButton(
+//                    onClick = { /*TODO*/ },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(8.dp),
+//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+//                ) {
+//                    Text("+ Add Timer")
+//                }
+//            } else {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .border(
+//                            1.dp,
+//                            MaterialTheme.colorScheme.onBackground,
+//                            RoundedCornerShape(8.dp)
+//                        ),
+//                    horizontalArrangement = Arrangement.Center
+//                ) {
+//                    Text(
+//                        text = task.userTimer.time,
+//                        fontSize = 18.sp,
+//                        color = MaterialTheme.colorScheme.onBackground,
+//                        modifier = Modifier.padding(4.dp)
+//                    )
+//                }
+//                Spacer(modifier = Modifier.width(8.dp))
+//                OutlinedButton(
+//                    onClick = { /* TODO: Pause, resume */ },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(8.dp),
+//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+//                ) {
+//                    Text(if (task.userTimer.isRunning) "Pause" else "Resume")
+//                }
+//            }
         }
 
         //MEMBERS
@@ -427,13 +344,12 @@ fun TaskDialog(task: Task) {
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                task.assignedMembersIds.forEach { memberId ->
-                    val user = dummyUsers.find { it.id == memberId }
-                    val avatarRes = user?.avatarResId ?: android.R.drawable.ic_menu_help
+                task.assignedMembers.forEach { user ->
+                    val avatarRes = 1
 
                     Image(
                         painter = painterResource(id = avatarRes),
-                        contentDescription = user?.name ?: "Unknown user",
+                        contentDescription = user.fullname,
                         modifier = Modifier
                             .size(36.dp)
                             .background(ExtendedTheme.colors.primary50, CircleShape)
@@ -468,8 +384,8 @@ fun TaskDialog(task: Task) {
             }
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 task.comments.forEach { comment ->
-                    val user = dummyUsers.find { it.id == comment.userId }
-                    val avatarRes = user?.avatarResId ?: android.R.drawable.ic_menu_help
+                    val user = usersDummies.find { it.id == comment.authorId }
+                    val avatarRes = 1
 
                     Row(
                         verticalAlignment = Alignment.Top,
@@ -478,7 +394,7 @@ fun TaskDialog(task: Task) {
                     ) {
                         Image(
                             painter = painterResource(id = avatarRes),
-                            contentDescription = user?.name ?: "User",
+                            contentDescription = user?.username ?: "User",
                             modifier = Modifier
                                 .size(36.dp)
                                 .background(ExtendedTheme.colors.primary50, CircleShape)
@@ -486,13 +402,13 @@ fun TaskDialog(task: Task) {
                         Column {
                             Row {
                                 Text(
-                                    text = user?.name ?: "Unknown",
+                                    text = user?.username ?: "Unknown",
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = comment.time,
+                                    text = comment.createdAt,
                                     color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 12.sp
                                 )
@@ -541,7 +457,7 @@ fun TaskDialog(task: Task) {
 fun TaskDialogPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            TaskDialog(task = dummyTask)
+            TaskDialog(task = tasksDummies[0])
         }
     }
 }
@@ -557,7 +473,7 @@ fun TaskDialogPreviewLight() {
 fun TaskDialogPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            TaskDialog(task = dummyTask)
+            TaskDialog(task = tasksDummies[0])
         }
     }
 }

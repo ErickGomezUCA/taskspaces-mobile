@@ -8,10 +8,12 @@ import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
+import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class TaskViewModel: ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
@@ -39,13 +41,13 @@ class TaskViewModel: ViewModel() {
         }
     }
 
-    fun updateTask(id: Int, title: String, description: String, status: String, projectId: Int) {
+    fun updateTask(id: Int, title: String, description: String, status: StatusVariations, projectId: Int) {
         viewModelScope.launch {
             taskRepository.updateTask(
                 id = id,
                 title = title,
                 description = description,
-                deadline = "",
+                deadline = LocalDateTime.now(),
                 status = status,
                 breadcrumb = "Workspace 1 / Project 1",
                 projectId = projectId

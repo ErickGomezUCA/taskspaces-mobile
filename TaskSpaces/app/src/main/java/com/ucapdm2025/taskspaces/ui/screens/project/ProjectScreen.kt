@@ -11,10 +11,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.data.model.TagModel
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
-import com.ucapdm2025.taskspaces.ui.components.projects.Task
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -42,9 +43,9 @@ fun ProjectScreen(
     val project = viewModel.projectModel.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
 
-    val pendingTasks = tasks.value.filter { it.status == "PENDING" }
-    val doingTasks = tasks.value.filter { it.status == "DOING" }
-    val doneTasks = tasks.value.filter { it.status == "DONE" }
+    val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
+    val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
+    val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
 
     ProjectsBackground {
         LazyRow(
@@ -88,25 +89,70 @@ fun ProjectScreen(
 @Composable
 fun ProjectsScreenPreviewLight() {
 //    TODO: Resolve these problems with task tag in model
-    val pendingTasks = listOf(
-        Task("Revisar requisitos", listOf(Tag("Análisis", Color(0xFF2E88DD)))),
-        Task("Diseñar UI", listOf(Tag("UI", Color(0xFF2E88DD))))
+    val pendingTasks = listOf<TaskModel>(
+        TaskModel(
+            id = 1,
+            title = "Revisar requisitos",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "Análisis",
+                    color = Color(0xFF2E88DD),
+                    projectId = 1
+                )
+            ),
+            projectId = 1,
+        ),
+        TaskModel(
+            id = 2,
+            title = "Diseñar UI",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "UI",
+                    color = Color(0xFF2E88DD),
+                    projectId = 1
+                )
+            ),
+            projectId = 1
+        )
     )
 
-    val doingTasks = listOf(
-        Task("Desarrollar login", listOf(Tag("Backend", Color(0xFFDD972E))))
+    val doingTasks = listOf<TaskModel>(
+        TaskModel(
+            id = 3,
+            title = "Desarrollar login",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "Backend",
+                    color = Color(0xFFDD972E),
+                    projectId = 1
+                )
+            ),
+            projectId = 1
+        )
     )
 
-    val doneTasks = listOf(
-        Task("Crear mockups", listOf(Tag("Diseño", Color(0xFF26AA5D))))
+    val doneTasks = listOf<TaskModel>(
+        TaskModel(
+            id = 3,
+            title = "Crear mockups",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "Diseño",
+                    color = Color(0xFF26AA5D),
+                    projectId = 1
+                )
+            ),
+            projectId = 1
+        )
     )
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
             ProjectScreen(
                 projectId = 1,
-                pendingTasks = pendingTasks,
-                doingTasks = doingTasks,
-                doneTasks = doneTasks,
                 onAddTaskClick = {}
             )
         }
@@ -122,25 +168,70 @@ fun ProjectsScreenPreviewLight() {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun ProjectsScreenPreviewDark() {
-    val pendingTasks = listOf(
-        Task("Revisar requisitos", listOf(Tag("Análisis", Color(0xFF2E88DD)))),
-        Task("Diseñar UI", listOf(Tag("UI", Color(0xFF2E88DD))))
+    val pendingTasks = listOf<TaskModel>(
+        TaskModel(
+            id = 1,
+            title = "Revisar requisitos",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "Análisis",
+                    color = Color(0xFF2E88DD),
+                    projectId = 1
+                )
+            ),
+            projectId = 1,
+        ),
+        TaskModel(
+            id = 2,
+            title = "Diseñar UI",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "UI",
+                    color = Color(0xFF2E88DD),
+                    projectId = 1
+                )
+            ),
+            projectId = 1
+        )
     )
 
-    val doingTasks = listOf(
-        Task("Desarrollar login", listOf(Tag("Backend", Color(0xFFDD972E))))
+    val doingTasks = listOf<TaskModel>(
+        TaskModel(
+            id = 3,
+            title = "Desarrollar login",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "Backend",
+                    color = Color(0xFFDD972E),
+                    projectId = 1
+                )
+            ),
+            projectId = 1
+        )
     )
 
-    val doneTasks = listOf(
-        Task("Crear mockups", listOf(Tag("Diseño", Color(0xFF26AA5D))))
+    val doneTasks = listOf<TaskModel>(
+        TaskModel(
+            id = 3,
+            title = "Crear mockups",
+            tags = listOf<TagModel>(
+                TagModel(
+                    id = 1,
+                    title = "Diseño",
+                    color = Color(0xFF26AA5D),
+                    projectId = 1
+                )
+            ),
+            projectId = 1
+        )
     )
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             ProjectScreen(
                 projectId = 1,
-                pendingTasks = pendingTasks,
-                doingTasks = doingTasks,
-                doneTasks = doneTasks,
                 onAddTaskClick = {}
             )
         }

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.screens.project.ProjectViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -82,7 +83,7 @@ fun TestProjectScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val pendingTasks = tasks.value.filter { it.status == "PENDING" }
+                val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
 
                 pendingTasks.forEach { item ->
                     Card(
@@ -105,7 +106,7 @@ fun TestProjectScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val doingTasks = tasks.value.filter { it.status == "DOING" }
+                val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
 
                 doingTasks.forEach { item ->
                     Card(
@@ -128,7 +129,7 @@ fun TestProjectScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val doneTasks = tasks.value.filter { it.status == "DONE" }
+                val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
 
                 doneTasks.forEach { item ->
                     Card(
@@ -173,7 +174,12 @@ fun TestProjectScreen(
                     viewModel.createTask(
                         title = mutableTaskInfo.value.title.value,
                         description = mutableTaskInfo.value.description.value,
-                        status = mutableTaskInfo.value.status.value,
+                        status = when (mutableTaskInfo.value.status.value) {
+                            "PENDING" -> StatusVariations.PENDING
+                            "DOING" -> StatusVariations.DOING
+                            "DONE" -> StatusVariations.DONE
+                            else -> StatusVariations.PENDING
+                        },
                         projectId = projectId
                     )
 
