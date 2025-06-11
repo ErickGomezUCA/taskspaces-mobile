@@ -1,1 +1,0 @@
-Contains the view model pattern, to manage the UI-related data.
