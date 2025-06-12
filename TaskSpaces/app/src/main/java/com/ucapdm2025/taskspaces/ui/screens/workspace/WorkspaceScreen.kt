@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -88,6 +90,7 @@ fun WorkspaceScreen(
             onDismissRequest = { viewModel.hideDialog() },
             title = { Text(text = "Create a new project") },
             text = {
+//                    TODO: Add Icon field
                 Column {
                     TextField(
                         value = createProjectDialogData.value,
@@ -98,22 +101,31 @@ fun WorkspaceScreen(
                 }
             },
             confirmButton = {
-                Button(onClick = {
-//                    TODO: Add Icon field
-                    viewModel.createProject(
-                        title = createProjectDialogData.value,
-                        icon = "",
-                        workspaceId = workspaceId
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { viewModel.hideDialog() },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    ) { Text(text = "Cancel") }
 
-                    viewModel.hideDialog()
-                }) { Text(text = "Create") }
-            },
-            dismissButton = {
-                Button(onClick = { viewModel.hideDialog() }) { Text(text = "Cancel") }
+                    Button(
+                        onClick = { viewModel.createProject(
+                            title = createProjectDialogData.value,
+                            icon = "",
+                            workspaceId = workspaceId
+                        )
+
+                            viewModel.hideDialog() },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                    ) { Text(text = "Save") }
+                }
             }
         )
-
     }
 
     LazyColumn(
