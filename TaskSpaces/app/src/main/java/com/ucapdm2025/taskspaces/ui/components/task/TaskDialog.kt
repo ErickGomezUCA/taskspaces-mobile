@@ -98,23 +98,28 @@ fun TaskDialog(
 
     val task = viewModel.task.collectAsStateWithLifecycle()
 
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.background,
         confirmButton = {
-            Button(
-                onClick = { onDismissRequest() },
-//            modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(8.dp),
-            ) { Text(text = "Save") }
-        },
-        dismissButton = {
-            OutlinedButton(
-                onClick = { onDismissRequest() },
-//            modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) { Text(text = "Cancel") }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { onDismissRequest() },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                ) { Text(text = "Cancel") }
+
+                Button(
+                    onClick = { onDismissRequest() },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(8.dp),
+                ) { Text(text = "Save") }
+            }
         },
         text = {
             if (task.value == null) {

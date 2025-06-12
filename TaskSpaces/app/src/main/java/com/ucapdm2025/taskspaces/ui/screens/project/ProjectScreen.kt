@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.project
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,6 +56,7 @@ fun ProjectScreen(
 
     fun onTaskCardClick(taskId: Int) {
         viewModel.setSelectedTaskId(taskId)
+        Log.d("test1", taskId.toString())
         viewModel.showTaskDialog()
     }
     
