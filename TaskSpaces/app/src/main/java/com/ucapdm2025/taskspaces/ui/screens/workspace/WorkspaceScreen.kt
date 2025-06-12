@@ -1,13 +1,30 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +36,10 @@ import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
-import com.ucapdm2025.taskspaces.ui.theme.*
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
+import com.ucapdm2025.taskspaces.ui.theme.OutfitTypography
+import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
  * Displays the workspace details screen, including sections for projects and members.
@@ -29,6 +49,7 @@ import com.ucapdm2025.taskspaces.ui.theme.*
  *
  * @param workspaceId The unique identifier of the workspace to display.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkspaceScreen(
     workspaceId: Int
@@ -41,6 +62,8 @@ fun WorkspaceScreen(
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
+    val showCreateProjectDialog = viewModel.showCreateProjectDialog.collectAsStateWithLifecycle()
+    val createProjectDialogData = viewModel.createProjectDialogData.collectAsStateWithLifecycle()
 
     if (workspace.value == null) {
         Column(
@@ -54,6 +77,39 @@ fun WorkspaceScreen(
             )
             return
         }
+    }
+
+    if (showCreateProjectDialog.value) {
+        AlertDialog(
+            onDismissRequest = { viewModel.hideDialog() },
+            title = { Text(text = "Create a new project") },
+            text = {
+                Column {
+                    TextField(
+                        value = createProjectDialogData.value,
+                        onValueChange = { viewModel.setCreateProjectDialogData(it) },
+                        label = { Text(text = "Project Title") },
+                        placeholder = { Text(text = "Enter project title") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+//                    TODO: Add Icon field
+                    viewModel.createProject(
+                        title = createProjectDialogData.value,
+                        icon = "",
+                        workspaceId = workspaceId
+                    )
+
+                    viewModel.hideDialog()
+                }) { Text(text = "Create") }
+            },
+            dismissButton = {
+                Button(onClick = { viewModel.hideDialog() }) { Text(text = "Cancel") }
+            }
+        )
+
     }
 
     LazyColumn(
@@ -108,9 +164,7 @@ fun WorkspaceScreen(
 
                 // "Create new project" button
                 TextButton(
-                    onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
-                    },
+                    onClick = { viewModel.showDialog() },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -121,7 +175,13 @@ fun WorkspaceScreen(
                         style = OutfitTypography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon", modifier = Modifier.padding(start = 4.dp).size(16.dp))
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add icon",
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .size(16.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))

@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
-//    This ID should be included as a parameter when the ViewModel is initialized
 
     private val _workspace: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
     val workspace: StateFlow<WorkspaceModel?> = _workspace.asStateFlow()
@@ -33,6 +32,12 @@ class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
 
     private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
     val members: StateFlow<List<UserModel>> = _members.asStateFlow()
+
+    private val _showCreateProjectDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showCreateProjectDialog: StateFlow<Boolean> = _showCreateProjectDialog.asStateFlow()
+
+    private val _createProjectDialogData: MutableStateFlow<String> = MutableStateFlow("")
+    val createProjectDialogData: StateFlow<String> = _createProjectDialogData.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -82,6 +87,19 @@ class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
         viewModelScope.launch {
             workspaceRepository.removeMember(username, workspaceId)
         }
+    }
+
+//  Dialog functions
+    fun showDialog() {
+        _showCreateProjectDialog.value = true
+    }
+
+    fun hideDialog() {
+        _showCreateProjectDialog.value = false
+    }
+
+    fun setCreateProjectDialogData(data: String) {
+        _createProjectDialogData.value = data
     }
 }
 
