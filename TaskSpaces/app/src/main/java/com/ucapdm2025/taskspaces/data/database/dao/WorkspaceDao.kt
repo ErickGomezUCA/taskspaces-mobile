@@ -19,7 +19,7 @@ interface WorkspaceDao {
     @Query("SELECT * FROM workspace WHERE id = :id")
     fun getWorkspaceById(id: Int): Flow<WorkspaceEntity?>
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createWorkspace(workspace: WorkspaceEntity)
 
     @Update
