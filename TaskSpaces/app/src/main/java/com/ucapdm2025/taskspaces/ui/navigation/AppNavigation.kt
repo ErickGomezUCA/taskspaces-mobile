@@ -15,33 +15,22 @@ import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = WorkspaceRoute(workspaceId = 1)) {
+    NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
             HomeScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
-//                Use this ID to get the workspace
             val workspaceId: Int = backStackEntry.arguments?.getInt("workspaceId") ?: 0
-//            Workspace screen goes here
             WorkspaceScreen(workspaceId = workspaceId, onProjectCardClick = { projectId ->
                 navController.navigate(ProjectRoute(projectId))
             })
         }
 
         composable<ProjectRoute> { backStackEntry ->
-//                Use this ID to get the project
             val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
-//            Project screen goes here
             ProjectScreen(projectId = projectId)
-        }
-
-        composable<TaskRoute> { backStackEntry ->
-//                Use this ID to get the task
-//                TODO: See if this is correct, because tasks are handled by a dialog instead of a view
-            backStackEntry.arguments?.getInt("taskId") ?: 0
-//            Task screen goes here
         }
 
         composable<TimeTrackerRoute> { backStackEntry ->
