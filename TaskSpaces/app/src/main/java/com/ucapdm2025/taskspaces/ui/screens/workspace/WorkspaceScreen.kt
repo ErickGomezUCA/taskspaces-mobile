@@ -30,10 +30,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
@@ -56,10 +58,9 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun WorkspaceScreen(
     workspaceId: Int,
-    onProjectCardClick: (Int) -> Unit
+    onProjectCardClick: (Int) -> Unit,
+    viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModel.Factory)
 ) {
-    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId))
-
     // TODO: I'm using mock data for now, but this will be replaced with real data from an API.
     // I'll connect it through a ViewModel and Repository once the backend is ready.
 

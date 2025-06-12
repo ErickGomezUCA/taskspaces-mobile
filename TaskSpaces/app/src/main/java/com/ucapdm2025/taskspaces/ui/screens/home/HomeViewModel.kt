@@ -1,21 +1,25 @@
 package com.ucapdm2025.taskspaces.ui.screens.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
-import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
+import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : ViewModel() {
     val userId = 1
-    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
     private val _workspaces: MutableStateFlow<List<WorkspaceModel>> = MutableStateFlow(emptyList())
@@ -23,7 +27,8 @@ class HomeViewModel: ViewModel() {
 
     private val _workspacesSharedWithMe: MutableStateFlow<List<WorkspaceModel>> =
         MutableStateFlow(emptyList())
-    val workspacesSharedWithMe: StateFlow<List<WorkspaceModel>> = _workspacesSharedWithMe.asStateFlow()
+    val workspacesSharedWithMe: StateFlow<List<WorkspaceModel>> =
+        _workspacesSharedWithMe.asStateFlow()
 
     private val _assignedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val assignedTasks: StateFlow<List<TaskModel>> = _assignedTasks.asStateFlow()
@@ -63,6 +68,15 @@ class HomeViewModel: ViewModel() {
     fun deleteWorkspace(id: Int) {
         viewModelScope.launch {
             workspaceRepository.deleteWorkspace(id)
+        }
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = this[APPLICATION_KEY] as TaskSpacesApplication
+                HomeViewModel(application.appProvider.provideWorkspaceRepository())
+            }
         }
     }
 }

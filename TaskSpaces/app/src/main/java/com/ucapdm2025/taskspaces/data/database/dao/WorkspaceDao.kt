@@ -25,8 +25,9 @@ interface WorkspaceDao {
     @Update
     suspend fun updateWorkspace(workspace: WorkspaceEntity)
 
-    @Delete
-    suspend fun deleteWorkspace(workspace: WorkspaceEntity)
+    // TODO: Ask if this is a correct approach to avoid passing the whole entity, and use only the id instead
+    @Query("DELETE FROM workspace WHERE id = :id")
+    suspend fun deleteWorkspace(id: Int)
 
 //    TODO: Set members queries
 }

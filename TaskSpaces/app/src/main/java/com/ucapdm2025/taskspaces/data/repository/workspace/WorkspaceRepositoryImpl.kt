@@ -7,13 +7,13 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
 import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.model.toDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
-// TODO: Implement RoomDatabase to this repository
 class WorkspaceRepositoryImpl(
     private val workspaceDao: WorkspaceDao
 ): WorkspaceRepository {
@@ -23,7 +23,6 @@ class WorkspaceRepositoryImpl(
 
     private var autoIncrementId = workspaces.value.size + 1
 
-//    TODO: Set the rest of workspace dao queries. And create AppDatabase
     override fun getWorkspacesByUserId(ownerId: Int): Flow<List<WorkspaceModel>> {
         return workspaceDao.getWorkspacesByUserId(ownerId = ownerId).map { list ->
             list.map { entity -> entity.toDomain() }
@@ -36,13 +35,13 @@ class WorkspaceRepositoryImpl(
     }
 
     override fun getWorkspaceById(id: Int): Flow<WorkspaceModel?> {
-        return workspaces.value.find { it.id == id }
-            ?.let { MutableStateFlow(it) }
-            ?: MutableStateFlow(null)
+        return workspaceDao.getWorkspaceById(id = id).map { entity ->
+            entity?.toDomain()
+        }
     }
 
-    override suspend fun createWorkspace(title: String, ownerId: Int): WorkspaceModel {
-        val createdWorkspaceModel = WorkspaceModel(
+    override suspend fun createWorkspace(title: String, ownerId: Int) {
+        val createdWorkspace = WorkspaceModel(
             id = autoIncrementId++,
             title = title,
             ownerId = ownerId,
@@ -50,12 +49,10 @@ class WorkspaceRepositoryImpl(
             updatedAt = LocalDateTime.now().toString()
         )
 
-        workspaces.value = workspaces.value + createdWorkspaceModel
-
-        return createdWorkspaceModel
+        workspaceDao.createWorkspace(workspace = createdWorkspace.toDatabase())
     }
 
-    override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int): WorkspaceModel {
+    override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int) {
         val updatedWorkspaceModel = WorkspaceModel(
             id = id,
             title = title,
@@ -64,23 +61,11 @@ class WorkspaceRepositoryImpl(
             updatedAt = LocalDateTime.now().toString()
         )
 
-        workspaces.value = workspaces.value.map {
-            if (it.id == updatedWorkspaceModel.id) updatedWorkspaceModel else it
-        }
-
-        return updatedWorkspaceModel
+        workspaceDao.updateWorkspace(workspace = updatedWorkspaceModel.toDatabase())
     }
 
-    override suspend fun deleteWorkspace(id: Int): Boolean {
-//        delay(1000) // Simulate network delay
-
-        val exists = workspaces.value.any { it.id == id}
-
-        if (exists) {
-            workspaces.value = workspaces.value.filter { it.id != id }
-        }
-
-        return exists
+    override suspend fun deleteWorkspace(id: Int) {
+        workspaceDao.deleteWorkspace(id = id)
     }
 
 //    Members
