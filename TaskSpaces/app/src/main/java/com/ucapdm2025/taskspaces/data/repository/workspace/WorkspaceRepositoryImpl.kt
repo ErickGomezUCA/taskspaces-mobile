@@ -1,5 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
+import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
+import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
 import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
@@ -12,16 +14,20 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 // TODO: Implement RoomDatabase to this repository
-class WorkspaceRepositoryImpl: WorkspaceRepository {
+class WorkspaceRepositoryImpl(
+    private val workspaceDao: WorkspaceDao
+): WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummies)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
     private val members = MutableStateFlow(workspaceMembersDummy)
 
     private var autoIncrementId = workspaces.value.size + 1
 
+//    TODO: Set the rest of workspace dao queries. And create AppDatabase
     override fun getWorkspacesByUserId(ownerId: Int): Flow<List<WorkspaceModel>> {
-        return workspaces
-            .map { list -> list.filter { it.ownerId == ownerId } }
+        return workspaceDao.getWorkspacesByUserId(ownerId = ownerId).map { list ->
+            list.map { entity -> entity.toDomain() }
+        }
     }
 
     // TODO: Refactor workspacesShared with a relational approach
