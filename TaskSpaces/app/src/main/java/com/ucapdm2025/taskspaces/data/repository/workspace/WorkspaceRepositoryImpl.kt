@@ -1,5 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
@@ -8,24 +10,34 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.remote.workspace.WorkspaceService
+import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 class WorkspaceRepositoryImpl(
-    private val workspaceDao: WorkspaceDao
+    private val workspaceDao: WorkspaceDao,
+    private val workspaceService: WorkspaceService
 ): WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummies)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
     private val members = MutableStateFlow(workspaceMembersDummy)
 
-    private var autoIncrementId = workspaces.value.size + 1
+    private var autoIncrementId = 0
 
-    override fun getWorkspacesByUserId(ownerId: Int): Flow<List<WorkspaceModel>> {
-        return workspaceDao.getWorkspacesByUserId(ownerId = ownerId).map { list ->
-            list.map { entity -> entity.toDomain() }
+    override fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            val remoteWorkspaces = workspaceService.getWorkspacesByUserId(ownerId = ownerId).content
+
+            if (remoteWorkspaces!!.isNotEmpty()) {
+//                TODO: Finish this part
+            }
         }
     }
 
@@ -52,6 +64,7 @@ class WorkspaceRepositoryImpl(
         workspaceDao.createWorkspace(workspace = createdWorkspace.toDatabase())
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int) {
         val updatedWorkspaceModel = WorkspaceModel(
             id = id,

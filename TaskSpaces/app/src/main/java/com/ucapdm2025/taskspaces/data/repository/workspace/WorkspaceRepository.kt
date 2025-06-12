@@ -2,12 +2,13 @@ package com.ucapdm2025.taskspaces.data.repository.workspace
 
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface WorkspaceRepository {
-    fun getWorkspacesByUserId(ownerId: Int): Flow<List<WorkspaceModel>>
+    fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>>
     fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<WorkspaceModel>>
-    fun getWorkspaceById(id: Int): Flow<WorkspaceModel?>
+    fun getWorkspaceById(id: Int): Flow<Resource<WorkspaceModel?>>
     suspend fun createWorkspace(title: String, ownerId: Int)
     suspend fun updateWorkspace(id: Int, title: String, ownerId: Int)
     suspend fun deleteWorkspace(id: Int)
