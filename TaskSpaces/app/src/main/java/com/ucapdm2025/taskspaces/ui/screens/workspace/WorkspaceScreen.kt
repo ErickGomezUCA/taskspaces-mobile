@@ -52,7 +52,8 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkspaceScreen(
-    workspaceId: Int
+    workspaceId: Int,
+    onProjectCardClick: (Int) -> Unit
 ) {
     val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId))
 
@@ -154,7 +155,8 @@ fun WorkspaceScreen(
                             rowItems.forEach { project ->
                                 ProjectCard(
                                     name = project.title,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    onClick = { onProjectCardClick(project.id) }
                                 )
                             }
                         }
@@ -272,7 +274,7 @@ fun WorkspaceScreen(
 fun WorkspaceScreenPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            WorkspaceScreen(workspaceId = 1)
+            WorkspaceScreen(workspaceId = 1, onProjectCardClick = {})
         }
     }
 }
@@ -287,7 +289,7 @@ fun WorkspaceScreenPreviewLight() {
 fun WorkspaceScreenNotFoundPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            WorkspaceScreen(workspaceId = 0)
+            WorkspaceScreen(workspaceId = 0, onProjectCardClick = {})
         }
     }
 }
@@ -302,7 +304,7 @@ fun WorkspaceScreenNotFoundPreviewLight() {
 fun WorkspaceScreenPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            WorkspaceScreen(workspaceId = 1)
+            WorkspaceScreen(workspaceId = 1, onProjectCardClick = {})
         }
     }
 }
@@ -317,7 +319,7 @@ fun WorkspaceScreenPreviewDark() {
 fun WorkspaceScreenNotFoundPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            WorkspaceScreen(workspaceId = 0)
+            WorkspaceScreen(workspaceId = 0, onProjectCardClick = {})
         }
     }
 }

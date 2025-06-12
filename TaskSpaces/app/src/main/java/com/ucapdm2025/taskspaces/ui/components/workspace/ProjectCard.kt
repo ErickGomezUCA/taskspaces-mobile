@@ -30,14 +30,14 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * @param name The name of the project to display.
  */
 @Composable
-fun ProjectCard(name: String, modifier: Modifier = Modifier) {
+fun ProjectCard(name: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .padding(8.dp)
             .clickable {
-                // TODO: Add navigation to project details screen when clicked
+                onClick()
             },
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
             modifier = Modifier

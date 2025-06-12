@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,7 +25,10 @@ fun AppNavigation(navController: NavHostController) {
 //                Use this ID to get the workspace
             val workspaceId: Int = backStackEntry.arguments?.getInt("workspaceId") ?: 0
 //            Workspace screen goes here
-            WorkspaceScreen(workspaceId = workspaceId)
+            WorkspaceScreen(workspaceId = workspaceId, onProjectCardClick = { projectId ->
+                navController.navigate(ProjectRoute(projectId))
+                Log.d("test1", projectId.toString())
+            })
         }
 
         composable<ProjectRoute> { backStackEntry ->
