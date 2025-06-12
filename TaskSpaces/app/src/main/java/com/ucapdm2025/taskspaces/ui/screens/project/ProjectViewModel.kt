@@ -32,6 +32,12 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     private val _tasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val tasks: StateFlow<List<TaskModel>> = _tasks
 
+    private val _showTaskDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showTaskDialog: StateFlow<Boolean> = _showTaskDialog
+
+    private val _selectedTaskId: MutableStateFlow<Int> = MutableStateFlow(0)
+    val selectedTaskId: StateFlow<Int> = _selectedTaskId
+
     init {
         viewModelScope.launch {
             projectRepository.getProjectById(projectId).collect { project ->
@@ -47,16 +53,18 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     }
 
     // Add more fields here
-    fun createTask(title: String, description: String, status: StatusVariations, projectId: Int) {
+    fun createTask(title: String, description: String? = "", status: StatusVariations, projectId: Int) {
         viewModelScope.launch {
-            taskRepository.createTask(
+            val newTask = taskRepository.createTask(
                 title = title,
-                description = description,
+                description = description ?: "",
                 deadline = LocalDateTime.now(),
                 status = status,
                 breadcrumb = "Workspace 1 / ${project.value?.title}",
                 projectId = projectId
             )
+
+            _selectedTaskId.value = newTask.id
         }
     }
 
@@ -64,6 +72,15 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
         viewModelScope.launch {
             taskRepository.deleteTask(id)
         }
+    }
+
+//    Dialog functions
+    fun showTaskDialog() {
+        _showTaskDialog.value = true
+    }
+
+    fun hideTaskDialog() {
+        _showTaskDialog.value = false
     }
 }
 

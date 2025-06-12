@@ -21,6 +21,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
+import com.ucapdm2025.taskspaces.ui.components.task.TaskDialog
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -40,17 +41,20 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun ProjectScreen(
     projectId: Int,
-    onAddTaskClick: (StatusVariations) -> Unit
+    onTaskCardClick: (Int) -> Unit
 ) {
     val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId))
 
     val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
+    val showTaskDialog = viewModel.showTaskDialog.collectAsStateWithLifecycle()
+    val selectedTaskId = viewModel.selectedTaskId.collectAsStateWithLifecycle()
 
     val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
     val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
     val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
 
+//    Show feedback icon if the project is not found
     if (project.value == null) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -65,6 +69,19 @@ fun ProjectScreen(
         }
     }
 
+//    Task Dialog
+    if (showTaskDialog.value) {
+        TaskDialog(
+            taskId = selectedTaskId.value,
+            onDismissRequest = { viewModel.hideTaskDialog() },
+//            onCreateTask = { title, description, status ->
+//                viewModel.createTask(title, description, status, projectId)
+//                viewModel.showTaskDialog.value = false
+//            },
+//            projectId = projectId
+        )
+    }
+
     ProjectsBackground {
         LazyRow(
             modifier = Modifier
@@ -76,21 +93,45 @@ fun ProjectScreen(
                 TaskStatusColumn(
                     status = StatusVariations.PENDING,
                     tasks = pendingTasks,
-                    onAddTaskClick = { onAddTaskClick(StatusVariations.PENDING) }
+                    onAddTaskClick = {
+                        viewModel.createTask(
+                            title = "New task",
+                            status = StatusVariations.PENDING,
+                            projectId = projectId
+                        )
+
+                        viewModel.showTaskDialog()
+                    }
                 )
             }
             item {
                 TaskStatusColumn(
                     status = StatusVariations.DOING,
                     tasks = doingTasks,
-                    onAddTaskClick = { onAddTaskClick(StatusVariations.DOING) }
+                    onAddTaskClick = {
+                        viewModel.createTask(
+                            title = "New task",
+                            status = StatusVariations.DOING,
+                            projectId = projectId
+                        )
+
+                        viewModel.showTaskDialog()
+                    }
                 )
             }
             item {
                 TaskStatusColumn(
                     status = StatusVariations.DONE,
                     tasks = doneTasks,
-                    onAddTaskClick = { onAddTaskClick(StatusVariations.DONE) }
+                    onAddTaskClick = {
+                        viewModel.createTask(
+                            title = "New task",
+                            status = StatusVariations.DONE,
+                            projectId = projectId
+                        )
+
+                        viewModel.showTaskDialog()
+                    }
                 )
             }
         }
@@ -171,7 +212,7 @@ fun ProjectsScreenPreviewLight() {
         ExtendedColors(darkTheme = false) {
             ProjectScreen(
                 projectId = 1,
-                onAddTaskClick = {}
+                onTaskCardClick = {}
             )
         }
     }
@@ -250,7 +291,7 @@ fun ProjectsScreenPreviewDark() {
         ExtendedColors(darkTheme = true) {
             ProjectScreen(
                 projectId = 1,
-                onAddTaskClick = {}
+                onTaskCardClick = {}
             )
         }
     }

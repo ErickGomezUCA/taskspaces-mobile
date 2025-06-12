@@ -15,7 +15,7 @@ import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = WorkspaceRoute(workspaceId = 1)) {
+    NavHost(navController = navController, startDestination = ProjectRoute(projectId = 1)) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
             HomeScreen()
@@ -27,7 +27,6 @@ fun AppNavigation(navController: NavHostController) {
 //            Workspace screen goes here
             WorkspaceScreen(workspaceId = workspaceId, onProjectCardClick = { projectId ->
                 navController.navigate(ProjectRoute(projectId))
-                Log.d("test1", projectId.toString())
             })
         }
 
@@ -35,7 +34,9 @@ fun AppNavigation(navController: NavHostController) {
 //                Use this ID to get the project
             val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
 //            Project screen goes here
-            ProjectScreen(projectId = projectId, onAddTaskClick = {})
+            ProjectScreen(projectId = projectId, onTaskCardClick = { taskId ->
+                navController.navigate(TaskRoute(taskId))
+            })
         }
 
         composable<TaskRoute> { backStackEntry ->

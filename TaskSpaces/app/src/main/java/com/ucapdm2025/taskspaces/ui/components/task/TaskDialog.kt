@@ -85,7 +85,10 @@ data class UserTimer(
  * @param task The [Task] to display and edit in the dialog.
  */
 @Composable
-fun TaskDialog(task: TaskModel) {
+fun TaskDialog(
+    taskId: Int,
+    onDismissRequest: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
