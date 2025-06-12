@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -113,13 +114,14 @@ fun WorkspaceScreen(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp)
+                        .height(40.dp),
                 ) {
                     Text(
-                        text = "Create new project  +",
+                        text = "Create new project",
                         style = OutfitTypography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon", modifier = Modifier.padding(start = 4.dp).size(16.dp))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
