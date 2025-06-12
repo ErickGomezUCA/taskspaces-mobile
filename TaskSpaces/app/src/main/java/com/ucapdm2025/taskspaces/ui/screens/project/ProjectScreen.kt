@@ -56,7 +56,6 @@ fun ProjectScreen(
 
     fun onTaskCardClick(taskId: Int) {
         viewModel.setSelectedTaskId(taskId)
-        Log.d("test1", taskId.toString())
         viewModel.showTaskDialog()
     }
     
@@ -80,11 +79,6 @@ fun ProjectScreen(
         TaskDialog(
             taskId = selectedTaskId.value,
             onDismissRequest = { viewModel.hideTaskDialog() },
-//            onCreateTask = { title, description, status ->
-//                viewModel.createTask(title, description, status, projectId)
-//                viewModel.showTaskDialog.value = false
-//            },
-//            projectId = projectId
         )
     }
 

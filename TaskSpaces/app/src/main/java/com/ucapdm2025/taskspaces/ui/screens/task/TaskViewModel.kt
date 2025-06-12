@@ -10,12 +10,16 @@ import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TaskViewModel(taskId: Int) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
@@ -26,18 +30,51 @@ class TaskViewModel(taskId: Int) : ViewModel() {
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
+    private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val currentTaskId: StateFlow<Int?> = _currentTaskId.asStateFlow()
+
     init {
+        // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
         viewModelScope.launch {
-            taskRepository.getTaskById(taskId).collect { task ->
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    taskRepository.getTaskById(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { task ->
                 _task.value = task
             }
         }
 
         viewModelScope.launch {
-            commentRepository.getCommentsByTaskId(taskId).collect { comments ->
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    commentRepository.getCommentsByTaskId(taskId)
+                } else {
+                    flowOf(emptyList()) // Emit empty list if no task ID is set
+                }
+            }.collect { comments ->
                 _comments.value = comments
             }
         }
+    }
+
+    /**
+     * Call this function from your Composable to load a new task.
+     * This will trigger the flows in the init block to re-fetch data.
+     */
+    fun loadTask(taskId: Int) {
+        if (_currentTaskId.value != taskId) { // Only update if the ID is different
+            _currentTaskId.value = taskId
+        }
+    }
+
+    // Function to clear the currently loaded task when the dialog is dismissed
+    fun clearTask() {
+        _currentTaskId.value = null
+        _task.value = null // Explicitly clear the task model
+        _comments.value = emptyList() // Explicitly clear comments
     }
 
     fun updateTask(

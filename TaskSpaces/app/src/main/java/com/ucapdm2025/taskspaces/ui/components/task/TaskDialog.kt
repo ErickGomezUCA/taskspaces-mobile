@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.components.task
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -98,9 +100,17 @@ fun TaskDialog(
 
     val task = viewModel.task.collectAsStateWithLifecycle()
 
+    LaunchedEffect(taskId) {
+        viewModel.loadTask(taskId)
+    }
+
+    fun hideDialog() {
+        viewModel.clearTask()
+        onDismissRequest()
+    }
 
     AlertDialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = { hideDialog() },
         containerColor = MaterialTheme.colorScheme.background,
         confirmButton = {
             Row(
@@ -108,14 +118,14 @@ fun TaskDialog(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(
-                    onClick = { onDismissRequest() },
+                    onClick = { hideDialog() },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 ) { Text(text = "Cancel") }
 
                 Button(
-                    onClick = { onDismissRequest() },
+                    onClick = { hideDialog() },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                 ) { Text(text = "Save") }
