@@ -41,6 +41,7 @@ import java.time.LocalDateTime
 fun TaskStatusColumn(
     status: StatusVariations,
     tasks: List<TaskModel>,
+    onTaskCardClick: (Int) -> Unit,
     onAddTaskClick: () -> Unit,
 ) {
     Column(
@@ -60,8 +61,7 @@ fun TaskStatusColumn(
             TaskCard(
                 title = task.title,
                 tags = task.tags,
-                //TODO: Replace with real navigation to the task chosen
-                onClick = {}
+                onClick = { onTaskCardClick(task.id) }
             )
         }
 
@@ -71,7 +71,6 @@ fun TaskStatusColumn(
             horizontalArrangement = Arrangement.Center
         ) {
             TextButton(
-                //TODO: Replace with real function of adding a task
                 onClick = { onAddTaskClick() },
                 contentPadding = PaddingValues(0.dp),
             ) {
@@ -159,6 +158,7 @@ fun TaskStatusColumnPreviewLight() {
                             updatedAt = ""
                         )
                     ),
+                    onTaskCardClick = {},
                     onAddTaskClick = {},
                 )
             }
@@ -241,6 +241,7 @@ fun TaskStatusColumnPreviewDark() {
                             updatedAt = ""
                         )
                     ),
+                    onTaskCardClick = {},
                     onAddTaskClick = {},
                 )
             }

@@ -82,6 +82,10 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     fun hideTaskDialog() {
         _showTaskDialog.value = false
     }
+
+    fun setSelectedTaskId(id: Int) {
+        _selectedTaskId.value = id
+    }
 }
 
 /**

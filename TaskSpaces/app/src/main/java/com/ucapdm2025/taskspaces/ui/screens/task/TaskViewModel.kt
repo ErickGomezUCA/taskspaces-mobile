@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.ui.screens.task
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.CommentModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
@@ -15,14 +16,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class TaskViewModel: ViewModel() {
+class TaskViewModel(taskId: Int) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
 
-    private val taskId = 1
-
-    private val _taskModel: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
-    val taskModel: StateFlow<TaskModel?> = _taskModel.asStateFlow()
+    private val _task: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
+    val task: StateFlow<TaskModel?> = _task.asStateFlow()
 
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
@@ -30,7 +29,7 @@ class TaskViewModel: ViewModel() {
     init {
         viewModelScope.launch {
             taskRepository.getTaskById(taskId).collect { task ->
-                _taskModel.value = task
+                _task.value = task
             }
         }
 
@@ -41,7 +40,13 @@ class TaskViewModel: ViewModel() {
         }
     }
 
-    fun updateTask(id: Int, title: String, description: String, status: StatusVariations, projectId: Int) {
+    fun updateTask(
+        id: Int,
+        title: String,
+        description: String,
+        status: StatusVariations,
+        projectId: Int
+    ) {
         viewModelScope.launch {
             taskRepository.updateTask(
                 id = id,
@@ -57,13 +62,22 @@ class TaskViewModel: ViewModel() {
 
     fun createComment(content: String) {
         viewModelScope.launch {
-            commentRepository.createComment(content = content, authorId = 1, taskId = taskId)
+            commentRepository.createComment(
+                content = content,
+                authorId = 1,
+                taskId = _task.value?.id ?: 0
+            )
         }
     }
 
     fun updateComment(id: Int, content: String) {
         viewModelScope.launch {
-            commentRepository.updateComment(id = id, content = content, authorId = 1, taskId = taskId)
+            commentRepository.updateComment(
+                id = id,
+                content = content,
+                authorId = 1,
+                taskId = _task.value?.id ?: 0
+            )
         }
     }
 
@@ -73,12 +87,21 @@ class TaskViewModel: ViewModel() {
         }
     }
 
-//    TODO: Define how this function should work in the viewmodel
+    //    TODO: Define how this function should work in the viewmodel
     fun bookmarkTask() {
         viewModelScope.launch {
-            taskModel.value?.let { task ->
+            task.value?.let { task ->
                 taskRepository.bookmarkTask(task.id)
             }
         }
+    }
+}
+
+class TaskViewModelFactory(private val taskId: Int) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
+            return TaskViewModel(taskId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

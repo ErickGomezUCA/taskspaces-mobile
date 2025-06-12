@@ -34,9 +34,7 @@ fun AppNavigation(navController: NavHostController) {
 //                Use this ID to get the project
             val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
 //            Project screen goes here
-            ProjectScreen(projectId = projectId, onTaskCardClick = { taskId ->
-                navController.navigate(TaskRoute(taskId))
-            })
+            ProjectScreen(projectId = projectId)
         }
 
         composable<TaskRoute> { backStackEntry ->

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Image
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.Textsms
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,18 +39,20 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ucapdm2025.taskspaces.data.dummy.tasksDummies
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.data.dummy.usersDummies
-import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatus
+import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
+import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -84,126 +88,173 @@ data class UserTimer(
  *
  * @param task The [Task] to display and edit in the dialog.
  */
+// TODO: Show dialog first and then load info
 @Composable
 fun TaskDialog(
     taskId: Int,
     onDismissRequest: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        //BREADCRUMB
-        Column {
-            Text(task.breadcrumb, fontSize = 14.sp, color = ExtendedTheme.colors.background50)
-        }
+    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskId))
 
+    val task = viewModel.task.collectAsStateWithLifecycle()
 
-        //TITLE
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Task,
-                    contentDescription = "Task",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(task.title, fontSize = 33.sp, color = MaterialTheme.colorScheme.onBackground)
-            }
-        }
-
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Flag,
-                    contentDescription = "Status",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                TaskStatus(status = task.status)
-            }
-        }
-
-
-        //DESCRIPTION
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Description,
-                    contentDescription = "Description",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    "Description",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            TextField(
-                value = task.description ?: "",
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        //TAGS
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Tag,
-                    contentDescription = "Tags",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Tags",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                task.tags.forEach { tag ->
-                    Tag(tag = tag)
-                }
-            }
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.background,
+        confirmButton = {
+            Button(
+                onClick = { onDismissRequest() },
+//            modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(8.dp),
+            ) { Text(text = "Save") }
+        },
+        dismissButton = {
             OutlinedButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.fillMaxWidth(),
+                onClick = { onDismissRequest() },
+//            modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) {
-                Text("+ Add tags")
-            }
-        }
+            ) { Text(text = "Cancel") }
+        },
+        text = {
+            if (task.value == null) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    FeedbackIcon(
+                        icon = Icons.Default.Close,
+                        title = "Sorry, we couldn't find this task.",
+                    )
+                }
 
-        //MEDIA
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Image,
-                    contentDescription = "Media",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Media",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    //BREADCRUMB
+                    Column {
+                        Text(
+                            task.value?.breadcrumb ?: "No data",
+                            fontSize = 14.sp,
+                            color = ExtendedTheme.colors.background50
+                        )
+                    }
+
+
+                    //TITLE
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Task,
+                                contentDescription = "Task",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                task.value?.title ?: "No data",
+                                fontSize = 33.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Flag,
+                                contentDescription = "Status",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            TaskStatus(status = task.value?.status ?: StatusVariations.PENDING)
+                        }
+                    }
+
+
+                    //DESCRIPTION
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Description,
+                                contentDescription = "Description",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "Description",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        TextField(
+                            value = task.value?.description ?: "",
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    //TAGS
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Tag,
+                                contentDescription = "Tags",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Tags",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            task.value?.tags?.forEach { tag ->
+                                Tag(tag = tag)
+                            }
+                        }
+                        OutlinedButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("+ Add tags")
+                        }
+                    }
+
+                    //MEDIA
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Image,
+                                contentDescription = "Media",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Media",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
 //            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//                task.images.forEach {
+//                task.value?.images.forEach {
 //                    Image(
 //                        painter = painterResource(id = it),
 //                        contentDescription = null,
@@ -211,87 +262,90 @@ fun TaskDialog(
 //                    )
 //                }
 //            }
-            OutlinedButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) {
-                Text("+ Add Media")
-            }
-        }
+                        OutlinedButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("+ Add Media")
+                        }
+                    }
 
-        //DEADLINE
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.CalendarMonth,
-                    contentDescription = "Deadline",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Deadline",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-            Column {
-                val formatter = DateTimeFormatter.ofPattern("d/MMM/yyyy - hh:mm a")
-                val dateText = task.deadline?.format(formatter)
-                val weeksLeft =
-                    java.time.Duration.between(LocalDateTime.now(), task.deadline).toDays() / 7
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            1.dp,
-                            MaterialTheme.colorScheme.onBackground,
-                            RoundedCornerShape(8.dp)
-                        ),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        dateText ?: "",
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(4.dp),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Text(
-                    "$weeksLeft weeks left until deadline",
-                    color = ExtendedTheme.colors.background50,
-                    fontSize = 12.sp
-                )
-            }
-            OutlinedButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) {
-                Text("+ Add Deadline")
-            }
-        }
+                    //DEADLINE
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.CalendarMonth,
+                                contentDescription = "Deadline",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Deadline",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
+                        }
+                        Column {
+                            val formatter = DateTimeFormatter.ofPattern("d/MMM/yyyy - hh:mm a")
+                            val dateText = task.value?.deadline?.format(formatter)
+                            val weeksLeft =
+                                java.time.Duration.between(
+                                    LocalDateTime.now(),
+                                    task.value?.deadline
+                                ).toDays() / 7
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.onBackground,
+                                        RoundedCornerShape(8.dp)
+                                    ),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    dateText ?: "",
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(4.dp),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                            Text(
+                                "$weeksLeft weeks left until deadline",
+                                color = ExtendedTheme.colors.background50,
+                                fontSize = 12.sp
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("+ Add Deadline")
+                        }
+                    }
 
-        //TIMERS
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Timer,
-                    contentDescription = "Timer",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Timer",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-//            if (task.userTimer == null) {
+                    //TIMERS
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Timer,
+                                contentDescription = "Timer",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Timer",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+//            if (task.value?.userTimer == null) {
 //                OutlinedButton(
 //                    onClick = { /*TODO*/ },
 //                    modifier = Modifier.fillMaxWidth(),
@@ -312,7 +366,7 @@ fun TaskDialog(
 //                    horizontalArrangement = Arrangement.Center
 //                ) {
 //                    Text(
-//                        text = task.userTimer.time,
+//                        text = task.value?.userTimer.time,
 //                        fontSize = 18.sp,
 //                        color = MaterialTheme.colorScheme.onBackground,
 //                        modifier = Modifier.padding(4.dp)
@@ -325,128 +379,128 @@ fun TaskDialog(
 //                    shape = RoundedCornerShape(8.dp),
 //                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
 //                ) {
-//                    Text(if (task.userTimer.isRunning) "Pause" else "Resume")
+//                    Text(if (task.value?.userTimer.isRunning) "Pause" else "Resume")
 //                }
 //            }
-        }
+                    }
 
-        //MEMBERS
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Person,
-                    contentDescription = "Members",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Members",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                task.assignedMembers.forEach { user ->
-                    val avatarRes = 1
-
-                    Image(
-                        painter = painterResource(id = avatarRes),
-                        contentDescription = user.fullname,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(ExtendedTheme.colors.primary50, CircleShape)
-                    )
-                }
-            }
-            OutlinedButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) {
-                Text("+ Add member")
-            }
-        }
-
-        //COMMENTS
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Textsms,
-                    contentDescription = "Comments",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Comments",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                task.comments.forEach { comment ->
-                    val user = usersDummies.find { it.id == comment.authorId }
-                    val avatarRes = 1
-
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(id = avatarRes),
-                            contentDescription = user?.username ?: "User",
-                            modifier = Modifier
-                                .size(36.dp)
-                                .background(ExtendedTheme.colors.primary50, CircleShape)
-                        )
-                        Column {
-                            Row {
-                                Text(
-                                    text = user?.username ?: "Unknown",
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = comment.createdAt,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(2.dp))
+                    //MEMBERS
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Person,
+                                contentDescription = "Members",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = comment.content,
+                                "Members",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            task.value?.assignedMembers?.forEach { user ->
+                                Image(
+                                    painter = painterResource(id = android.R.drawable.ic_menu_camera),
+                                    contentDescription = user.fullname,
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(ExtendedTheme.colors.primary50, CircleShape)
+                                )
+                            }
+                        }
+                        OutlinedButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("+ Add member")
+                        }
+                    }
+
+                    //COMMENTS
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Textsms,
+                                contentDescription = "Comments",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Comments",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            task.value?.comments?.forEach { comment ->
+                                val user = usersDummies.find { it.id == comment.authorId }
+                                Row(
+                                    verticalAlignment = Alignment.Top,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = android.R.drawable.ic_menu_camera),
+                                        contentDescription = user?.username ?: "User",
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(ExtendedTheme.colors.primary50, CircleShape)
+                                    )
+                                    Column {
+                                        Row {
+                                            Text(
+                                                text = user?.username ?: "Unknown",
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onBackground
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = comment.createdAt,
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                fontSize = 12.sp
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = comment.content,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                            }
+                        }
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+//                        ) {
+//                            OutlinedButton(
+//                                onClick = { /*TODO*/ },
+//                                modifier = Modifier.weight(1f),
+//                                shape = RoundedCornerShape(8.dp),
+//                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+//                            ) {
+//                                Text("Cancel")
+//                            }
+//                            Button(
+//                                onClick = { },
+//                                modifier = Modifier.weight(1f),
+//                                shape = RoundedCornerShape(8.dp),
+//                            ) {
+//                                Text("Save")
+//                            }
+//                        }
                     }
                 }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                ) {
-                    Text("Cancel")
-                }
-                Button(
-                    onClick = { },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text("Save")
-                }
+
             }
         }
-    }
+    )
 }
 
 /**
@@ -460,7 +514,7 @@ fun TaskDialog(
 fun TaskDialogPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            TaskDialog(task = tasksDummies[0])
+            TaskDialog(taskId = 1, onDismissRequest = {})
         }
     }
 }
@@ -476,7 +530,7 @@ fun TaskDialogPreviewLight() {
 fun TaskDialogPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            TaskDialog(task = tasksDummies[0])
+            TaskDialog(taskId = 1, onDismissRequest = {})
         }
     }
 }

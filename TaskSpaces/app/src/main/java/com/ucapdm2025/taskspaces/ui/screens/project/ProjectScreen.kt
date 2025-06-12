@@ -40,8 +40,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun ProjectScreen(
-    projectId: Int,
-    onTaskCardClick: (Int) -> Unit
+    projectId: Int
 ) {
     val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId))
 
@@ -54,6 +53,11 @@ fun ProjectScreen(
     val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
     val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
 
+    fun onTaskCardClick(taskId: Int) {
+        viewModel.setSelectedTaskId(taskId)
+        viewModel.showTaskDialog()
+    }
+    
 //    Show feedback icon if the project is not found
     if (project.value == null) {
         Column(
@@ -93,6 +97,9 @@ fun ProjectScreen(
                 TaskStatusColumn(
                     status = StatusVariations.PENDING,
                     tasks = pendingTasks,
+                    onTaskCardClick = { taskId ->
+                        onTaskCardClick(taskId)
+                    },
                     onAddTaskClick = {
                         viewModel.createTask(
                             title = "New task",
@@ -108,6 +115,9 @@ fun ProjectScreen(
                 TaskStatusColumn(
                     status = StatusVariations.DOING,
                     tasks = doingTasks,
+                    onTaskCardClick = { taskId ->
+                        onTaskCardClick(taskId)
+                    },
                     onAddTaskClick = {
                         viewModel.createTask(
                             title = "New task",
@@ -123,6 +133,9 @@ fun ProjectScreen(
                 TaskStatusColumn(
                     status = StatusVariations.DONE,
                     tasks = doneTasks,
+                    onTaskCardClick = { taskId ->
+                        onTaskCardClick(taskId)
+                    },
                     onAddTaskClick = {
                         viewModel.createTask(
                             title = "New task",
@@ -212,7 +225,6 @@ fun ProjectsScreenPreviewLight() {
         ExtendedColors(darkTheme = false) {
             ProjectScreen(
                 projectId = 1,
-                onTaskCardClick = {}
             )
         }
     }
@@ -291,7 +303,6 @@ fun ProjectsScreenPreviewDark() {
         ExtendedColors(darkTheme = true) {
             ProjectScreen(
                 projectId = 1,
-                onTaskCardClick = {}
             )
         }
     }

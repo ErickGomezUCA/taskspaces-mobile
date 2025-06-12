@@ -45,7 +45,7 @@ private class MutableComment(
 fun TestTaskScreen(
     viewModel: TaskViewModel = viewModel()
 ) {
-    val task = viewModel.taskModel.collectAsStateWithLifecycle()
+    val task = viewModel.task.collectAsStateWithLifecycle()
     val comments = viewModel.comments.collectAsStateWithLifecycle()
 
     val taskId = 1
