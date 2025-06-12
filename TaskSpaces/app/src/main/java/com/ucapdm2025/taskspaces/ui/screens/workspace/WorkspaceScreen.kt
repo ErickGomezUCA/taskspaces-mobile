@@ -66,6 +66,7 @@ fun WorkspaceScreen(
     val showCreateProjectDialog = viewModel.showCreateProjectDialog.collectAsStateWithLifecycle()
     val createProjectDialogData = viewModel.createProjectDialogData.collectAsStateWithLifecycle()
 
+//    Show feedback icon if the workspace is not found
     if (workspace.value == null) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -80,6 +81,7 @@ fun WorkspaceScreen(
         }
     }
 
+//    Create project dialog
     if (showCreateProjectDialog.value) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDialog() },
