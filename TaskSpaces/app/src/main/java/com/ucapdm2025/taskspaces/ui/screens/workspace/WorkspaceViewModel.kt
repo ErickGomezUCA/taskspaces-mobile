@@ -111,7 +111,7 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
             initializer {
                 val application = this[APPLICATION_KEY] as TaskSpacesApplication
                 WorkspaceViewModel(
-                    workspaceId = 0, // Default value, should be set later
+                    workspaceId = 0, // TODO: Find a way to pass the actual workspace ID
                     workspaceRepository = application.appProvider.provideWorkspaceRepository()
                 )
             }
