@@ -43,7 +43,7 @@ fun TestProjectScreen(
 ) {
     val projectId = 1
 
-    val project = viewModel.projectModel.collectAsStateWithLifecycle()
+    val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
 
     var selectedTaskId = remember { mutableStateOf("") }

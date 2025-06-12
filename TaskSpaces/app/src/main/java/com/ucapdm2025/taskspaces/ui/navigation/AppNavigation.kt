@@ -8,6 +8,7 @@ import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
+import com.ucapdm2025.taskspaces.ui.screens.project.ProjectScreen
 import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 
@@ -28,8 +29,9 @@ fun AppNavigation(navController: NavHostController) {
 
         composable<ProjectRoute> { backStackEntry ->
 //                Use this ID to get the project
-            backStackEntry.arguments?.getInt("projectId") ?: 0
+            val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
 //            Project screen goes here
+            ProjectScreen(projectId = projectId, onAddTaskClick = {})
         }
 
         composable<TaskRoute> { backStackEntry ->

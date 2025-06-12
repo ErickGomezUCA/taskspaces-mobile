@@ -26,8 +26,8 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
-    private val _projectModel: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
-    val projectModel: StateFlow<ProjectModel?> = _projectModel
+    private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
+    val project: StateFlow<ProjectModel?> = _project
 
     private val _tasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val tasks: StateFlow<List<TaskModel>> = _tasks
@@ -35,7 +35,7 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     init {
         viewModelScope.launch {
             projectRepository.getProjectById(projectId).collect { project ->
-                _projectModel.value = project
+                _project.value = project
             }
         }
 
@@ -54,7 +54,7 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
                 description = description,
                 deadline = LocalDateTime.now(),
                 status = status,
-                breadcrumb = "Workspace 1 / ${projectModel.value?.title}",
+                breadcrumb = "Workspace 1 / ${project.value?.title}",
                 projectId = projectId
             )
         }

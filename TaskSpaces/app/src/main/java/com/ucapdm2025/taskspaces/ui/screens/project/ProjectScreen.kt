@@ -1,10 +1,14 @@
 package com.ucapdm2025.taskspaces.ui.screens.project
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
-import com.ucapdm2025.taskspaces.ui.components.general.Tag
+import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
@@ -40,12 +44,26 @@ fun ProjectScreen(
 ) {
     val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId))
 
-    val project = viewModel.projectModel.collectAsStateWithLifecycle()
+    val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
 
     val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
     val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
     val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
+
+    if (project.value == null) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            FeedbackIcon(
+                icon = Icons.Default.Close,
+                title = "Sorry, we couldn't find this project.",
+            )
+            return
+        }
+    }
 
     ProjectsBackground {
         LazyRow(
