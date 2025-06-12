@@ -25,8 +25,8 @@ class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
 //    This ID should be included as a parameter when the ViewModel is initialized
 
-    private val _workspaceModel: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
-    val workspaceModel: StateFlow<WorkspaceModel?> = _workspaceModel.asStateFlow()
+    private val _workspace: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
+    val workspace: StateFlow<WorkspaceModel?> = _workspace.asStateFlow()
 
     private val _projects: MutableStateFlow<List<ProjectModel>> = MutableStateFlow(emptyList())
     val projects: StateFlow<List<ProjectModel>> = _projects.asStateFlow()
@@ -37,7 +37,7 @@ class WorkspaceViewModel(private val workspaceId: Int): ViewModel() {
     init {
         viewModelScope.launch {
             workspaceRepository.getWorkspaceById(workspaceId).collect { workspace ->
-                _workspaceModel.value = workspace
+                _workspace.value = workspace
             }
         }
 

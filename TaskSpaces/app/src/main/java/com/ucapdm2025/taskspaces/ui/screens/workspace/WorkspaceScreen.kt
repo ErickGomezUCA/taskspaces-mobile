@@ -37,7 +37,7 @@ fun WorkspaceScreen(
     // TODO: I'm using mock data for now, but this will be replaced with real data from an API.
     // I'll connect it through a ViewModel and Repository once the backend is ready.
 
-    val workspace = viewModel.workspaceModel.collectAsStateWithLifecycle()
+    val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
 
