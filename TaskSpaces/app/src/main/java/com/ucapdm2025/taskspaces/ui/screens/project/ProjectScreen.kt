@@ -33,11 +33,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * Pending, Doing, and Done. Each column displays its corresponding tasks and
  * includes a button to add new tasks under that status.
  *
- * @param pendingTasks A list of tasks with [StatusVariations.PENDING] status.
- * @param doingTasks A list of tasks with [StatusVariations.DOING] status.
- * @param doneTasks A list of tasks with [StatusVariations.DONE] status.
- * @param onAddTaskClick A lambda function triggered when the "Add New Task" button is clicked in any column.
- * It receives the [StatusVariations] of the column where the button was pressed.
+ * @param projectId The ID of the project to display tasks for.
  */
 @Composable
 fun ProjectScreen(

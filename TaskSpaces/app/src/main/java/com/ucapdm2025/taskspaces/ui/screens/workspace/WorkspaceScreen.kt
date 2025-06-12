@@ -48,6 +48,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * in a structured layout. If the workspace is not found, a feedback message is shown.
  *
  * @param workspaceId The unique identifier of the workspace to display.
+ * @param onProjectCardClick Callback function to handle clicks on project cards, passing the project ID.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

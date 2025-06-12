@@ -88,9 +88,9 @@ data class UserTimer(
  * - Comments section showing user avatars, names, times, and content.
  * - Action buttons for cancel and save.
  *
- * @param task The [Task] to display and edit in the dialog.
+ * @param taskId: The ID of the task to be displayed in the dialog.
+ * @param onDismissRequest: Callback function to be invoked when the dialog is dismissed.
  */
-// TODO: Show dialog first and then load info
 @Composable
 fun TaskDialog(
     taskId: Int,
