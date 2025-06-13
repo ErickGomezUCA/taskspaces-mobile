@@ -64,9 +64,7 @@ fun TaskCard(
             ) {
                 tags.forEach { tag ->
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        tags.forEach {
                             Tag(tag = tag)
-                        }
                     }
                 }
             }
