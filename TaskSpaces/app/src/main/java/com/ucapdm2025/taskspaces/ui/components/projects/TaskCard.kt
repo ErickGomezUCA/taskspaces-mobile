@@ -60,11 +60,12 @@ fun TaskCard(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 tags.forEach { tag ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Tag(tag = tag)
-
+                    }
                 }
             }
         }
