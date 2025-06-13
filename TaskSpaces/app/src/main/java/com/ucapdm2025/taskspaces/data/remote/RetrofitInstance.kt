@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.data.remote
 
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
+import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.user.UserService
 import com.ucapdm2025.taskspaces.data.remote.services.workspace.WorkspaceService
 import okhttp3.OkHttpClient
@@ -27,6 +28,10 @@ object RetrofitInstance {
 
     val userService: UserService by lazy {
         retrofit.create(UserService::class.java)
+    }
+
+    val authService: AuthService by lazy {
+        retrofit.create(AuthService::class.java)
     }
 
     val workspaceService: WorkspaceService by lazy {
