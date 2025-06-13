@@ -18,10 +18,10 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun SharedWorkspacesSection(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
-        WorkspaceCard(name = "Workspace 3", projectsCount = 1, membersCount = 1)
+        WorkspaceCard(name = "Workspace 3", projectsCount = 1, membersCount = 1, isWorkspaceShared = true)
         Spacer(modifier = Modifier.height(8.dp))
 
-        WorkspaceCard(name = "Workspace 4", projectsCount = 1, membersCount = 1)
+        WorkspaceCard(name = "Workspace 4", projectsCount = 1, membersCount = 1, isWorkspaceShared = true)
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
