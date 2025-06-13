@@ -1,17 +1,21 @@
-package com.ucapdm2025.taskspaces.ui.screens
+package com.ucapdm2025.taskspaces.ui.screens.Home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.ucapdm2025.taskspaces.ui.components.projects.AssignedTasksSection
-import com.ucapdm2025.taskspaces.ui.components.projects.SharedWorkspacesSection
-import com.ucapdm2025.taskspaces.ui.components.projects.YourWorkspacesSection
+import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+/**
+ * A composable function that represents the main home screen of the app.
+ * Sections are visually grouped using the [Container] composable,
+ * and styled with themed colors via [ExtendedTheme] and [MaterialTheme].
+ */
 @Composable
 fun HomeScreen() {
     LazyColumn(
@@ -19,41 +23,45 @@ fun HomeScreen() {
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        /*item {
-            Text(
-               // text = "Welcome, \$USER",
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-        }*/
-
         item {
-            YourWorkspacesSection()
+            Container(title = "Your workspaces") {
+                YourWorkspacesSection()
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
-            SharedWorkspacesSection()
-            Spacer(modifier = Modifier.height(80.dp))
+            Container(title = "Workspaces shared with me") {
+                SharedWorkspacesSection()
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
-            AssignedTasksSection()
+            Container(title = "Assigned tasks") {
+                AssignedTasksSection()
+            }
             Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
 
+/**
+ * Preview of the HomeScreen in light mode using theme colors.
+ */
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenLightPreview() {
-    TaskSpacesTheme {
-        ExtendedColors {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
             HomeScreen()
         }
     }
 }
 
+/**
+ * Preview of the HomeScreen in dark mode using theme colors.
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun HomeScreenDarkPreview() {
