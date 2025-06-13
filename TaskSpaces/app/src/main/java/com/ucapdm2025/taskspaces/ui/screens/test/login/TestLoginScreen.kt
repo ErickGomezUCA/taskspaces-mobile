@@ -20,13 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.screens.login.LoginViewModel
 
 @Composable
 fun TestLoginScreen(
     viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 ) {
+    val authToken = viewModel.authToken.collectAsStateWithLifecycle()
+
     var email = remember { mutableStateOf("") }
     var password = remember { mutableStateOf("") }
 
@@ -65,10 +69,15 @@ fun TestLoginScreen(
             onClick = {
                 // TODO: Implement login logic here.
                 println("Attempting to log in with Email: $email, Password: $password")
+                viewModel.login(email.value, password.value)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
+        }
+
+        Container(title = "Current token value") {
+            Text(text = authToken.value)
         }
     }
 }

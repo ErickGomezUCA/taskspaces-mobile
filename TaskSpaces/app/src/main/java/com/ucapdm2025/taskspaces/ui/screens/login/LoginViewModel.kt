@@ -34,7 +34,10 @@ class LoginViewModel(
         //     authRepository.login(email, password)
         // }
         // This is just a placeholder for demonstration purposes.
-    })
+        viewModelScope.launch {
+            authRepository.login(email, password)
+        }
+    }
 
     fun saveToken(
         token: String
@@ -47,8 +50,10 @@ class LoginViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val authRepository = (this[APPLICATION_KEY] as TaskSpacesApplication).authRepository
-                LoginViewModel(authRepository)
+                val application = (this[APPLICATION_KEY] as TaskSpacesApplication)
+                LoginViewModel(
+                    application.appProvider.provideAuthRepository()
+                )
             }
         }
     }

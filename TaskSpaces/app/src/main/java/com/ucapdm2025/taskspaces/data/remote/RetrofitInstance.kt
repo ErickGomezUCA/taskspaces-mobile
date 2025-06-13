@@ -17,7 +17,7 @@ object RetrofitInstance {
             level = HttpLoggingInterceptor.Level.BODY
         })
 //        TODO: Fix BuildConfig no loading
-        .addInterceptor(AuthInterceptor { BuildConfig.API_TOKEN })
+//        .addInterceptor(AuthInterceptor { BuildConfig.API_TOKEN })
         .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()

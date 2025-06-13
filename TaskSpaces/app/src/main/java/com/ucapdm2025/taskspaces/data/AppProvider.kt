@@ -1,12 +1,20 @@
 package com.ucapdm2025.taskspaces.data
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.ucapdm2025.taskspaces.data.database.AppDatabase
 import com.ucapdm2025.taskspaces.data.remote.RetrofitInstance
+import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
+
+private const val AUTH_TOKEN_NAME = "auth_token"
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AUTH_TOKEN_NAME)
 
 class AppProvider(context: Context) {
     private val appDatabase = AppDatabase.getDatabase(context)
@@ -14,6 +22,10 @@ class AppProvider(context: Context) {
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
     private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService)
+
+//    Auth
+    private val authService = RetrofitInstance.authService
+    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
 
 //    Workspace
     private val workspaceDao = appDatabase.workspaceDao()
@@ -26,5 +38,9 @@ class AppProvider(context: Context) {
 
     fun provideUserRepository(): UserRepository {
         return userRepository
+    }
+
+    fun provideAuthRepository(): AuthRepository {
+        return authRepository
     }
 }
