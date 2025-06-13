@@ -51,7 +51,7 @@ fun YourWorkspacesSection(
             onClick = { /* Navigate to full list */ },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = ExtendedTheme.colors.primary25,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             shape = MaterialTheme.shapes.medium
