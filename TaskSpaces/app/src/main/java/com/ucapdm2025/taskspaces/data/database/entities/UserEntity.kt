@@ -1,10 +1,12 @@
 package com.ucapdm2025.taskspaces.data.database.entities
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.ucapdm2025.taskspaces.data.model.UserModel
 
 @Entity(tableName = "user")
 data class UserEntity(
+    @PrimaryKey(autoGenerate = true)
     override val id: Int,
     val fullname: String,
     val username: String,

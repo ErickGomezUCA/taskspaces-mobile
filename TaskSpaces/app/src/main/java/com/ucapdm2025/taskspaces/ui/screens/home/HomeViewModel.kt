@@ -12,6 +12,7 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
+import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,8 +36,20 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
 
     init {
         viewModelScope.launch {
-            workspaceRepository.getWorkspacesByUserId(userId).collect { workspaceList ->
-                _workspaces.value = workspaceList
+            workspaceRepository.getWorkspacesByUserId(userId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+                    is Resource.Success -> {
+                        val workspaces = resource.data
+                        _workspaces.value = workspaces
+                    }
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+                }
+
             }
         }
 

@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
+import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 
 @Database(
-    entities = [WorkspaceEntity::class],
+    entities = [WorkspaceEntity::class, UserEntity::class],
     version = 1,
     exportSchema = false
 )

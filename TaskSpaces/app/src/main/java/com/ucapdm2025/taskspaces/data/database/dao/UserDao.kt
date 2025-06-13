@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.database.dao
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -7,6 +8,7 @@ import androidx.room.Update
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface UserDao {
     @Query("SELECT * FROM user")
     fun getUsers(): Flow<List<UserEntity>>
