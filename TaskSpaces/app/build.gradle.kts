@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
@@ -8,9 +6,6 @@ plugins {
   alias(libs.plugins.kotlin.parcelize)
   alias(libs.plugins.ksp)
 }
-
-val localProperties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
-val apiToken = localProperties["API_TOKEN"] as String
 
 android {
   namespace = "com.agarcia.myfirstandroidapp"
@@ -28,8 +23,6 @@ android {
     versionName = "2.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-    buildConfigField("String", "API_TOKEN", "\"$apiToken\"")
   }
 
   buildTypes {
