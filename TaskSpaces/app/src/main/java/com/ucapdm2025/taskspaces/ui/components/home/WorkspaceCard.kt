@@ -3,6 +3,8 @@ package com.ucapdm2025.taskspaces.ui.components.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ fun WorkspaceCard(
     projectsCount: Int,
     membersCount: Int,
     modifier: Modifier = Modifier,
+    isWorkspaceShared: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -60,12 +63,16 @@ fun WorkspaceCard(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                Text(
-                    text = name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (isWorkspaceShared) Icon(imageVector = Icons.Outlined.Groups, contentDescription = "Shared workspace icon")
+
+                    Text(
+                        text = name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$projectsCount Project(s)  •  $membersCount Member(s)",
@@ -98,6 +105,26 @@ fun WorkspaceCardPreviewLight() {
 }
 
 /**
+ * Preview of [WorkspaceCard] in light mode and shared variant.
+ */
+@Preview(showBackground = true)
+@Composable
+fun WorkspaceCardSharedPreviewLight() {
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            Surface {
+                WorkspaceCard(
+                    name = "Design Sprint Board",
+                    projectsCount = 3,
+                    membersCount = 5,
+                    isWorkspaceShared = true
+                )
+            }
+        }
+    }
+}
+
+/**
  * Preview of [WorkspaceCard] in dark mode.
  */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
@@ -110,6 +137,26 @@ fun WorkspaceCardPreviewDark() {
                     name = "Marketing Plan",
                     projectsCount = 2,
                     membersCount = 7
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Preview of [WorkspaceCard] in dark mode and shared variant.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun WorkspaceCardSharedPreviewDark() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            Surface {
+                WorkspaceCard(
+                    name = "Marketing Plan",
+                    projectsCount = 2,
+                    membersCount = 7,
+                    isWorkspaceShared = true
                 )
             }
         }
