@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.data.remote.workspace
+package com.ucapdm2025.taskspaces.data.remote.services.workspace
 
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse

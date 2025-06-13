@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
-import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
@@ -14,7 +13,7 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
-import com.ucapdm2025.taskspaces.data.remote.workspace.WorkspaceService
+import com.ucapdm2025.taskspaces.data.remote.services.workspace.WorkspaceService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
