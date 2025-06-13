@@ -1,8 +1,10 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
+import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
@@ -10,12 +12,18 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.workspace.WorkspaceService
 import com.ucapdm2025.taskspaces.helpers.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
@@ -33,23 +41,67 @@ class WorkspaceRepositoryImpl(
         emit(Resource.Loading)
 
         try {
-            val remoteWorkspaces = workspaceService.getWorkspacesByUserId(ownerId = ownerId).content
+//            Fetch workspaces from remote
+            val remoteWorkspaces: List<WorkspaceResponse> = workspaceService.getWorkspacesByUserId(ownerId = ownerId).content
 
-            if (remoteWorkspaces!!.isNotEmpty()) {
-//                TODO: Finish this part
+//            Save remote workspaces to the database
+            if (remoteWorkspaces.isNotEmpty()) {
+                remoteWorkspaces.forEach {
+                    workspaceDao.createWorkspace(it.toEntity())
+                }
             }
         }
-    }
+        catch(e: Exception) {
+            Log.d("WorkspaceRepository: getWorkspacesByUserId", "Error fetching workspaces: ${e.message}")
+        }
+
+//        Use local workspaces
+        val localWorkspaces = workspaceDao.getWorkspacesByUserId(ownerId = ownerId).map { entities ->
+            val workspaces = entities.map { it.toDomain() }
+
+            if (workspaces.isEmpty()) {
+//                Logs an error if no workspaces are found for the user
+                Resource.Error("No workspace found for user with ID: $ownerId")
+            } else {
+//                Returns the workspaces as a success (to domain)
+                Resource.Success(workspaces)
+            }
+        }.distinctUntilChanged()
+
+        emitAll(localWorkspaces)
+    }.flowOn(Dispatchers.IO)
 
     // TODO: Refactor workspacesShared with a relational approach
     override fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<WorkspaceModel>> {
         return workspacesSharedWithMe.asStateFlow()
     }
 
-    override fun getWorkspaceById(id: Int): Flow<WorkspaceModel?> {
-        return workspaceDao.getWorkspaceById(id = id).map { entity ->
-            entity?.toDomain()
+    override fun getWorkspaceById(id: Int): Flow<Resource<WorkspaceModel?>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            val remoteWorkspace: WorkspaceResponse? = workspaceService.getWorkspaceById(id = id).content
+
+            if (remoteWorkspace != null) {
+                workspaceDao.createWorkspace(remoteWorkspace.toEntity())
+            } else {
+                Log.d("WorkspaceRepository", "No workspace found with ID: $id")
+            }
+        } catch (e: Exception) {
+            Log.d("WorkspaceRepository: getWorkspaceById", "Error fetching workspaces: ${e.message}")
         }
+
+        val remoteWorkspace = workspaceDao.getWorkspaceById(id = id).map { entity ->
+            val workspace = entity?.toDomain()
+
+            if (workspace == null) {
+//                Logs an error if no workspaces are found for the user
+                Resource.Error("No workspace found")
+            } else {
+//                Returns the workspaces as a success (to domain)
+                Resource.Success(workspace)
+            }
+        }.distinctUntilChanged()
     }
 
     override suspend fun createWorkspace(title: String, ownerId: Int) {

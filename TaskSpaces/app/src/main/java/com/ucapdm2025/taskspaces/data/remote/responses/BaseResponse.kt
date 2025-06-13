@@ -10,5 +10,5 @@ data class BaseResponse<T>(
     val message: String,
 
     @SerializedName("content")
-    val content: T? = null
+    val content: T
 )
