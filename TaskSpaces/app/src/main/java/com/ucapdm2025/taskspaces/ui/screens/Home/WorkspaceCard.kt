@@ -40,7 +40,8 @@ fun WorkspaceCard(
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = ExtendedTheme.colors.primary25),
+        colors = CardDefaults.cardColors(containerColor = ExtendedTheme.colors.cardContent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         onClick = onClick
     ) {
         Column {
