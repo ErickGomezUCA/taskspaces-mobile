@@ -11,6 +11,7 @@ import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
 import com.ucapdm2025.taskspaces.ui.screens.project.ProjectScreen
 import com.ucapdm2025.taskspaces.ui.screens.test.home.TestHomeScreen
+import com.ucapdm2025.taskspaces.ui.screens.test.login.TestLoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 
@@ -19,7 +20,7 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
-            HomeScreen()
+            TestLoginScreen()
         }
 
         composable<WorkspaceRoute> { backStackEntry ->

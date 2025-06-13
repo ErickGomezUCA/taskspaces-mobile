@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-  namespace = "com.agarcia.myfirstandroidapp"
+  namespace = "com.ucapdm2025.taskspaces"
   compileSdk = 35
 
   buildFeatures {
@@ -16,11 +16,11 @@ android {
   }
 
   defaultConfig {
-    applicationId = "com.agarcia.myfirstandroidapp"
-    minSdk = 24
+    applicationId = "com.ucapdm2025.taskspaces"
+    minSdk = 26
     targetSdk = 35
-    versionCode = 3
-    versionName = "2.0"
+    versionCode = 1
+    versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
