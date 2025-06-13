@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.screens.Home
+package com.ucapdm2025.taskspaces.ui.components.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

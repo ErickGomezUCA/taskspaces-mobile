@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.screens.Home
+package com.ucapdm2025.taskspaces.ui.screens.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,6 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
+import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
+import com.ucapdm2025.taskspaces.ui.screens.home.sections.YourWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme

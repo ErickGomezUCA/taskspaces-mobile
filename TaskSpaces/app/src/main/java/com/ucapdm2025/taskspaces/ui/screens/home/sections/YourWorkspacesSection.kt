@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.screens.Home
+package com.ucapdm2025.taskspaces.ui.screens.home.sections
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.ui.components.home.WorkspaceCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
-import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
