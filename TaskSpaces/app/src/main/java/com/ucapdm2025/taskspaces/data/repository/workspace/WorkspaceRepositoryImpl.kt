@@ -115,7 +115,6 @@ class WorkspaceRepositoryImpl(
         workspaceDao.createWorkspace(workspace = createdWorkspace.toDatabase())
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int) {
         val updatedWorkspaceModel = WorkspaceModel(
             id = id,

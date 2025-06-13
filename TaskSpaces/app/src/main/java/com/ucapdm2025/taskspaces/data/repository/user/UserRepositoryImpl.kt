@@ -1,33 +1,72 @@
 package com.ucapdm2025.taskspaces.data.repository.user
 
+import android.util.Log
+import com.ucapdm2025.taskspaces.data.database.dao.UserDao
+import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.usersDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
+import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.services.user.UserService
+import com.ucapdm2025.taskspaces.helpers.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 // TODO: Replace dummy data with a real local database, or consuming from a remote API
-class UserRepositoryImpl : UserRepository {
-    private val users = MutableStateFlow(usersDummies)
-    private var autoIncrementId = users.value.size + 1
+class UserRepositoryImpl(
+    private val userDao: UserDao,
+    private val userService: UserService
+) : UserRepository {
+    private var autoIncrementId = 0
 
     override fun getUsers(): Flow<List<UserModel>> {
-        return users.asStateFlow()
+        return userDao.getUsers().map { entities ->
+            entities.map { it.toDomain() }
+        }
     }
 
-    override fun getUserById(id: Int): Flow<UserModel?> {
-        return users.value.find { it.id == id }
-            ?.let { MutableStateFlow(it) }
-            ?: MutableStateFlow(null)
-    }
+    override fun getUserById(id: Int): Flow<Resource<UserModel?>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            val remoteUser: UserResponse? = userService.getUserById(id).content
+
+            if (remoteUser != null) {
+                userDao.createUser(remoteUser.toEntity())
+            }
+        }
+        catch(e: Exception) {
+            Log.d("UserRepository: getUserById", "Error fetching user: ${e.message}")
+        }
+
+        val localUser = userDao.getUserById(id).map { entity ->
+            val user = entity?.toDomain()
+
+            if (user != null) {
+                Resource.Success(user)
+            } else {
+                Resource.Error("User not found")
+            }
+        }.distinctUntilChanged()
+
+        emitAll(localUser)
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun createUser(
         fullname: String,
         username: String,
         email: String,
         avatar: String
-    ): UserModel {
+    ) {
         val createdUserModel = UserModel(
             id = autoIncrementId++,
             fullname = fullname,
@@ -38,8 +77,7 @@ class UserRepositoryImpl : UserRepository {
             updatedAt = LocalDateTime.now().toString()
         )
 
-        users.value = users.value + createdUserModel
-        return createdUserModel
+        userDao.createUser(createdUserModel.toDatabase())
     }
 
     override suspend fun updateUser(
@@ -48,7 +86,7 @@ class UserRepositoryImpl : UserRepository {
         username: String,
         email: String,
         avatar: String
-    ): UserModel {
+    ) {
         val updatedUserModel = UserModel(
             id = id,
             fullname = fullname,
@@ -59,19 +97,10 @@ class UserRepositoryImpl : UserRepository {
             updatedAt = LocalDateTime.now().toString()
         )
 
-        users.value = users.value.map {
-            if (it.id == updatedUserModel.id) updatedUserModel else it
-        }
-        return updatedUserModel
+        userDao.updateUser(updatedUserModel.toDatabase())
     }
 
-    override suspend fun deleteUser(id: Int): Boolean {
-        val exists = users.value.any { it.id == id }
-
-        if (exists) {
-            users.value = users.value.filter { it.id != id }
-        }
-
-        return exists
+    override suspend fun deleteUser(id: Int) {
+        userDao.deleteUser(id)
     }
 }

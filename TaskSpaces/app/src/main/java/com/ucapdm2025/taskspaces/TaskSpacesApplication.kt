@@ -13,5 +13,6 @@ class TaskSpacesApplication: Application() {
         super.onCreate()
 
         val workspaceRepository = appProvider.provideWorkspaceRepository()
+        val userRepository = appProvider.provideUserRepository()
     }
 }
