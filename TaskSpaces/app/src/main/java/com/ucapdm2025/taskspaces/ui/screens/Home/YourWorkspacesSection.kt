@@ -1,72 +1,51 @@
-package com.ucapdm2025.taskspaces.ui.components.projects
+package com.ucapdm2025.taskspaces.ui.screens.Home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ucapdm2025.taskspaces.ui.screens.Home.WorkspaceCard
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 
 @Composable
 fun YourWorkspacesSection(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = Color(0xFFF5F5F5), shape = RoundedCornerShape(16.dp)) // fondo gris claro
-            .padding(16.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Your workspaces",
-                style = MaterialTheme.typography.titleMedium
-            )
-            IconButton(onClick = {  }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More"
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-
         WorkspaceCard(name = "Workspace 1", projectsCount = 1, membersCount = 1)
         Spacer(modifier = Modifier.height(8.dp))
+
         WorkspaceCard(name = "Workspace 2", projectsCount = 1, membersCount = 1)
 
         Spacer(modifier = Modifier.height(12.dp))
 
-
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            TextButton(onClick = { }) {
-                Text(text = "Create workspace +", fontSize = 14.sp)
+        // Create workspace button (centered)
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            TextButton(onClick = { /* Create workspace action */ }) {
+                Text(
+                    text = "Create workspace +",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
 
-
-
+        // See more button
         Button(
-            onClick = {  },
+            onClick = { /* Navigate to full list */ },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = ExtendedTheme.colors.primary25,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ),
-            shape = RoundedCornerShape(12.dp)
+            shape = MaterialTheme.shapes.medium
         ) {
             Text("See more")
         }
