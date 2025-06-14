@@ -36,3 +36,6 @@ val ProjectScreenBackgroundDark = Color(0xFF27272A)
 val PendingStatusColor = Color(0xFF2E88DD)
 val DoingStatusColor = Color(0xFFDD972E)
 val DoneStatusColor = Color(0xFF26AA5D)
+
+val CardContentLight = Color(0xFFF7F8F8)
+val CardContentDark = Color(0xFF414143)
