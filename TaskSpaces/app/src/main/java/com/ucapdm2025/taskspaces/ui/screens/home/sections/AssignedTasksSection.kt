@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -23,8 +24,22 @@ fun AssignedTasksSection(modifier: Modifier = Modifier) {
         TaskCard(
             title = "Task Title",
             tags = listOf(
-                Tag("Tag", Color.Red),
-                Tag("Tag", Color.Blue)
+                TagModel(
+                    id = 1,
+                    title = "Tag",
+                    color = Color.Red,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                ),
+                TagModel(
+                    id = 2,
+                    title = "Tag",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -32,8 +47,22 @@ fun AssignedTasksSection(modifier: Modifier = Modifier) {
         TaskCard(
             title = "Task Title",
             tags = listOf(
-                Tag("Tag", Color(0xFFE67E22)),
-                Tag("Tag", Color(0xFF27AE60))
+                TagModel(
+                    id = 1,
+                    title = "Tag",
+                    color = Color.Red,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                ),
+                TagModel(
+                    id = 2,
+                    title = "Tag",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -41,8 +70,22 @@ fun AssignedTasksSection(modifier: Modifier = Modifier) {
         TaskCard(
             title = "Task Title",
             tags = listOf(
-                Tag("Tag", Color(0xFF9B59B6)),
-                Tag("Tag", Color(0xFF3498DB))
+                TagModel(
+                    id = 1,
+                    title = "Tag",
+                    color = Color.Red,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                ),
+                TagModel(
+                    id = 2,
+                    title = "Tag",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
             )
         )
         Spacer(modifier = Modifier.height(12.dp))

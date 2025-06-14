@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
@@ -35,7 +36,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun TaskCard(
     title: String,
-    tags: List<Tag>,
+    tags: List<TagModel>,
     //TODO: Replace with real navigation to the task chosen
     onClick: () -> Unit = {}
 ) {
@@ -63,20 +64,12 @@ fun TaskCard(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 tags.forEach { tag ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Tag(tag = tag)
-                    }
+                    Tag(tag = tag)
                 }
             }
         }
     }
 }
-
-// TODO: Replace with actual models
-data class Task(
-    val title: String,
-    val tags: List<Tag>,
-)
 
 /**
  * A preview composable for the [TaskCard] component.
@@ -87,8 +80,22 @@ data class Task(
 @Composable
 fun TaskCardPreviewLight() {
     val tagsTest = listOf(
-        Tag("Tag", Color.Red),
-        Tag("Tag", Color.Blue)
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
     )
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
@@ -110,8 +117,22 @@ fun TaskCardPreviewLight() {
 @Composable
 fun TaskCardPreviewDark() {
     val tagsTest = listOf(
-        Tag("Tag", Color.Red),
-        Tag("Tag", Color.Blue)
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
     )
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {

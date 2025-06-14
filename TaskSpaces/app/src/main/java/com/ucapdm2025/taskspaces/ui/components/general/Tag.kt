@@ -19,17 +19,6 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
- * Data class representing a tag or label associated with a task.
- *
- * @property title The text displayed inside the tag.
- * @property color The color used for the tag's border and text.
- */
-data class Tag(
-    val title: String,
-    val color: Color
-)
-
-/**
  * A composable function that displays a styled tag with a title and color.
  *
  * This component is typically used to visually represent task categories or labels.
