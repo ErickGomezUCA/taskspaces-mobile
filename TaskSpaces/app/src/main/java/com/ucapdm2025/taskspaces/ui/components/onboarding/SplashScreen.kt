@@ -33,7 +33,7 @@ fun SplashScreen() {
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = R.drawable.logo_white),
             contentDescription = "Logo",
             modifier = Modifier.size(90.dp)
         )
