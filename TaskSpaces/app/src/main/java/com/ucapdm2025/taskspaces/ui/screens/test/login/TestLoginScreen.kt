@@ -27,7 +27,8 @@ import com.ucapdm2025.taskspaces.ui.screens.login.LoginViewModel
 
 @Composable
 fun TestLoginScreen(
-    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
+    onSuccessfulLogin: () -> Unit
 ) {
     val authToken = viewModel.authToken.collectAsStateWithLifecycle()
 
@@ -41,43 +42,51 @@ fun TestLoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Email input field
-        TextField(
-            value = email.value,
-            onValueChange = { email.value = it },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (authToken.value == "") {
+            // Email input field
+            TextField(
+                value = email.value,
+                onValueChange = { email.value = it },
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Password input field
-        OutlinedTextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = { Text("Password") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
+            // Password input field
+            TextField(
+                value = password.value,
+                onValueChange = { password.value = it },
+                label = { Text("Password") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Submit button
-        Button (
-            onClick = {
-                // TODO: Implement login logic here.
-                println("Attempting to log in with Email: $email, Password: $password")
-                viewModel.login(email.value, password.value)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Login")
-        }
+            // Submit button
+            Button (
+                onClick = {
+                    // TODO: Implement login logic here.
+                    println("Attempting to log in with Email: $email, Password: $password")
+                    viewModel.login(email.value, password.value)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Login")
+            }
 
-        Container(title = "Current token value") {
-            Text(text = authToken.value)
+        } else {
+//            TODO: Refactor this to a automatic redirection to home
+            Text(text = "Login successful!")
+
+            Container(title = "Current token value") {
+                Text(text = authToken.value)
+            }
+
+            Button(onClick = onSuccessfulLogin) { Text(text = "Go to home") }
         }
     }
 }

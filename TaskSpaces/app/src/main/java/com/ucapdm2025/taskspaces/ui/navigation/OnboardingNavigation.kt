@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
 import com.ucapdm2025.taskspaces.ui.screens.LoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
+import com.ucapdm2025.taskspaces.ui.screens.test.login.TestLoginScreen
 
 /**
  * A composable function that sets up the navigation graph for the onboarding flow.
@@ -16,13 +17,15 @@ import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
 fun OnboardingNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = OnboardingRoute) {
+//    TODO: Change this into onboarding, leave login as startDestination for testing purposes
+    NavHost(navController = navController, startDestination = LoginRoute) {
         composable<OnboardingRoute> {
             OnboardingScreen(navController = navController)
         }
 
         composable<LoginRoute> {
-            LoginScreen(navController = navController)
+//            LoginScreen(navController = navController)
+            TestLoginScreen(onSuccessfulLogin = { navController.navigate(AppRoute) })
         }
 
         composable<SignupRoute> {
