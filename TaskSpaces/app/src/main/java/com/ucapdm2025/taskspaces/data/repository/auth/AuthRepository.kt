@@ -1,10 +1,12 @@
 package com.ucapdm2025.taskspaces.data.repository.auth
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.remote.requests.LoginRequest
 import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +37,23 @@ class AuthRepository(
     suspend fun login(
         email: String,
         password: String
-    ): String {
+    ): Result<String> {
+        Log.d("test1", "email: $email, password: $password")
+
         val request = LoginRequest(email, password)
 
-        return authService.login(request).content.token
+        Log.d("test1", "request: ${request.email}, ${request.password}")
+
+        return try {
+            val response = authService.login(request)
+            Result.success(response.content.token)
+        } catch (e: HttpException) {
+            Result.failure(e)
+        } catch (e: IOException){
+            Result.failure(e)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun saveAuthToken(

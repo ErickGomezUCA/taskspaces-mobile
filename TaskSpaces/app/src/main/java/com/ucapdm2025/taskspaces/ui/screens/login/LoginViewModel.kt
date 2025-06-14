@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -28,14 +29,21 @@ class LoginViewModel(
         email: String,
         password: String
     ) {
-        // Here you would typically call a login function from the repository
-        // For example:
-        // viewModelScope.launch {
-        //     authRepository.login(email, password)
-        // }
-        // This is just a placeholder for demonstration purposes.
         viewModelScope.launch {
-            authRepository.login(email, password)
+            var token: String;
+            val response = authRepository.login(email, password)
+
+            if (response.isSuccess) {
+                token = response.getOrThrow()
+                saveToken(token)
+            } else {
+                // Handle login failure, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.d("test1", "Login failed: ${exception.message}")
+                }
+            }
         }
     }
 
