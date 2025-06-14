@@ -13,7 +13,6 @@ import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
-import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,19 +33,27 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
     private val _assignedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val assignedTasks: StateFlow<List<TaskModel>> = _assignedTasks.asStateFlow()
 
+    private val _showCreateWorkspaceDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showCreateWorkspaceDialog: StateFlow<Boolean> = _showCreateWorkspaceDialog.asStateFlow()
+
+    private val _createWorkspaceDialogData: MutableStateFlow<String> = MutableStateFlow("")
+    val createWorkspaceDialogData: StateFlow<String> = _createWorkspaceDialogData.asStateFlow()
+
     init {
         viewModelScope.launch {
             workspaceRepository.getWorkspacesByUserId(userId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // Handle loading state if necessary
+                        // TODO: Handle loading state
                     }
+
                     is Resource.Success -> {
                         val workspaces = resource.data
                         _workspaces.value = workspaces
                     }
+
                     is Resource.Error -> {
-                        // Handle error state if necessary
+                        // TODO: Handle error state
                     }
                 }
 
@@ -82,6 +89,19 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
         viewModelScope.launch {
             workspaceRepository.deleteWorkspace(id)
         }
+    }
+
+    //    Dialog functions
+    fun showDialog() {
+        _showCreateWorkspaceDialog.value = true
+    }
+
+    fun hideDialog() {
+        _showCreateWorkspaceDialog.value = false
+    }
+
+    fun setCreateWorkspaceDialogData(data: String) {
+        _createWorkspaceDialogData.value = data
     }
 
     companion object {

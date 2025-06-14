@@ -1,8 +1,15 @@
 package com.ucapdm2025.taskspaces.ui.screens.home.sections
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +33,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun YourWorkspacesSection(
     workspaces: List<WorkspaceModel>,
+    onCreateWorkspaceClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -41,14 +49,22 @@ fun YourWorkspacesSection(
                 )
             }
         } else {
-            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(text = "No workspaces found...", color = ExtendedTheme.colors.onBackground50)
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             // Create workspace button
-            TextButton(onClick = { /* Create workspace action */ }, modifier = Modifier.fillMaxWidth()) {
+            TextButton(onClick = { onCreateWorkspaceClick() }, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Create workspace +",
                     fontSize = 14.sp,
@@ -98,7 +114,7 @@ fun YourWorkspacesSectionPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
             Surface {
-                YourWorkspacesSection(workspaces = workspaces)
+                YourWorkspacesSection(workspaces = workspaces, onCreateWorkspaceClick = {})
             }
         }
     }
@@ -113,7 +129,7 @@ fun YourWorkspacesSectionNoDataPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
             Surface {
-                YourWorkspacesSection(workspaces = emptyList())
+                YourWorkspacesSection(workspaces = emptyList(), onCreateWorkspaceClick = {})
             }
         }
     }
@@ -146,7 +162,7 @@ fun YourWorkspacesSectionPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             Surface {
-                YourWorkspacesSection(workspaces = workspaces)
+                YourWorkspacesSection(workspaces = workspaces, onCreateWorkspaceClick = {})
             }
         }
     }
@@ -161,7 +177,7 @@ fun YourWorkspacesSectionNoDataPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             Surface {
-                YourWorkspacesSection(workspaces = emptyList())
+                YourWorkspacesSection(workspaces = emptyList(), onCreateWorkspaceClick = {})
             }
         }
     }
