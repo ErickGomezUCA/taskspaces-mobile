@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
@@ -20,7 +22,13 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * and styled with themed colors via [ExtendedTheme] and [MaterialTheme].
  */
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
+) {
+    val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
+//    val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
+//    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -28,7 +36,7 @@ fun HomeScreen() {
     ) {
         item {
             Container(title = "Your workspaces") {
-                YourWorkspacesSection()
+                YourWorkspacesSection(workspaces = workspaces.value)
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
