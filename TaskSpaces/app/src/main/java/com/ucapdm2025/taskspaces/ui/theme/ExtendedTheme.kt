@@ -17,11 +17,15 @@ data class ExtendedColors(
     val background25: Color,
     val background50: Color,
     val background75: Color,
+    val background100: Color,
+    val onBoarding: Color,
+    val primary100: Color,
     val primary50: Color,
     val primary25: Color,
     val projectColumn: Color,
     val tag: Color,
-    val projectBackground: Color
+    val projectBackground: Color,
+    val cardContent: Color,
 )
 
 // 2. Set colors for light and dark theme (must follow ExtendedColors structure)
@@ -32,11 +36,15 @@ val LocalExtendedColors = staticCompositionLocalOf {
         background25 = Color.Unspecified,
         background50 = Color.Unspecified,
         background75 = Color.Unspecified,
+        background100 = Color.Unspecified,
+        onBoarding = Color.Unspecified,
+        primary100 = Color.Unspecified,
         primary50 = Color.Unspecified,
         primary25 = Color.Unspecified,
         projectColumn = Color.Unspecified,
         tag = Color.Unspecified,
-        projectBackground = Color.Unspecified
+        projectBackground = Color.Unspecified,
+        cardContent = Color.Unspecified,
     )
 }
 
@@ -47,11 +55,15 @@ val localExtendedColorsDark = staticCompositionLocalOf {
         background25 = White25,
         background50 = White50,
         background75 = White75,
+        background100 = White100,
+        onBoarding = PrimaryLight100,
+        primary100 = PrimaryDark100,
         primary50 = PrimaryDark50,
         primary25 = PrimaryDark25,
         projectColumn = ProjectScreenColumnDark,
         tag = Black75,
         projectBackground = ProjectScreenBackgroundDark,
+        cardContent = CardContentDark,
     )
 }
 
@@ -62,11 +74,15 @@ val localExtendedColorsLight = staticCompositionLocalOf {
         background25 = Black25,
         background50 = Black50,
         background75 = Black75,
+        background100 = Black100,
+        onBoarding = PrimaryLight100,
+        primary100 = PrimaryLight100,
         primary50 = PrimaryLight50,
         primary25 = PrimaryLight25,
         projectColumn = ProjectScreenColumnLight,
         tag = White75,
         projectBackground = ProjectScreenBackgroundLight,
+        cardContent = CardContentLight,
     )
 }
 

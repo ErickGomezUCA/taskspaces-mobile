@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
@@ -36,7 +35,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun TaskCard(
     title: String,
-    tags: List<TagModel>,
+    tags: List<Tag>,
     //TODO: Replace with real navigation to the task chosen
     onClick: () -> Unit = {}
 ) {
@@ -61,16 +60,23 @@ fun TaskCard(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 tags.forEach { tag ->
-                    Tag(tag = tag)
-
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Tag(tag = tag)
+                    }
                 }
             }
         }
     }
 }
+
+// TODO: Replace with actual models
+data class Task(
+    val title: String,
+    val tags: List<Tag>,
+)
 
 /**
  * A preview composable for the [TaskCard] component.
@@ -81,22 +87,8 @@ fun TaskCard(
 @Composable
 fun TaskCardPreviewLight() {
     val tagsTest = listOf(
-        TagModel(
-            id = 1,
-            title = "Tag",
-            color = Color.Red,
-            projectId = 1,
-            createdAt = "",
-            updatedAt = ""
-        ),
-        TagModel(
-            id = 2,
-            title = "Tag",
-            color = Color.Blue,
-            projectId = 1,
-            createdAt = "",
-            updatedAt = ""
-        )
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
     )
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
@@ -118,22 +110,8 @@ fun TaskCardPreviewLight() {
 @Composable
 fun TaskCardPreviewDark() {
     val tagsTest = listOf(
-        TagModel(
-            id = 1,
-            title = "Tag",
-            color = Color.Red,
-            projectId = 1,
-            createdAt = "",
-            updatedAt = ""
-        ),
-        TagModel(
-            id = 2,
-            title = "Tag",
-            color = Color.Blue,
-            projectId = 1,
-            createdAt = "",
-            updatedAt = ""
-        )
+        Tag("Tag", Color.Red),
+        Tag("Tag", Color.Blue)
     )
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {

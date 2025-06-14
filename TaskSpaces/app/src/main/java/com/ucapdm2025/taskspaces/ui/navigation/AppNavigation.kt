@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
-import com.ucapdm2025.taskspaces.ui.screens.HomeScreen
+import com.ucapdm2025.taskspaces.ui.screens.home.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
 import com.ucapdm2025.taskspaces.ui.screens.project.ProjectScreen
