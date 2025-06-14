@@ -28,13 +28,12 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * with a button to create a new workspace and a button to see more workspaces.
  *
  * @param workspaces A list of [WorkspaceModel] representing the user's workspaces.
- * @param modifier Optional [Modifier] to customize the layout.
  */
 @Composable
 fun YourWorkspacesSection(
-    workspaces: List<WorkspaceModel>,
+    modifier: Modifier = Modifier,
+    workspaces: List<WorkspaceModel> = emptyList<WorkspaceModel>(),
     onCreateWorkspaceClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -73,16 +72,19 @@ fun YourWorkspacesSection(
             }
 
             // See more button
-            Button(
-                onClick = { /* Navigate to full list */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("See more")
+            if (workspaces.size > 2) {
+                Button(
+                    onClick = { /* Navigate to full list */ },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text("See more")
+                }
+
             }
         }
     }
