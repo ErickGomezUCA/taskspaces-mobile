@@ -38,8 +38,6 @@ class AuthRepository(
         email: String,
         password: String
     ): Result<String> {
-        Log.d("test1", "email: $email, password: $password")
-
         val request = LoginRequest(email, password)
 
         Log.d("test1", "request: ${request.email}, ${request.password}")

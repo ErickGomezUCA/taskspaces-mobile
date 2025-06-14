@@ -5,7 +5,6 @@ import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.LoginResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface AuthService {

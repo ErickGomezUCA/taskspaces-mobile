@@ -41,7 +41,7 @@ class WorkspaceRepositoryImpl(
 
         try {
 //            Fetch workspaces from remote
-            val remoteWorkspaces: List<WorkspaceResponse> = workspaceService.getWorkspacesByUserId(ownerId = ownerId).content
+            val remoteWorkspaces: List<WorkspaceResponse> = workspaceService.getWorkspacesByUserId(userId = ownerId).content
 
 //            Save remote workspaces to the database
             if (remoteWorkspaces.isNotEmpty()) {
