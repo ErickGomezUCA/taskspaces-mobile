@@ -13,6 +13,7 @@ import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,11 +34,17 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
     private val _assignedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val assignedTasks: StateFlow<List<TaskModel>> = _assignedTasks.asStateFlow()
 
-    private val _showCreateWorkspaceDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val showCreateWorkspaceDialog: StateFlow<Boolean> = _showCreateWorkspaceDialog.asStateFlow()
+    private val _showWorkspaceDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showWorkspaceDialog: StateFlow<Boolean> = _showWorkspaceDialog.asStateFlow()
 
-    private val _createWorkspaceDialogData: MutableStateFlow<String> = MutableStateFlow("")
-    val createWorkspaceDialogData: StateFlow<String> = _createWorkspaceDialogData.asStateFlow()
+    private val _workspaceDialogData: MutableStateFlow<String> = MutableStateFlow("")
+    val workspaceDialogData: StateFlow<String> = _workspaceDialogData.asStateFlow()
+
+    private val _editMode: MutableStateFlow<HomeEditMode> = MutableStateFlow(HomeEditMode.NONE)
+    val editMode: StateFlow<HomeEditMode> = _editMode.asStateFlow()
+
+    private val _editWorkspaceSelected: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
+    val editWorkspaceSelected: StateFlow<WorkspaceModel?> = _editWorkspaceSelected.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -102,15 +109,25 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
 
     //    Dialog functions
     fun showDialog() {
-        _showCreateWorkspaceDialog.value = true
+        _showWorkspaceDialog.value = true
     }
 
     fun hideDialog() {
-        _showCreateWorkspaceDialog.value = false
+//        Reset dialog data when hiding the dialog
+        _workspaceDialogData.value = ""
+        _showWorkspaceDialog.value = false
     }
 
-    fun setCreateWorkspaceDialogData(data: String) {
-        _createWorkspaceDialogData.value = data
+    fun setWorkspaceDialogData(data: String) {
+        _workspaceDialogData.value = data
+    }
+
+    fun setEditMode(mode: HomeEditMode) {
+        _editMode.value = mode
+    }
+
+    fun setEditWorkspaceSelected(workspace: WorkspaceModel?) {
+        _editWorkspaceSelected.value = workspace
     }
 
     companion object {

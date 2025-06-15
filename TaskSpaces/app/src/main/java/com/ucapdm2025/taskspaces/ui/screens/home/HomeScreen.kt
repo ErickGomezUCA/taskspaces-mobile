@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
+import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.YourWorkspacesSection
@@ -43,26 +44,30 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun HomeScreen(
+    onNavigateWorkspace: (Int) -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
 //    val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
 //    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
-    val showCreateWorkspaceDialog =
-        viewModel.showCreateWorkspaceDialog.collectAsStateWithLifecycle()
-    val createWorkspaceDialogData =
-        viewModel.createWorkspaceDialogData.collectAsStateWithLifecycle()
+    val showWorkspaceDialog =
+        viewModel.showWorkspaceDialog.collectAsStateWithLifecycle()
+    val workspaceDialogData =
+        viewModel.workspaceDialogData.collectAsStateWithLifecycle()
+    val editMode = viewModel.editMode.collectAsStateWithLifecycle()
+    val editWorkspaceSelected =
+        viewModel.editWorkspaceSelected.collectAsStateWithLifecycle()
 
 //    Create workspace dialog
-    if (showCreateWorkspaceDialog.value) {
+    if (showWorkspaceDialog.value) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDialog() },
             title = { Text(text = "Create a new workspace") },
             text = {
                 Column {
                     TextField(
-                        value = createWorkspaceDialogData.value,
-                        onValueChange = { viewModel.setCreateWorkspaceDialogData(it) },
+                        value = workspaceDialogData.value,
+                        onValueChange = { viewModel.setWorkspaceDialogData(it) },
                         label = { Text(text = "Workspace Title") },
                         placeholder = { Text(text = "Enter workspace title") }
                     )
@@ -82,14 +87,17 @@ fun HomeScreen(
 
                     Button(
                         onClick = {
-                            viewModel.createWorkspace(
-                                title = createWorkspaceDialogData.value,
-                            )
+                            if (editMode.value == HomeEditMode.UPDATE) {
+                                viewModel.updateWorkspace(editWorkspaceSelected.value?.id ?: 0, workspaceDialogData.value)
+                            } else {
+                                viewModel.createWorkspace(workspaceDialogData.value)
+                            }
+
                             viewModel.hideDialog()
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
-                    ) { Text(text = "Save") }
+                    ) { Text(text = if (editMode.value == HomeEditMode.UPDATE) "Update" else "Create") }
                 }
             }
         )
@@ -112,7 +120,7 @@ fun HomeScreen(
                                 contentDescription = "Delete icon"
                             )
                         },
-                        onClick = {}),
+                        onClick = { viewModel.setEditMode(HomeEditMode.DELETE) }),
                     DropdownMenuOption(
                         label = "Update",
                         icon = {
@@ -121,12 +129,23 @@ fun HomeScreen(
                                 contentDescription = "Edit icon"
                             )
                         },
-                        onClick = {})
+                        onClick = { viewModel.setEditMode(HomeEditMode.UPDATE) })
                 )
             ) {
                 YourWorkspacesSection(
                     workspaces = workspaces.value,
-                    onCreateWorkspaceClick = { viewModel.showDialog() })
+                    onClickWorkspaceCard = { workspace ->
+                        when (editMode.value) {
+                            HomeEditMode.UPDATE -> {
+                                viewModel.setWorkspaceDialogData(workspace.title)
+                                viewModel.showDialog()
+                            }
+                            HomeEditMode.DELETE -> viewModel.deleteWorkspace(workspace.id)
+                            else -> onNavigateWorkspace(workspace.id)
+                        }
+                    },
+                    onCreateWorkspaceClick = { viewModel.showDialog() },
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
         }

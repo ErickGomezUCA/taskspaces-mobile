@@ -34,6 +34,7 @@ fun YourWorkspacesSection(
     modifier: Modifier = Modifier,
     workspaces: List<WorkspaceModel> = emptyList<WorkspaceModel>(),
     onCreateWorkspaceClick: () -> Unit,
+    onClickWorkspaceCard: (WorkspaceModel) -> Unit = { }
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -44,7 +45,8 @@ fun YourWorkspacesSection(
                 WorkspaceCard(
                     name = workspace.title,
                     projectsCount = 1,
-                    membersCount = 1
+                    membersCount = 1,
+                    onClick = { onClickWorkspaceCard(workspace) },
                 )
             }
         } else {
