@@ -2,20 +2,14 @@ package com.ucapdm2025.taskspaces.ui.screens.workspace
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
-import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepositoryImpl
 import com.ucapdm2025.taskspaces.helpers.Resource
-import com.ucapdm2025.taskspaces.ui.screens.home.HomeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -117,16 +111,23 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
     fun setCreateProjectDialogData(data: String) {
         _createProjectDialogData.value = data
     }
+}
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = this[APPLICATION_KEY] as TaskSpacesApplication
-                WorkspaceViewModel(
-                    workspaceId = 0, // TODO: Find a way to pass the actual workspace ID
-                    workspaceRepository = application.appProvider.provideWorkspaceRepository()
-                )
-            }
+// Create a separate ViewModel factory for WorkspaceViewModel
+// because workspaceId needs to be passed as a parameter,
+// and with companion object it was not possible to do so.
+/**
+ * Factory for creating instances of [WorkspaceViewModel].
+ */
+class WorkspaceViewModelFactory(
+    private val workspaceId: Int,
+    private val workspaceRepository: WorkspaceRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(WorkspaceViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return WorkspaceViewModel(workspaceId, workspaceRepository) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

@@ -102,7 +102,7 @@ class WorkspaceRepositoryImpl(
             )
         }
 
-        val remoteWorkspace = workspaceDao.getWorkspaceById(id = id).map { entity ->
+        val localWorkspace = workspaceDao.getWorkspaceById(id = id).map { entity ->
             val workspace = entity?.toDomain()
 
             if (workspace == null) {
@@ -113,6 +113,8 @@ class WorkspaceRepositoryImpl(
                 Resource.Success(workspace)
             }
         }.distinctUntilChanged()
+
+        emitAll(localWorkspace)
     }
 
     override suspend fun createWorkspace(title: String): Result<WorkspaceModel> {

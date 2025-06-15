@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -58,11 +59,12 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun WorkspaceScreen(
     workspaceId: Int,
-    onProjectCardClick: (Int) -> Unit,
-    viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModel.Factory)
+    onProjectCardClick: (Int) -> Unit
 ) {
-    // TODO: I'm using mock data for now, but this will be replaced with real data from an API.
-    // I'll connect it through a ViewModel and Repository once the backend is ready.
+//    Retrieve dependencies and ViewModel here because i cannot pass them as parameters with companion objects (like the traditional way)
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val workspaceRepository = application.appProvider.provideWorkspaceRepository()
+    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId, workspaceRepository))
 
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()

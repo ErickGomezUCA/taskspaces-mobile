@@ -17,7 +17,9 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
-            HomeScreen()
+            HomeScreen(onNavigateWorkspace = { workspaceId ->
+                navController.navigate(WorkspaceRoute(workspaceId))
+            })
         }
 
         composable<WorkspaceRoute> { backStackEntry ->

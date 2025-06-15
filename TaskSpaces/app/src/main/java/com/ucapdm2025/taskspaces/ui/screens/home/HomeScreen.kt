@@ -48,7 +48,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun HomeScreen(
-    onNavigateWorkspace: (Int) -> Unit = {},
+    onNavigateWorkspace: (Int) -> Unit,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
@@ -212,7 +212,7 @@ fun HomeScreen(
 fun HomeScreenLightPreview() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            HomeScreen()
+            HomeScreen(onNavigateWorkspace = {})
         }
     }
 }
@@ -225,7 +225,7 @@ fun HomeScreenLightPreview() {
 fun HomeScreenDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            HomeScreen()
+            HomeScreen(onNavigateWorkspace = {})
         }
     }
 }
