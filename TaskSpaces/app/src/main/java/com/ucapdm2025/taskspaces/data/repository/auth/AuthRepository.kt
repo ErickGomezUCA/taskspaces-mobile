@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
-import com.ucapdm2025.taskspaces.data.remote.requests.auth.LoginRequest
-import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
+import com.ucapdm2025.taskspaces.data.remote.requests.LoginRequest
+import com.ucapdm2025.taskspaces.data.remote.services.AuthService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

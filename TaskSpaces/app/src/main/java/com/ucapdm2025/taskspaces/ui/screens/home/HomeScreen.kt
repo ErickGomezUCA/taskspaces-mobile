@@ -176,6 +176,7 @@ fun HomeScreen(
                                     viewModel.deleteWorkspace(workspace.id)
                                     viewModel.setEditMode(HomeEditMode.NONE)
                                 }
+
                                 else -> onNavigateWorkspace(workspace.id)
                             }
                         },

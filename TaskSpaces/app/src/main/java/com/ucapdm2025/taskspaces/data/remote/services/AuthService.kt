@@ -1,6 +1,6 @@
-package com.ucapdm2025.taskspaces.data.remote.services.auth
+package com.ucapdm2025.taskspaces.data.remote.services
 
-import com.ucapdm2025.taskspaces.data.remote.requests.auth.LoginRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.LoginRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.LoginResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse

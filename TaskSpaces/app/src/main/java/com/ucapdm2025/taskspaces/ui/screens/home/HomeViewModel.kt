@@ -19,6 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Home screen, responsible for managing the state and business logic.
+ */
 class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : ViewModel() {
     val userId = 1
     private val taskRepository: TaskRepository = TaskRepositoryImpl()

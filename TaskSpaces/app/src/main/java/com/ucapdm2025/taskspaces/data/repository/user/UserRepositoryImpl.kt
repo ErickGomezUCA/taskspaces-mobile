@@ -8,7 +8,7 @@ import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
-import com.ucapdm2025.taskspaces.data.remote.services.user.UserService
+import com.ucapdm2025.taskspaces.data.remote.services.UserService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

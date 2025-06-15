@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.data.remote.services.user
+package com.ucapdm2025.taskspaces.data.remote.services
 
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse

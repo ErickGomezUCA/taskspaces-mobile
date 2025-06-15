@@ -9,6 +9,9 @@ import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 
+/**
+ * AppDatabase is the main database class for the TaskSpaces application.
+ */
 @Database(
     entities = [WorkspaceEntity::class, UserEntity::class],
     version = 1,

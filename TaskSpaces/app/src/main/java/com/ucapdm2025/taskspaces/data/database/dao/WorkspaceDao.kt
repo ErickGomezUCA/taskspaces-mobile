@@ -9,6 +9,9 @@ import androidx.room.Update
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 import kotlinx.coroutines.flow.Flow
 
+/** * WorkspaceDao is an interface that defines the Data Access Object (DAO) for managing workspaces in the database.
+ * It provides methods to retrieve, create, update, and delete workspaces.
+ */
 @Dao
 interface WorkspaceDao {
     @Query("SELECT * FROM workspace WHERE ownerId = :ownerId")

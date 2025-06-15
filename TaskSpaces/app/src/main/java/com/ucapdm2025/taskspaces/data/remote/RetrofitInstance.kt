@@ -2,9 +2,9 @@ package com.ucapdm2025.taskspaces.data.remote
 
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
-import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
-import com.ucapdm2025.taskspaces.data.remote.services.user.UserService
-import com.ucapdm2025.taskspaces.data.remote.services.workspace.WorkspaceService
+import com.ucapdm2025.taskspaces.data.remote.services.AuthService
+import com.ucapdm2025.taskspaces.data.remote.services.UserService
+import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

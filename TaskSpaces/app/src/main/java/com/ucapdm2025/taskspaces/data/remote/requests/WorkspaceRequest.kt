@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.data.remote.requests.workspace
+package com.ucapdm2025.taskspaces.data.remote.requests
 
 /**
  * WorkspaceRequest is a data class that represents the request body for creating or updating a workspace.

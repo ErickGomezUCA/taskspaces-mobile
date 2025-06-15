@@ -1,7 +1,6 @@
-package com.ucapdm2025.taskspaces.data.remote.services.workspace
+package com.ucapdm2025.taskspaces.data.remote.services
 
-import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
-import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
 import retrofit2.http.Body
@@ -31,4 +30,3 @@ interface WorkspaceService {
     @DELETE("workspaces/{id}")
     suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<WorkspaceResponse>
 }
-

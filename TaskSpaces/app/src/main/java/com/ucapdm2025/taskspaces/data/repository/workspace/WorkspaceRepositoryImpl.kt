@@ -10,11 +10,11 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
-import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
-import com.ucapdm2025.taskspaces.data.remote.services.workspace.WorkspaceService
+import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

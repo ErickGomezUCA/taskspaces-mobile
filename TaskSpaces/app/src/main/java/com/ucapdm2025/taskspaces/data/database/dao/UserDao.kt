@@ -8,6 +8,10 @@ import androidx.room.Update
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * UserDao is an interface that defines the Data Access Object (DAO) for managing users in the database.
+ * It provides methods to retrieve, create, update, and delete users.
+ */
 @Dao
 interface UserDao {
     @Query("SELECT * FROM user")
