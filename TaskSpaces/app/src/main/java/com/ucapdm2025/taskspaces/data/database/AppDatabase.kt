@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
+import com.ucapdm2025.taskspaces.data.database.entities.ProjectEntity
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 
@@ -13,13 +15,14 @@ import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
  * AppDatabase is the main database class for the TaskSpaces application.
  */
 @Database(
-    entities = [WorkspaceEntity::class, UserEntity::class],
+    entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun workspaceDao(): WorkspaceDao
     abstract fun userDao(): UserDao
+    abstract fun workspaceDao(): WorkspaceDao
+    abstract fun projectDao(): ProjectDao
 
     companion object {
         @Volatile

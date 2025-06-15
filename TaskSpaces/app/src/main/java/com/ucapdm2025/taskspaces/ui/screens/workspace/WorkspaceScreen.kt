@@ -63,7 +63,8 @@ fun WorkspaceScreen(
 //    Retrieve dependencies and ViewModel here because i cannot pass them as parameters with companion objects (like the traditional way)
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val workspaceRepository = application.appProvider.provideWorkspaceRepository()
-    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId, workspaceRepository))
+    val projectRepository = application.appProvider.provideProjectRepository()
+    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId, workspaceRepository, projectRepository))
 
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
@@ -118,8 +119,7 @@ fun WorkspaceScreen(
                     Button(
                         onClick = { viewModel.createProject(
                             title = projectDialogData.value,
-                            icon = "",
-                            workspaceId = workspaceId
+                            icon = ""
                         )
 
                             viewModel.hideDialog() },

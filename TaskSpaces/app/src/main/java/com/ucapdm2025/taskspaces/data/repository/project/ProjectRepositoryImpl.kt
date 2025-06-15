@@ -1,69 +1,209 @@
 package com.ucapdm2025.taskspaces.data.repository.project
 
+import android.util.Log
+import coil3.network.HttpException
+import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
+import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.projectsDummies
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
+import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.remote.requests.ProjectRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.ProjectResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
+import com.ucapdm2025.taskspaces.helpers.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import java.time.LocalDateTime
+import okio.IOException
 
 /**
  * ProjectRepositoryImpl is an implementation of the ProjectRepository interface.
  * It provides methods to manage projects in the application, including retrieving,
  * creating, updating, and deleting projects.
  */
-class ProjectRepositoryImpl: ProjectRepository {
+class ProjectRepositoryImpl(
+    private val projectDao: ProjectDao,
+    private val projectService: ProjectService
+) : ProjectRepository {
     private val projects = MutableStateFlow(projectsDummies)
 
-    private var autoIncrementId = projects.value.size + 1;
+    override fun getProjectsByWorkspaceId(workspaceId: Int): Flow<Resource<List<ProjectModel>>> =
+        flow {
+            emit(Resource.Loading)
 
-    override fun getProjectsByWorkspaceId(workspaceId: Int): Flow<List<ProjectModel>> {
-        return projects.map {list -> list.filter {it.workspaceId == workspaceId }}
-    }
+            try {
+                //            Fetch projects from remote
+                val remoteProjects: List<ProjectResponse> =
+                    projectService.getProjectsByWorkspaceId(workspaceId = workspaceId).content
 
-    override suspend fun getProjectById(id: Int): Flow<ProjectModel?> {
-        return projects.value.find { it.id == id }
-            ?.let { MutableStateFlow(it) }
-            ?: MutableStateFlow(null)
-    }
+                //            Save remote projects to the database
+                if (remoteProjects.isNotEmpty()) {
+                    remoteProjects.forEach {
+                        projectDao.createProject(it.toEntity())
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d(
+                    "ProjectRepository: getProjectsByWorkspaceId",
+                    "Error fetching projects: ${e.message}"
+                )
+            }
 
-    override suspend fun createProject(title: String, icon: String, workspaceId: Int): ProjectModel {
-        val createdProjectModel = ProjectModel(
-            id = autoIncrementId++,
-            title = title,
-            icon = icon,
-            workspaceId = workspaceId,
-            createdAt = LocalDateTime.now().toString(),
-            updatedAt = LocalDateTime.now().toString()
-        )
+            //        Use local projects
+            val localProjects =
+                projectDao.getProjectsByWorkspaceId(workspaceId = workspaceId).map { entities ->
+                    val projects = entities.map { it.toDomain() }
 
-        projects.value = projects.value + createdProjectModel
-        return createdProjectModel
-    }
+                    if (projects.isEmpty()) {
+                        //                Logs an error if no projects are found for the user
+                        Resource.Error("No project found for workspace with ID: $workspaceId")
+                    } else {
+                        //                Returns the projects as a success (to domain)
+                        Resource.Success(projects)
+                    }
+                }.distinctUntilChanged()
 
-    override suspend fun updateProject(id: Int, title: String, icon: String, workspaceId: Int): ProjectModel {
-        val updatedProjectModel = ProjectModel(
-            id = id,
-            title = title,
-            icon = icon,
-            workspaceId = workspaceId,
-            createdAt = LocalDateTime.now().toString(),
-            updatedAt = LocalDateTime.now().toString()
-        )
+            emitAll(localProjects)
+        }.flowOn(Dispatchers.IO)
 
-        projects.value = projects.value.map {
-            if (it.id == updatedProjectModel.id) updatedProjectModel else it
+    override suspend fun getProjectById(id: Int): Flow<Resource<ProjectModel?>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch project from remote
+            val remoteProject: ProjectResponse? =
+                projectService.getProjectById(id = id).content
+
+            //            Save remote project to the database
+            if (remoteProject != null) {
+                projectDao.createProject(remoteProject.toEntity())
+            } else {
+                Log.d("ProjectRepository", "No project found with ID: $id")
+            }
+        } catch (e: Exception) {
+            Log.d(
+                "ProjectRepository: getProjectById",
+                "Error fetching project: ${e.message}"
+            )
         }
-        return updatedProjectModel
+
+        //        Use local project
+        val localProject =
+            projectDao.getProjectById(id = id).map { entity ->
+                val project = entity?.toDomain()
+
+                if (project == null) {
+                    //                Logs an error if no projects are found for the user
+                    Resource.Error("No project found")
+                } else {
+                    //                Returns the projects as a success (to domain)
+                    Resource.Success(project)
+                }
+            }.distinctUntilChanged()
+
+        emitAll(localProject)
     }
 
-    override suspend fun deleteProject(id: Int): Boolean {
-        val exists = projects.value.any { it.id == id }
+    override suspend fun createProject(
+        title: String,
+        icon: String,
+        workspaceId: Int
+    ): Result<ProjectModel> {
+        val request = ProjectRequest(title, icon)
 
-        if (exists) {
-            projects.value = projects.value.filter { it.id != id }
+        return try {
+            val response =
+                projectService.createProject(workspaceId = workspaceId, request = request)
+
+            val createdProject: ProjectModel = response.content.toDomain()
+
+//            Create retrieved project from remote server into the local database
+            projectDao.createProject(createdProject.toDatabase())
+
+            Log.d(
+                "ProjectRepository: createProject",
+                "Project created successfully: $createdProject"
+            )
+
+            Result.success(createdProject)
+        } catch (e: HttpException) {
+            Log.e("ProjectRepository", "Error creating project: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("ProjectRepository", "Network error creating project: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("ProjectRepository", "Unexpected error creating project: ${e.message}")
+            Result.failure(e)
         }
+    }
 
-        return exists
+    override suspend fun updateProject(
+        id: Int,
+        title: String,
+        icon: String,
+        workspaceId: Int
+    ): Result<ProjectModel> {
+        val request = ProjectRequest(title, icon)
+
+        return try {
+            val response = projectService.updateProject(id = id, request = request)
+
+            val updatedProject: ProjectModel = response.content.toDomain()
+
+//            Update retrieved project from remote server into the local database
+            projectDao.updateProject(updatedProject.toDatabase())
+
+            Log.d(
+                "ProjectRepository: updateProject",
+                "Project updated successfully: $updatedProject"
+            )
+
+            Result.success(updatedProject)
+        } catch (e: HttpException) {
+            Log.e("ProjectRepository", "Error updating project: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("ProjectRepository", "Network error creating project: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("ProjectRepository", "Unexpected error creating project: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+
+    override suspend fun deleteProject(id: Int): Result<ProjectModel> {
+        return try {
+            val response = projectService.deleteProject(id = id)
+
+            val deletedProject: ProjectModel = response.content.toDomain()
+
+//            Update retrieved project from remote server into the local database
+            projectDao.deleteProject(deletedProject.toDatabase())
+
+            Log.d(
+                "ProjectRepository: deleteProject",
+                "Project deleted successfully: $deletedProject"
+            )
+
+            Result.success(deletedProject)
+        } catch (e: HttpException) {
+            Log.e("ProjectRepository", "Error deleting project: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("ProjectRepository", "Network error creating project: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("ProjectRepository", "Unexpected error creating project: ${e.message}")
+            Result.failure(e)
+        }
     }
 }

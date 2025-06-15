@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.project
 
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
+import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -9,9 +10,9 @@ import kotlinx.coroutines.flow.Flow
  * update an existing project, and delete a project.
  */
 interface ProjectRepository {
-    fun getProjectsByWorkspaceId(workspaceId: Int): Flow<List<ProjectModel>>
-    suspend fun getProjectById(id: Int): Flow<ProjectModel?>
-    suspend fun createProject(title: String, icon: String, workspaceId: Int): ProjectModel
-    suspend fun updateProject(id: Int, title: String, icon: String, workspaceId: Int): ProjectModel
-    suspend fun deleteProject(id: Int): Boolean
+    fun getProjectsByWorkspaceId(workspaceId: Int): Flow<Resource<List<ProjectModel>>>
+    suspend fun getProjectById(id: Int): Flow<Resource<ProjectModel?>>
+    suspend fun createProject(title: String, icon: String, workspaceId: Int): Result<ProjectModel>
+    suspend fun updateProject(id: Int, title: String, icon: String, workspaceId: Int): Result<ProjectModel>
+    suspend fun deleteProject(id: Int): Result<ProjectModel>
 }

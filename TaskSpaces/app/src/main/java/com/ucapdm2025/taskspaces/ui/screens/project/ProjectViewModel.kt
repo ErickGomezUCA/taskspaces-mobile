@@ -9,7 +9,9 @@ import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,8 +24,9 @@ import java.time.LocalDateTime
  *
  * @param projectId The unique identifier for the project to be managed.
  */
-class ProjectViewModel(projectId: Int) : ViewModel() {
-    private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
+class ProjectViewModel(
+    private val projectId: Int,
+    private val projectRepository: ProjectRepository) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
     private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
@@ -41,7 +44,7 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
     init {
         viewModelScope.launch {
             projectRepository.getProjectById(projectId).collect { project ->
-                _project.value = project
+//                _project.value = project
             }
         }
 
@@ -92,11 +95,16 @@ class ProjectViewModel(projectId: Int) : ViewModel() {
  * Factory for creating instances of [ProjectViewModel] with a specific projectId.
  *
  * @param projectId The unique identifier for the project.
+ * @param projectRepository The repository for managing project data.
  */
-class ProjectViewModelFactory(private val projectId: Int) : ViewModelProvider.Factory {
+class ProjectViewModelFactory(
+    private val projectId: Int,
+    private val projectRepository: ProjectRepository,
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProjectViewModel::class.java)) {
-            return ProjectViewModel(projectId) as T
+            @Suppress("UNCHECKED_CAST")
+            return ProjectViewModel(projectId, projectRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

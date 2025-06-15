@@ -24,6 +24,11 @@ data class WorkspaceEntity (
     override val updatedAt: String = ""
 ): BaseEntity(id, createdAt, updatedAt)
 
+/**
+ * Extension function to convert a WorkspaceEntity to a WorkspaceModel.
+ *
+ * @return A WorkspaceModel instance with the same properties as the WorkspaceEntity.
+ */
 fun WorkspaceEntity.toDomain(): WorkspaceModel {
     return WorkspaceModel(
         id = id,

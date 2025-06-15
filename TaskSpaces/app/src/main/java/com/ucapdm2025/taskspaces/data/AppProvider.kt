@@ -8,6 +8,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.ucapdm2025.taskspaces.data.database.AppDatabase
 import com.ucapdm2025.taskspaces.data.remote.RetrofitInstance
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
+import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
+import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
@@ -38,6 +40,11 @@ class AppProvider(context: Context) {
     private val workspaceService = RetrofitInstance.workspaceService
     private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl(workspaceDao, workspaceService)
 
+//    Project
+    private val projectDao = appDatabase.projectDao()
+    private val projectService = RetrofitInstance.projectService
+    private val projectRepository: ProjectRepository = ProjectRepositoryImpl(projectDao, projectService)
+
     fun provideWorkspaceRepository(): WorkspaceRepository {
         return workspaceRepository
     }
@@ -48,5 +55,9 @@ class AppProvider(context: Context) {
 
     fun provideAuthRepository(): AuthRepository {
         return authRepository
+    }
+
+    fun provideProjectRepository(): ProjectRepository {
+        return projectRepository
     }
 }

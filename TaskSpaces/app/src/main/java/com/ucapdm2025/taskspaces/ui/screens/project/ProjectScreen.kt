@@ -12,10 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
@@ -39,7 +41,9 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun ProjectScreen(
     projectId: Int
 ) {
-    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId))
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val projectRepository = application.appProvider.provideProjectRepository()
+    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository))
 
     val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()

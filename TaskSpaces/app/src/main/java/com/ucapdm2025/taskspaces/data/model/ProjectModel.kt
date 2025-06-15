@@ -1,5 +1,7 @@
 package com.ucapdm2025.taskspaces.data.model
 
+import com.ucapdm2025.taskspaces.data.database.entities.ProjectEntity
+
 /**
  * ProjectModel represents a project in the system.
  * It extends BaseModel to include common properties
@@ -20,3 +22,19 @@ data class ProjectModel (
     override val createdAt: String = "",
     override val updatedAt: String = ""
 ): BaseModel(id, createdAt, updatedAt)
+
+/**
+ * Converts ProjectModel to ProjectEntity for database storage.
+ *
+ * @return ProjectEntity representing the project in the database.
+ */
+fun ProjectModel.toDatabase(): ProjectEntity {
+    return ProjectEntity(
+        id = id,
+        title = title,
+        icon = icon ?: "",
+        workspaceId = workspaceId,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}

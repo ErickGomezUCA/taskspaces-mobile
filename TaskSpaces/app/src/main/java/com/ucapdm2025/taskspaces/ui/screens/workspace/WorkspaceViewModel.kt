@@ -21,9 +21,7 @@ import kotlinx.coroutines.launch
  *
  * @param workspaceId The unique identifier for the workspace to be managed.
  */
-class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepository: WorkspaceRepository): ViewModel() {
-    private val projectRepository: ProjectRepository = ProjectRepositoryImpl()
-
+class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepository: WorkspaceRepository, private val projectRepository: ProjectRepository): ViewModel() {
     private val _workspace: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
     val workspace: StateFlow<WorkspaceModel?> = _workspace.asStateFlow()
 
@@ -181,12 +179,13 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
  */
 class WorkspaceViewModelFactory(
     private val workspaceId: Int,
-    private val workspaceRepository: WorkspaceRepository
+    private val workspaceRepository: WorkspaceRepository,
+    private val projectRepository: ProjectRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WorkspaceViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return WorkspaceViewModel(workspaceId, workspaceRepository) as T
+            return WorkspaceViewModel(workspaceId, workspaceRepository, projectRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
