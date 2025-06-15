@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
@@ -22,9 +23,13 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for the Home screen, responsible for managing the state and business logic.
  */
-class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : ViewModel() {
-    val userId = 1
+class HomeViewModel(
+    private val workspaceRepository: WorkspaceRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
+
+    private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
 
     private val _workspaces: MutableStateFlow<List<WorkspaceModel>> = MutableStateFlow(emptyList())
     val workspaces: StateFlow<List<WorkspaceModel>> = _workspaces.asStateFlow()
@@ -49,9 +54,16 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
     private val _selectedWorkspaceId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
+    //    Fetch user id from auth
     init {
         viewModelScope.launch {
-            workspaceRepository.getWorkspacesByUserId(userId).collect { resource ->
+            authRepository.authUserId.collect { userId ->
+                _authUserId.value = userId
+            }
+        }
+
+        viewModelScope.launch {
+            workspaceRepository.getWorkspacesByUserId(_authUserId.value).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
                         // TODO: Handle loading state
@@ -71,13 +83,14 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
         }
 
         viewModelScope.launch {
-            workspaceRepository.getWorkspacesSharedWithMe(userId).collect { sharedWorkspaceList ->
-                _workspacesSharedWithMe.value = sharedWorkspaceList
-            }
+            workspaceRepository.getWorkspacesSharedWithMe(_authUserId.value)
+                .collect { sharedWorkspaceList ->
+                    _workspacesSharedWithMe.value = sharedWorkspaceList
+                }
         }
 
         viewModelScope.launch {
-            taskRepository.getAssignedTasks(userId).collect { assignedTasksList ->
+            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
                 _assignedTasks.value = assignedTasksList
             }
         }
@@ -155,7 +168,10 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = this[APPLICATION_KEY] as TaskSpacesApplication
-                HomeViewModel(application.appProvider.provideWorkspaceRepository())
+                HomeViewModel(
+                    application.appProvider.provideWorkspaceRepository(),
+                    application.appProvider.provideAuthRepository()
+                )
             }
         }
     }

@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.requests.LoginRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.LoginResponse
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -57,12 +58,12 @@ class AuthRepository(
     suspend fun login(
         email: String,
         password: String
-    ): Result<String> {
+    ): Result<LoginResponse> {
         val request = LoginRequest(email, password)
 
         return try {
             val response = authService.login(request)
-            Result.success(response.content.token)
+            Result.success(response.content)
         } catch (e: HttpException) {
             Log.e("AuthRepository", "Login failed: ${e.message}", e)
             Result.failure(e)

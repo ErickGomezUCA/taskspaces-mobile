@@ -17,28 +17,35 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authRepository: AuthRepository
-): ViewModel() {
+) : ViewModel() {
     val authToken: StateFlow<String> = authRepository.authToken.map { it }
-            .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = ""
-    )
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ""
+        )
+
+    val authUserId: StateFlow<Int> = authRepository.authUserId.map { it }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = 0
+        )
 
     fun login(
         email: String,
         password: String
     ) {
         viewModelScope.launch {
-            var token: String;
             val response = authRepository.login(email, password)
 
             if (response.isSuccess) {
-                token = response.getOrThrow()
-
-                Log.d("test1", response.toString())
+//                Save token and user ID from remote server
+                val token = response.getOrThrow().token
+                val userId = response.getOrThrow().user.id
 
                 saveToken(token)
+                saveAuthUserId(userId)
             } else {
                 // Handle login failure, e.g., show a message to the user
                 val exception = response.exceptionOrNull()
@@ -50,7 +57,7 @@ class LoginViewModel(
         }
     }
 
-    fun saveToken(
+    private fun saveToken(
         token: String
     ) {
         viewModelScope.launch {
@@ -58,9 +65,21 @@ class LoginViewModel(
         }
     }
 
+    private fun saveAuthUserId(
+        userId: Int
+    ) {
+        viewModelScope.launch {
+            authRepository.saveAuthUserId(userId)
+        }
+    }
+
     fun logout() {
         viewModelScope.launch {
             authRepository.saveAuthToken("")
+        }
+
+        viewModelScope.launch {
+            authRepository.saveAuthUserId(0)
         }
     }
 

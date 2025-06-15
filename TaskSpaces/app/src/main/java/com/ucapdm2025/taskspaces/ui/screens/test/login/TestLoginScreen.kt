@@ -31,6 +31,7 @@ fun TestLoginScreen(
     onSuccessfulLogin: () -> Unit
 ) {
     val authToken = viewModel.authToken.collectAsStateWithLifecycle()
+    val authUserId = viewModel.authUserId.collectAsStateWithLifecycle()
 
     var email = remember { mutableStateOf("") }
     var password = remember { mutableStateOf("") }
@@ -84,6 +85,10 @@ fun TestLoginScreen(
 
             Container(title = "Current token value") {
                 Text(text = authToken.value)
+            }
+
+            Container(title = "Current user id value") {
+                Text(text = authUserId.value.toString())
             }
 
             Row(
