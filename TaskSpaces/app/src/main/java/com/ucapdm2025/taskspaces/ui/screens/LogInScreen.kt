@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.ui.components.login
+package com.ucapdm2025.taskspaces.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -68,7 +68,6 @@ fun LoginScreen(
         Image(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
 
