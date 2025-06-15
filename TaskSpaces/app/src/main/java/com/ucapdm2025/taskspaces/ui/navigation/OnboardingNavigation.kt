@@ -22,7 +22,11 @@ fun OnboardingNavigation() {
         }
 
         composable<LoginRoute> {
-            LoginScreen(navController = navController)
+            LoginScreen(
+                navController = navController,
+                onLogin = {},
+                onNavigateToSignUp = {}
+            )
         }
 
         composable<SignupRoute> {

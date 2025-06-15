@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.ucapdm2025.taskspaces.R
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight100
@@ -57,14 +58,17 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun LoginScreen(
     onLogin: () -> Unit,
-    onNavigateToSignUp: () -> Unit
+    onNavigateToSignUp: () -> Unit,
+    navController: NavHostController
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var usernameError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
         Image(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = null,
@@ -115,7 +119,9 @@ fun LoginScreen(
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 isError = usernameError,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth().border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -137,7 +143,9 @@ fun LoginScreen(
                 visualTransformation = PasswordVisualTransformation(),
                 isError = passwordError,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth().border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -190,7 +198,8 @@ fun PreviewLoginScreenLight() {
         ExtendedColors(darkTheme = false) {
             LoginScreen(
                 onLogin = {},
-                onNavigateToSignUp = {}
+                onNavigateToSignUp = {},
+                navController = {} as NavHostController
             )
         }
     }
@@ -208,7 +217,8 @@ fun PreviewLoginScreenDark() {
         ExtendedColors(darkTheme = true) {
             LoginScreen(
                 onLogin = {},
-                onNavigateToSignUp = {}
+                onNavigateToSignUp = {},
+                navController = {} as NavHostController
             )
         }
     }
