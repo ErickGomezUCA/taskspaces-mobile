@@ -66,7 +66,7 @@ fun HomeScreen(
     if (showWorkspaceDialog.value) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDialog() },
-            title = { Text(text = "Create a new workspace") },
+            title = { Text(text = if (editMode.value == HomeEditMode.UPDATE) "Update workspace" else "Create a new workspace") },
             text = {
                 Column {
 //                    Title text field
