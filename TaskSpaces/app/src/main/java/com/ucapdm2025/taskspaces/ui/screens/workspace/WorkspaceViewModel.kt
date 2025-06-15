@@ -10,6 +10,7 @@ import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,11 +33,17 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
     private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
     val members: StateFlow<List<UserModel>> = _members.asStateFlow()
 
-    private val _showCreateProjectDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val showCreateProjectDialog: StateFlow<Boolean> = _showCreateProjectDialog.asStateFlow()
+    private val _showProjectDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showProjectDialog: StateFlow<Boolean> = _showProjectDialog.asStateFlow()
 
-    private val _createProjectDialogData: MutableStateFlow<String> = MutableStateFlow("")
-    val createProjectDialogData: StateFlow<String> = _createProjectDialogData.asStateFlow()
+    private val _projectDialogData: MutableStateFlow<String> = MutableStateFlow("")
+    val projectDialogData: StateFlow<String> = _projectDialogData.asStateFlow()
+
+    private val _editMode: MutableStateFlow<WorkspaceEditMode> = MutableStateFlow(WorkspaceEditMode.NONE)
+    val editMode: StateFlow<WorkspaceEditMode> = _editMode.asStateFlow()
+
+    private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -57,8 +64,22 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
         }
 
         viewModelScope.launch {
-            projectRepository.getProjectsByWorkspaceId(workspaceId).collect { projectList ->
-                _projects.value = projectList
+            projectRepository.getProjectsByWorkspaceId(workspaceId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val projects = resource.data
+                        _projects.value = projects
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
+                }
+
             }
         }
 
@@ -69,24 +90,54 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
         }
     }
 
-    fun createProject(title: String, icon: String, workspaceId: Int) {
+    fun createProject(title: String, icon: String) {
         viewModelScope.launch {
-            projectRepository.createProject(title, icon, workspaceId)
+            val response = projectRepository.createProject(title, icon, workspaceId)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    println("Error creating project: ${exception.message}")
+                }
+            }
         }
     }
 
-    fun updateProject(id: Int, title: String, icon: String, workspaceId: Int) {
+    fun updateProject(id: Int, title: String, icon: String) {
         viewModelScope.launch {
-            projectRepository.updateProject(id, title, icon, workspaceId)
+            val response = projectRepository.updateProject(id, title, icon, workspaceId)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    println("Error creating workspace: ${exception.message}")
+                }
+            }
+
         }
     }
 
     fun deleteProject(id: Int) {
         viewModelScope.launch {
-            projectRepository.deleteProject(id)
+            val response = projectRepository.deleteProject(id)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    println("Error creating workspace: ${exception.message}")
+                }
+            }
+
         }
     }
 
+//    Members functions
     fun addMember(username: String, memberRole: String, workspaceId: Int) {
         viewModelScope.launch {
             workspaceRepository.addMember(username, memberRole, workspaceId)
@@ -101,15 +152,24 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
 
 //  Dialog functions
     fun showDialog() {
-        _showCreateProjectDialog.value = true
+        _projectDialogData.value = ""
+        _showProjectDialog.value = true
     }
 
     fun hideDialog() {
-        _showCreateProjectDialog.value = false
+        _showProjectDialog.value = false
     }
 
-    fun setCreateProjectDialogData(data: String) {
-        _createProjectDialogData.value = data
+    fun setProjectDialogData(data: String) {
+        _projectDialogData.value = data
+    }
+
+    fun setEditMode(editMode: WorkspaceEditMode) {
+        _editMode.value = editMode
+    }
+
+    fun setSelectedProjectId(projectId: Int?) {
+        _selectedProjectId.value = projectId
     }
 }
 

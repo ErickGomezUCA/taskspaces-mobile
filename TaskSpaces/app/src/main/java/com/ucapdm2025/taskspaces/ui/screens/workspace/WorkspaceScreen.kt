@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -69,9 +68,10 @@ fun WorkspaceScreen(
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
-    val showCreateProjectDialog = viewModel.showCreateProjectDialog.collectAsStateWithLifecycle()
-    val createProjectDialogData = viewModel.createProjectDialogData.collectAsStateWithLifecycle()
+    val showProjectDialog = viewModel.showProjectDialog.collectAsStateWithLifecycle()
+    val projectDialogData = viewModel.projectDialogData.collectAsStateWithLifecycle()
 
+//    TODO: Show error and loading states
 //    Show feedback icon if the workspace is not found
     if (workspace.value == null) {
         Column(
@@ -88,7 +88,7 @@ fun WorkspaceScreen(
     }
 
 //    Create project dialog
-    if (showCreateProjectDialog.value) {
+    if (showProjectDialog.value) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDialog() },
             title = { Text(text = "Create a new project") },
@@ -96,8 +96,8 @@ fun WorkspaceScreen(
 //                    TODO: Add Icon field
                 Column {
                     TextField(
-                        value = createProjectDialogData.value,
-                        onValueChange = { viewModel.setCreateProjectDialogData(it) },
+                        value = projectDialogData.value,
+                        onValueChange = { viewModel.setProjectDialogData(it) },
                         label = { Text(text = "Project Title") },
                         placeholder = { Text(text = "Enter project title") }
                     )
@@ -117,7 +117,7 @@ fun WorkspaceScreen(
 
                     Button(
                         onClick = { viewModel.createProject(
-                            title = createProjectDialogData.value,
+                            title = projectDialogData.value,
                             icon = "",
                             workspaceId = workspaceId
                         )
