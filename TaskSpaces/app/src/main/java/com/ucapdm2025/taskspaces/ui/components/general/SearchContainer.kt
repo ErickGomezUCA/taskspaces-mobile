@@ -37,7 +37,7 @@ fun SearchContainer(
                 color = ExtendedTheme.colors.background25,
                 shape = RoundedCornerShape(size = 24.dp)
             )
-            .padding(24.dp)
+            .padding(15.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
@@ -48,6 +48,7 @@ fun SearchContainer(
             Text(
                 text = title,
                 fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -55,7 +56,7 @@ fun SearchContainer(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "View more",
-                        fontSize = 14.sp,
+                        fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Icon(
