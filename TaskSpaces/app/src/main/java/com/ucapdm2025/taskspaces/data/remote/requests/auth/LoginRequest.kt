@@ -1,4 +1,4 @@
-package com.ucapdm2025.taskspaces.data.remote.requests
+package com.ucapdm2025.taskspaces.data.remote.requests.auth
 
 /**
  * LoginRequest is a data class that represents the request body for user login.

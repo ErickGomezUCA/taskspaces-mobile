@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
-import com.ucapdm2025.taskspaces.data.remote.requests.LoginRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.auth.LoginRequest
 import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -47,16 +47,17 @@ class AuthRepository(
     ): Result<String> {
         val request = LoginRequest(email, password)
 
-        Log.d("test1", "request: ${request.email}, ${request.password}")
-
         return try {
             val response = authService.login(request)
             Result.success(response.content.token)
         } catch (e: HttpException) {
+            Log.e("AuthRepository", "Login failed: ${e.message}", e)
             Result.failure(e)
         } catch (e: IOException){
+            Log.e("AuthRepository", "Network error during login: ${e.message}", e)
             Result.failure(e)
         } catch (e: Exception) {
+            Log.e("AuthRepository", "Unexpected error during login: ${e.message}", e)
             Result.failure(e)
         }
     }

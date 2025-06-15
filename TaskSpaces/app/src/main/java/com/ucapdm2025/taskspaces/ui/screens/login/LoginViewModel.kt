@@ -36,7 +36,6 @@ class LoginViewModel(
             if (response.isSuccess) {
                 token = response.getOrThrow()
                 saveToken(token)
-                Log.d("test1", "Token: $token")
             } else {
                 // Handle login failure, e.g., show a message to the user
                 val exception = response.exceptionOrNull()

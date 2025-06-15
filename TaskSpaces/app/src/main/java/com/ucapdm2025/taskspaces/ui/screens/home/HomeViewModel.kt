@@ -75,7 +75,16 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
 
     fun createWorkspace(title: String) {
         viewModelScope.launch {
-            workspaceRepository.createWorkspace(title, userId)
+            val response = workspaceRepository.createWorkspace(title)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    println("Error creating workspace: ${exception.message}")
+                }
+            }
         }
     }
 

@@ -1,8 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.workspace
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
+import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
@@ -11,7 +10,9 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.CreateWorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.workspace.WorkspaceService
 import com.ucapdm2025.taskspaces.helpers.Resource
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import java.time.LocalDateTime
 
 /**
@@ -34,7 +36,7 @@ import java.time.LocalDateTime
 class WorkspaceRepositoryImpl(
     private val workspaceDao: WorkspaceDao,
     private val workspaceService: WorkspaceService
-): WorkspaceRepository {
+) : WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummies)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
     private val members = MutableStateFlow(workspaceMembersDummy)
@@ -46,7 +48,8 @@ class WorkspaceRepositoryImpl(
 
         try {
 //            Fetch workspaces from remote
-            val remoteWorkspaces: List<WorkspaceResponse> = workspaceService.getWorkspacesByUserId(userId = ownerId).content
+            val remoteWorkspaces: List<WorkspaceResponse> =
+                workspaceService.getWorkspacesByUserId(userId = ownerId).content
 
 //            Save remote workspaces to the database
             if (remoteWorkspaces.isNotEmpty()) {
@@ -54,23 +57,26 @@ class WorkspaceRepositoryImpl(
                     workspaceDao.createWorkspace(it.toEntity())
                 }
             }
-        }
-        catch(e: Exception) {
-            Log.d("WorkspaceRepository: getWorkspacesByUserId", "Error fetching workspaces: ${e.message}")
+        } catch (e: Exception) {
+            Log.d(
+                "WorkspaceRepository: getWorkspacesByUserId",
+                "Error fetching workspaces: ${e.message}"
+            )
         }
 
 //        Use local workspaces
-        val localWorkspaces = workspaceDao.getWorkspacesByUserId(ownerId = ownerId).map { entities ->
-            val workspaces = entities.map { it.toDomain() }
+        val localWorkspaces =
+            workspaceDao.getWorkspacesByUserId(ownerId = ownerId).map { entities ->
+                val workspaces = entities.map { it.toDomain() }
 
-            if (workspaces.isEmpty()) {
+                if (workspaces.isEmpty()) {
 //                Logs an error if no workspaces are found for the user
-                Resource.Error("No workspace found for user with ID: $ownerId")
-            } else {
+                    Resource.Error("No workspace found for user with ID: $ownerId")
+                } else {
 //                Returns the workspaces as a success (to domain)
-                Resource.Success(workspaces)
-            }
-        }.distinctUntilChanged()
+                    Resource.Success(workspaces)
+                }
+            }.distinctUntilChanged()
 
         emitAll(localWorkspaces)
     }.flowOn(Dispatchers.IO)
@@ -84,7 +90,8 @@ class WorkspaceRepositoryImpl(
         emit(Resource.Loading)
 
         try {
-            val remoteWorkspace: WorkspaceResponse? = workspaceService.getWorkspaceById(id = id).content
+            val remoteWorkspace: WorkspaceResponse? =
+                workspaceService.getWorkspaceById(id = id).content
 
             if (remoteWorkspace != null) {
                 workspaceDao.createWorkspace(remoteWorkspace.toEntity())
@@ -92,7 +99,10 @@ class WorkspaceRepositoryImpl(
                 Log.d("WorkspaceRepository", "No workspace found with ID: $id")
             }
         } catch (e: Exception) {
-            Log.d("WorkspaceRepository: getWorkspaceById", "Error fetching workspaces: ${e.message}")
+            Log.d(
+                "WorkspaceRepository: getWorkspaceById",
+                "Error fetching workspaces: ${e.message}"
+            )
         }
 
         val remoteWorkspace = workspaceDao.getWorkspaceById(id = id).map { entity ->
@@ -108,16 +118,33 @@ class WorkspaceRepositoryImpl(
         }.distinctUntilChanged()
     }
 
-    override suspend fun createWorkspace(title: String, ownerId: Int) {
-        val createdWorkspace = WorkspaceModel(
-            id = autoIncrementId++,
-            title = title,
-            ownerId = ownerId,
-            createdAt = LocalDateTime.now().toString(),
-            updatedAt = LocalDateTime.now().toString()
-        )
+    override suspend fun createWorkspace(title: String): Result<WorkspaceModel> {
+        val request = CreateWorkspaceRequest(title)
 
-        workspaceDao.createWorkspace(workspace = createdWorkspace.toDatabase())
+        return try {
+            val response = workspaceService.createWorkspace(request)
+
+            val createdWorkspace: WorkspaceModel = response.content.toDomain()
+
+//            Create retrieved workspace from remote server into the local database
+            workspaceDao.createWorkspace(workspace = createdWorkspace.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: createWorkspace",
+                "Workspace created successfully: ${createdWorkspace.title}"
+            )
+
+            Result.success(createdWorkspace)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: createWorkspace", "Error creating workspace: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: createWorkspace", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: createWorkspace", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
     }
 
     override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int) {
@@ -136,12 +163,16 @@ class WorkspaceRepositoryImpl(
         workspaceDao.deleteWorkspace(id = id)
     }
 
-//    Members
+    //    Members
     override fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<UserModel>> {
         return members.asStateFlow()
     }
 
-    override suspend fun addMember(username: String, memberRole: String, workspaceId: Int): Boolean {
+    override suspend fun addMember(
+        username: String,
+        memberRole: String,
+        workspaceId: Int
+    ): Boolean {
         val userExists = members.value.find { it.username == username }
         val workspaceExists = workspaces.value.any { it.id == workspaceId }
 
