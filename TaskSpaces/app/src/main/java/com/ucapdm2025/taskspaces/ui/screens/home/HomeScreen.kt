@@ -43,6 +43,8 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * A composable function that represents the main home screen of the app.
  * Sections are visually grouped using the [Container] composable,
  * and styled with themed colors via [ExtendedTheme] and [MaterialTheme].
+ *
+ * @param onNavigateWorkspace A lambda function to navigate to a specific workspace by its ID.
  */
 @Composable
 fun HomeScreen(
@@ -60,13 +62,14 @@ fun HomeScreen(
     val selectedWorkspaceId =
         viewModel.selectedWorkspaceId.collectAsStateWithLifecycle()
 
-//    Create workspace dialog
+//    Workspace dialog (for create and update workspace)
     if (showWorkspaceDialog.value) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDialog() },
             title = { Text(text = "Create a new workspace") },
             text = {
                 Column {
+//                    Title text field
                     TextField(
                         value = workspaceDialogData.value,
                         onValueChange = { viewModel.setWorkspaceDialogData(it) },
@@ -75,6 +78,7 @@ fun HomeScreen(
                     )
                 }
             },
+//            Group both actions buttons in the same space (do not confuse with confirmButton)
             confirmButton = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -88,7 +92,9 @@ fun HomeScreen(
                     ) { Text(text = "Cancel") }
                     Button(
                         onClick = {
+//                            Update selected workspace if in update mode, otherwise create a new one
                             if (editMode.value == HomeEditMode.UPDATE) {
+//                                selectedWorkspaceId comes when the user selects a workspace to update on update mode
                                 viewModel.updateWorkspace(
                                     selectedWorkspaceId.value ?: 0,
                                     workspaceDialogData.value
@@ -111,6 +117,7 @@ fun HomeScreen(
     }
 
 //    Using a box to place this floating status dialog on top of the LazyColumn
+//    This floating status dialog shows the current edit mode for Home Screen
     Box(modifier = Modifier.fillMaxSize()) {
         if (editMode.value != HomeEditMode.NONE) {
             FloatingStatusDialog(
@@ -155,6 +162,7 @@ fun HomeScreen(
                     YourWorkspacesSection(
                         workspaces = workspaces.value,
                         onClickWorkspaceCard = { workspace ->
+//                            Set the selected workspace ID when in update mode and show the dialog
                             when (editMode.value) {
                                 HomeEditMode.UPDATE -> {
                                     viewModel.setSelectedWorkspaceId(workspace.id)
@@ -162,6 +170,8 @@ fun HomeScreen(
                                     viewModel.showDialog()
                                 }
 
+//                                Delete the workspace clicked when in delete mode
+//                                TODO: Add a confirmation dialog before deleting
                                 HomeEditMode.DELETE -> {
                                     viewModel.deleteWorkspace(workspace.id)
                                     viewModel.setEditMode(HomeEditMode.NONE)
