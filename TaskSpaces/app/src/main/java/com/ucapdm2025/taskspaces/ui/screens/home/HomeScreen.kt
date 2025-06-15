@@ -86,7 +86,6 @@ fun HomeScreen(
                         shape = RoundedCornerShape(8.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                     ) { Text(text = "Cancel") }
-
                     Button(
                         onClick = {
                             if (editMode.value == HomeEditMode.UPDATE) {

@@ -10,7 +10,7 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
-import com.ucapdm2025.taskspaces.data.remote.requests.workspace.CreateWorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.io.IOException
-import java.time.LocalDateTime
 
 /**
  * WorkspaceRepositoryImpl is an implementation of the WorkspaceRepository interface.
@@ -40,8 +39,6 @@ class WorkspaceRepositoryImpl(
     private val workspaces = MutableStateFlow(workspacesDummies)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
     private val members = MutableStateFlow(workspaceMembersDummy)
-
-    private var autoIncrementId = 0
 
     override fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>> = flow {
         emit(Resource.Loading)
@@ -119,7 +116,7 @@ class WorkspaceRepositoryImpl(
     }
 
     override suspend fun createWorkspace(title: String): Result<WorkspaceModel> {
-        val request = CreateWorkspaceRequest(title)
+        val request = WorkspaceRequest(title)
 
         return try {
             val response = workspaceService.createWorkspace(request)
@@ -131,7 +128,7 @@ class WorkspaceRepositoryImpl(
 
             Log.d(
                 "WorkspaceRepository: createWorkspace",
-                "Workspace created successfully: ${createdWorkspace.title}"
+                "Workspace created successfully: $createdWorkspace"
             )
 
             Result.success(createdWorkspace)
@@ -147,16 +144,33 @@ class WorkspaceRepositoryImpl(
         }
     }
 
-    override suspend fun updateWorkspace(id: Int, title: String, ownerId: Int) {
-        val updatedWorkspaceModel = WorkspaceModel(
-            id = id,
-            title = title,
-            ownerId = ownerId,
-            createdAt = LocalDateTime.now().toString(),
-            updatedAt = LocalDateTime.now().toString()
-        )
+    override suspend fun updateWorkspace(id: Int, title: String): Result<WorkspaceModel> {
+        val request = WorkspaceRequest(title)
 
-        workspaceDao.updateWorkspace(workspace = updatedWorkspaceModel.toDatabase())
+        return try {
+            val response = workspaceService.updateWorkspace(id, request)
+
+            val updatedWorkspace: WorkspaceModel = response.content.toDomain()
+
+//            Update retrieved workspace from remote server into the local database
+            workspaceDao.updateWorkspace(workspace = updatedWorkspace.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: updateWorkspace",
+                "Workspace updated successfully: $updatedWorkspace"
+            )
+
+            Result.success(updatedWorkspace)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: updateWorkspace", "Error updating workspace: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: updateWorkspace", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: updateWorkspace", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
     }
 
     override suspend fun deleteWorkspace(id: Int) {

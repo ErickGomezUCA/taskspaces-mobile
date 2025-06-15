@@ -5,6 +5,6 @@ package com.ucapdm2025.taskspaces.data.remote.requests.workspace
  *
  * @property title The title of the workspace.
  */
-data class CreateWorkspaceRequest (
+data class WorkspaceRequest (
     val title: String
 )

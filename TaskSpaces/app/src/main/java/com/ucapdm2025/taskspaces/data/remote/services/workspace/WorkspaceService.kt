@@ -1,7 +1,7 @@
 package com.ucapdm2025.taskspaces.data.remote.services.workspace
 
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
-import com.ucapdm2025.taskspaces.data.remote.requests.workspace.CreateWorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
 import retrofit2.http.Body
@@ -23,10 +23,10 @@ interface WorkspaceService {
     suspend fun getWorkspacesByUserId(@Path("userId") userId: Int): BaseResponse<List<WorkspaceResponse>>
 
     @POST("workspaces/")
-    suspend fun createWorkspace(@Body request: CreateWorkspaceRequest): BaseResponse<WorkspaceResponse>
+    suspend fun createWorkspace(@Body request: WorkspaceRequest): BaseResponse<WorkspaceResponse>
 
     @PUT("workspace/{id}")
-    suspend fun updateWorkspace(@Path("id") id: Int, workspace: WorkspaceEntity): BaseResponse<WorkspaceResponse>
+    suspend fun updateWorkspace(@Path("id") id: Int, @Body request: WorkspaceRequest): BaseResponse<WorkspaceResponse>
 
     @DELETE("workspace/{id}")
     suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<Unit>

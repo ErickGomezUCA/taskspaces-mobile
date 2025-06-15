@@ -97,7 +97,7 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
 
     fun updateWorkspace(id: Int, title: String) {
         viewModelScope.launch {
-            workspaceRepository.updateWorkspace(id, title, userId)
+            workspaceRepository.updateWorkspace(id, title)
         }
     }
 
