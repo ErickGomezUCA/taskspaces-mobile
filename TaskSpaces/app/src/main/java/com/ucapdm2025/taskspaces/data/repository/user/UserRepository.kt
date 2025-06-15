@@ -4,6 +4,11 @@ import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * UserRepository is an interface that defines the methods for managing users in the application.
+ * It provides methods to get a list of users, get a user by ID, create a new user, update an existing user,
+ * and delete a user.
+ */
 interface UserRepository {
     fun getUsers(): Flow<List<UserModel>>
     fun getUserById(id: Int): Flow<Resource<UserModel?>>

@@ -7,6 +7,10 @@ import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+/**
+ * AuthService is an interface that defines the authentication-related API endpoints.
+ * It includes methods for user login and registration.
+ */
 interface AuthService {
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): BaseResponse<LoginResponse>

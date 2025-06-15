@@ -11,6 +11,10 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
+/**
+ * WorkspaceService is an interface that defines the workspace-related API endpoints.
+ * It includes methods for creating, retrieving, updating, and deleting workspaces.
+ */
 interface WorkspaceService {
     @GET("workspaces/{id}")
     suspend fun getWorkspaceById(@Path("id") id: Int): BaseResponse<WorkspaceResponse>

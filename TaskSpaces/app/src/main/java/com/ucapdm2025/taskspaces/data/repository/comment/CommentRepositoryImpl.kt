@@ -7,6 +7,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
+/**
+ * CommentRepositoryImpl is an implementation of the CommentRepository interface.
+ * It provides methods to manage comments in the application, including retrieving,
+ * creating, updating, and deleting comments.
+ */
 class CommentRepositoryImpl: CommentRepository {
     private val comments = MutableStateFlow(commentsDummies)
 

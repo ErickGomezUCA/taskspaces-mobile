@@ -11,6 +11,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
+/**
+ * TaskRepositoryImpl is an implementation of the TaskRepository interface.
+ * It provides methods to manage tasks in the application, including retrieving,
+ * creating, updating, and deleting tasks.
+ */
 class TaskRepositoryImpl : TaskRepository {
     private val tasks = MutableStateFlow(tasksDummies)
     private val bookmarkedTasks =

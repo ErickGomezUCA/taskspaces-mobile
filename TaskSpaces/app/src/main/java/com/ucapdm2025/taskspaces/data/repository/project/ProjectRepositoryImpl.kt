@@ -7,6 +7,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
+/**
+ * ProjectRepositoryImpl is an implementation of the ProjectRepository interface.
+ * It provides methods to manage projects in the application, including retrieving,
+ * creating, updating, and deleting projects.
+ */
 class ProjectRepositoryImpl: ProjectRepository {
     private val projects = MutableStateFlow(projectsDummies)
 

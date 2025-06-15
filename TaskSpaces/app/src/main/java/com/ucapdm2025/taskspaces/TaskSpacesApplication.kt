@@ -3,12 +3,16 @@ package com.ucapdm2025.taskspaces
 import android.app.Application
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.ucapdm2025.taskspaces.data.AppProvider
-import com.ucapdm2025.taskspaces.data.remote.helpers.TokenHolder
+import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * Main application class for TaskSpaces.
+ * This class initializes the AppProvider and loads the authentication token
+ */
 class TaskSpacesApplication: Application() {
     val appProvider by lazy {
         AppProvider(this)

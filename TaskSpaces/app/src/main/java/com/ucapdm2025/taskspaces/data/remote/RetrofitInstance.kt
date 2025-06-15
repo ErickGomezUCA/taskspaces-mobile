@@ -1,6 +1,6 @@
 package com.ucapdm2025.taskspaces.data.remote
 
-import com.ucapdm2025.taskspaces.data.remote.helpers.TokenHolder
+import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.user.UserService
@@ -10,6 +10,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * RetrofitInstance is a singleton object that provides a Retrofit instance for making API calls.
+ * It includes services for user, authentication, and workspace operations.
+ */
 object RetrofitInstance {
     //    IMPORTANT: Include "/" at the end of the base url
 //    TODO: This is the local ip of my pc, please change it to a proper ip for production

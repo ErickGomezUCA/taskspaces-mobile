@@ -26,6 +26,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
+/**
+ * WorkspaceRepositoryImpl is an implementation of the WorkspaceRepository interface.
+ * It provides methods to manage workspaces in the application, including retrieving,
+ * creating, updating, and deleting workspaces, as well as managing workspace members.
+ */
 class WorkspaceRepositoryImpl(
     private val workspaceDao: WorkspaceDao,
     private val workspaceService: WorkspaceService

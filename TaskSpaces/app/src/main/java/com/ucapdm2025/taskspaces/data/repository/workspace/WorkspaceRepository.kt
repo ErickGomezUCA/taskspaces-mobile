@@ -5,6 +5,12 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * WorkspaceRepository is an interface that defines the methods for managing workspaces in the application.
+ * It provides methods to get workspaces by user ID, get workspaces shared with a user, get a workspace by its ID,
+ * create a new workspace, update an existing workspace, delete a workspace, get members of a workspace,
+ * add a member to a workspace, and remove a member from a workspace.
+ */
 interface WorkspaceRepository {
     fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>>
     fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<WorkspaceModel>>

@@ -21,6 +21,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
+/**
+ * UserRepositoryImpl is an implementation of the UserRepository interface.
+ * It provides methods to manage users in the application, including retrieving,
+ * creating, updating, and deleting users.
+ */
 // TODO: Replace dummy data with a real local database, or consuming from a remote API
 class UserRepositoryImpl(
     private val userDao: UserDao,

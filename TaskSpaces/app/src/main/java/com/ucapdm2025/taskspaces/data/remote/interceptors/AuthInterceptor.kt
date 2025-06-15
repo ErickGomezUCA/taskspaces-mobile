@@ -4,6 +4,12 @@ import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 
+/**
+ * AuthInterceptor is an OkHttp interceptor that adds the Authorization header
+ * with a Bearer token to outgoing requests.
+ *
+ * @param tokenProvider A lambda function that provides the current authentication token.
+ */
 class AuthInterceptor(
     private val tokenProvider: () -> String
 ) : Interceptor {
