@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
@@ -27,6 +28,7 @@ class AuthRepository(
 ) {
     private companion object {
         val AUTH_TOKEN = stringPreferencesKey("auth_token")
+        val AUTH_USER_ID = intPreferencesKey("auth_user_id")
     }
 
     val authToken: Flow<String> = dataStore.data.catch { error ->
@@ -39,6 +41,17 @@ class AuthRepository(
     }
         .map { preferences ->
             preferences[AUTH_TOKEN] ?: ""
+        }
+
+    val authUserId: Flow<Int> = dataStore.data.catch { error ->
+        if (error is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw error
+        }
+    }
+        .map { preferences ->
+            preferences[AUTH_USER_ID] ?: 0
         }
 
     suspend fun login(
@@ -69,6 +82,16 @@ class AuthRepository(
 
         dataStore.edit { preferences ->
             preferences[AUTH_TOKEN] = token
+        }
+    }
+
+    suspend fun saveAuthUserId(
+        user: Int
+    ) {
+
+
+        dataStore.edit { preferences ->
+            preferences[AUTH_USER_ID] = user
         }
     }
 }
