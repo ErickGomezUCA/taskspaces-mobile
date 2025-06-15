@@ -18,6 +18,16 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+/**
+ * A reusable container composable for grouping related search content (e.g., workspaces, projects).
+ *
+ * Displays a section title with an optional "View more" action, followed by custom content.
+ *
+ * @param title The section title displayed at the top.
+ * @param modifier Modifier for customizing layout and styling.
+ * @param onViewMoreClick Optional callback triggered when "View more" is clicked.
+ * @param content Slot for injecting composables inside the container.
+ */
 @Composable
 fun SearchContainer(
     title: String,
