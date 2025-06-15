@@ -16,7 +16,7 @@ import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
  */
 @Database(
     entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase() {

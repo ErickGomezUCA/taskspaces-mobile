@@ -4,7 +4,6 @@ import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
-import com.ucapdm2025.taskspaces.data.dummy.projectsDummies
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.ProjectRequest
@@ -15,7 +14,6 @@ import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -32,8 +30,6 @@ class ProjectRepositoryImpl(
     private val projectDao: ProjectDao,
     private val projectService: ProjectService
 ) : ProjectRepository {
-    private val projects = MutableStateFlow(projectsDummies)
-
     override fun getProjectsByWorkspaceId(workspaceId: Int): Flow<Resource<List<ProjectModel>>> =
         flow {
             emit(Resource.Loading)

@@ -7,7 +7,6 @@ import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
-import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
@@ -21,7 +20,11 @@ import kotlinx.coroutines.launch
  *
  * @param workspaceId The unique identifier for the workspace to be managed.
  */
-class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepository: WorkspaceRepository, private val projectRepository: ProjectRepository): ViewModel() {
+class WorkspaceViewModel(
+    private val workspaceId: Int,
+    private val workspaceRepository: WorkspaceRepository,
+    private val projectRepository: ProjectRepository
+) : ViewModel() {
     private val _workspace: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
     val workspace: StateFlow<WorkspaceModel?> = _workspace.asStateFlow()
 
@@ -37,7 +40,8 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
     private val _projectDialogData: MutableStateFlow<String> = MutableStateFlow("")
     val projectDialogData: StateFlow<String> = _projectDialogData.asStateFlow()
 
-    private val _editMode: MutableStateFlow<WorkspaceEditMode> = MutableStateFlow(WorkspaceEditMode.NONE)
+    private val _editMode: MutableStateFlow<WorkspaceEditMode> =
+        MutableStateFlow(WorkspaceEditMode.NONE)
     val editMode: StateFlow<WorkspaceEditMode> = _editMode.asStateFlow()
 
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
@@ -50,10 +54,12 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
                     is Resource.Loading -> {
                         // Handle loading state if necessary
                     }
+
                     is Resource.Success -> {
                         val workspace = resource.data
                         _workspace.value = workspace
                     }
+
                     is Resource.Error -> {
                         // Handle error state if necessary
                     }
@@ -135,7 +141,7 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
         }
     }
 
-//    Members functions
+    //    Members functions
     fun addMember(username: String, memberRole: String, workspaceId: Int) {
         viewModelScope.launch {
             workspaceRepository.addMember(username, memberRole, workspaceId)
@@ -148,7 +154,7 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
         }
     }
 
-//  Dialog functions
+    //  Dialog functions
     fun showDialog() {
         _projectDialogData.value = ""
         _showProjectDialog.value = true
@@ -176,6 +182,10 @@ class WorkspaceViewModel(private val workspaceId: Int, private val workspaceRepo
 // and with companion object it was not possible to do so.
 /**
  * Factory for creating instances of [WorkspaceViewModel].
+ *
+ * @param workspaceId The unique identifier for the workspace to be managed.
+ * @param workspaceRepository The repository for managing workspace data.
+ * @param projectRepository The repository for managing project data.
  */
 class WorkspaceViewModelFactory(
     private val workspaceId: Int,
