@@ -25,10 +25,10 @@ interface WorkspaceService {
     @POST("workspaces/")
     suspend fun createWorkspace(@Body request: WorkspaceRequest): BaseResponse<WorkspaceResponse>
 
-    @PUT("workspace/{id}")
+    @PUT("workspaces/{id}")
     suspend fun updateWorkspace(@Path("id") id: Int, @Body request: WorkspaceRequest): BaseResponse<WorkspaceResponse>
 
-    @DELETE("workspace/{id}")
+    @DELETE("workspaces/{id}")
     suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<Unit>
 }
 

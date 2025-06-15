@@ -57,8 +57,8 @@ fun HomeScreen(
     val workspaceDialogData =
         viewModel.workspaceDialogData.collectAsStateWithLifecycle()
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
-    val editWorkspaceSelected =
-        viewModel.editWorkspaceSelected.collectAsStateWithLifecycle()
+    val selectedWorkspaceId =
+        viewModel.selectedWorkspaceId.collectAsStateWithLifecycle()
 
 //    Create workspace dialog
     if (showWorkspaceDialog.value) {
@@ -90,9 +90,11 @@ fun HomeScreen(
                         onClick = {
                             if (editMode.value == HomeEditMode.UPDATE) {
                                 viewModel.updateWorkspace(
-                                    editWorkspaceSelected.value?.id ?: 0,
+                                    selectedWorkspaceId.value ?: 0,
                                     workspaceDialogData.value
                                 )
+
+                                viewModel.setSelectedWorkspaceId(null)
                             } else {
                                 viewModel.createWorkspace(workspaceDialogData.value)
                             }
@@ -155,6 +157,7 @@ fun HomeScreen(
                         onClickWorkspaceCard = { workspace ->
                             when (editMode.value) {
                                 HomeEditMode.UPDATE -> {
+                                    viewModel.setSelectedWorkspaceId(workspace.id)
                                     viewModel.setWorkspaceDialogData(workspace.title)
                                     viewModel.showDialog()
                                 }

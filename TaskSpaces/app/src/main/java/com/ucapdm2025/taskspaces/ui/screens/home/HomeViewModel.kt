@@ -43,8 +43,8 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
     private val _editMode: MutableStateFlow<HomeEditMode> = MutableStateFlow(HomeEditMode.NONE)
     val editMode: StateFlow<HomeEditMode> = _editMode.asStateFlow()
 
-    private val _editWorkspaceSelected: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
-    val editWorkspaceSelected: StateFlow<WorkspaceModel?> = _editWorkspaceSelected.asStateFlow()
+    private val _selectedWorkspaceId: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -126,8 +126,8 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
         _editMode.value = mode
     }
 
-    fun setEditWorkspaceSelected(workspace: WorkspaceModel?) {
-        _editWorkspaceSelected.value = workspace
+    fun setSelectedWorkspaceId(id: Int?) {
+        _selectedWorkspaceId.value = id
     }
 
     companion object {
