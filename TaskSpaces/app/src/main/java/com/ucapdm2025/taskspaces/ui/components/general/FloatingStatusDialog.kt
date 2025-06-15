@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -39,6 +40,7 @@ fun FloatingStatusDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .zIndex(10f)
             .padding(32.dp),
         contentAlignment = Alignment.BottomCenter
     ) {

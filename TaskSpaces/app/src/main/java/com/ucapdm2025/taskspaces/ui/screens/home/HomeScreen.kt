@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.ui.screens.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
+import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
@@ -88,7 +90,10 @@ fun HomeScreen(
                     Button(
                         onClick = {
                             if (editMode.value == HomeEditMode.UPDATE) {
-                                viewModel.updateWorkspace(editWorkspaceSelected.value?.id ?: 0, workspaceDialogData.value)
+                                viewModel.updateWorkspace(
+                                    editWorkspaceSelected.value?.id ?: 0,
+                                    workspaceDialogData.value
+                                )
                             } else {
                                 viewModel.createWorkspace(workspaceDialogData.value)
                             }
@@ -103,66 +108,82 @@ fun HomeScreen(
         )
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        item {
-            Container(
-                title = "Your workspaces",
-                dropdownMenuOptions = listOf(
-                    DropdownMenuOption(
-                        label = "Delete",
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = "Delete icon"
-                            )
-                        },
-                        onClick = { viewModel.setEditMode(HomeEditMode.DELETE) }),
-                    DropdownMenuOption(
-                        label = "Update",
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Sync,
-                                contentDescription = "Edit icon"
-                            )
-                        },
-                        onClick = { viewModel.setEditMode(HomeEditMode.UPDATE) })
-                )
-            ) {
-                YourWorkspacesSection(
-                    workspaces = workspaces.value,
-                    onClickWorkspaceCard = { workspace ->
-                        when (editMode.value) {
-                            HomeEditMode.UPDATE -> {
-                                viewModel.setWorkspaceDialogData(workspace.title)
-                                viewModel.showDialog()
+//    Using a box to place this floating status dialog on top of the LazyColumn
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (editMode.value != HomeEditMode.NONE) {
+            FloatingStatusDialog(
+                onClose = { viewModel.setEditMode(HomeEditMode.NONE) },
+                message = when (editMode.value) {
+                    HomeEditMode.DELETE -> "On Delete Mode"
+                    HomeEditMode.UPDATE -> "On Update Mode"
+                    else -> "Invalid Mode"
+                }
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            item {
+                Container(
+                    title = "Your workspaces",
+                    dropdownMenuOptions = listOf(
+                        DropdownMenuOption(
+                            label = "Delete",
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Delete,
+                                    contentDescription = "Delete icon"
+                                )
+                            },
+                            onClick = { viewModel.setEditMode(HomeEditMode.DELETE) }),
+                        DropdownMenuOption(
+                            label = "Update",
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Sync,
+                                    contentDescription = "Edit icon"
+                                )
+                            },
+                            onClick = { viewModel.setEditMode(HomeEditMode.UPDATE) })
+                    )
+                ) {
+                    YourWorkspacesSection(
+                        workspaces = workspaces.value,
+                        onClickWorkspaceCard = { workspace ->
+                            when (editMode.value) {
+                                HomeEditMode.UPDATE -> {
+                                    viewModel.setWorkspaceDialogData(workspace.title)
+                                    viewModel.showDialog()
+                                }
+
+                                HomeEditMode.DELETE -> viewModel.deleteWorkspace(workspace.id)
+                                else -> onNavigateWorkspace(workspace.id)
                             }
-                            HomeEditMode.DELETE -> viewModel.deleteWorkspace(workspace.id)
-                            else -> onNavigateWorkspace(workspace.id)
-                        }
-                    },
-                    onCreateWorkspaceClick = { viewModel.showDialog() },
-                )
+                        },
+                        onCreateWorkspaceClick = { viewModel.showDialog() },
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
+
+            item {
+                Container(title = "Workspaces shared with me") {
+                    SharedWorkspacesSection()
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                Container(title = "Assigned tasks") {
+                    AssignedTasksSection()
+                }
+                Spacer(modifier = Modifier.height(80.dp))
+            }
         }
 
-        item {
-            Container(title = "Workspaces shared with me") {
-                SharedWorkspacesSection()
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        item {
-            Container(title = "Assigned tasks") {
-                AssignedTasksSection()
-            }
-            Spacer(modifier = Modifier.height(80.dp))
-        }
     }
 }
 
