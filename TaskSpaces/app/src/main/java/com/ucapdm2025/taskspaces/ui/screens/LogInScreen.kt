@@ -33,13 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.ucapdm2025.taskspaces.R
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight100
@@ -59,16 +57,17 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun LoginScreen(
     onLogin: () -> Unit,
     onNavigateToSignUp: () -> Unit,
-    navController: NavHostController
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var usernameError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Image(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = null,
@@ -161,7 +160,11 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Do not have an account?", color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(0.dp))
+                Text(
+                    "Do not have an account?",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(0.dp)
+                )
                 TextButton(onClick = onNavigateToSignUp, modifier = Modifier.padding(0.dp)) {
                     Text("Sign up", color = PrimaryLight100)
                 }
@@ -199,7 +202,6 @@ fun PreviewLoginScreenLight() {
             LoginScreen(
                 onLogin = {},
                 onNavigateToSignUp = {},
-                navController = {} as NavHostController
             )
         }
     }
@@ -218,7 +220,6 @@ fun PreviewLoginScreenDark() {
             LoginScreen(
                 onLogin = {},
                 onNavigateToSignUp = {},
-                navController = {} as NavHostController
             )
         }
     }
