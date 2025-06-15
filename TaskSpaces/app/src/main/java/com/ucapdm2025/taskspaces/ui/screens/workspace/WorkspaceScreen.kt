@@ -1,8 +1,10 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,9 +41,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
+import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
+import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.OutfitTypography
@@ -58,19 +65,27 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun WorkspaceScreen(
     workspaceId: Int,
-    onProjectCardClick: (Int) -> Unit
+    onNavigateProject: (Int) -> Unit,
 ) {
 //    Retrieve dependencies and ViewModel here because i cannot pass them as parameters with companion objects (like the traditional way)
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val workspaceRepository = application.appProvider.provideWorkspaceRepository()
     val projectRepository = application.appProvider.provideProjectRepository()
-    val viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory(workspaceId, workspaceRepository, projectRepository))
+    val viewModel: WorkspaceViewModel = viewModel(
+        factory = WorkspaceViewModelFactory(
+            workspaceId,
+            workspaceRepository,
+            projectRepository
+        )
+    )
 
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
     val showProjectDialog = viewModel.showProjectDialog.collectAsStateWithLifecycle()
     val projectDialogData = viewModel.projectDialogData.collectAsStateWithLifecycle()
+    val editMode = viewModel.editMode.collectAsStateWithLifecycle()
+    val selectedProjectId = viewModel.selectedProjectId.collectAsStateWithLifecycle()
 
 //    TODO: Show error and loading states
 //    Show feedback icon if the workspace is not found
@@ -92,7 +107,7 @@ fun WorkspaceScreen(
     if (showProjectDialog.value) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDialog() },
-            title = { Text(text = "Create a new project") },
+            title = { Text(text = if (editMode.value == WorkspaceEditMode.UPDATE) "Update workspace" else "Create a new workspace") },
             text = {
 //                    TODO: Add Icon field
                 Column {
@@ -117,168 +132,251 @@ fun WorkspaceScreen(
                     ) { Text(text = "Cancel") }
 
                     Button(
-                        onClick = { viewModel.createProject(
-                            title = projectDialogData.value,
-                            icon = ""
-                        )
+                        onClick = {
+//                            Update selected workspace if in update mode, otherwise create a new one
+                            if (editMode.value == WorkspaceEditMode.UPDATE) {
+//                                selectedWorkspaceId comes when the user selects a workspace to update on update mode
+                                viewModel.updateProject(
+                                    id = selectedProjectId.value ?: 0,
+                                    title = projectDialogData.value,
+                                    icon = "",
+                                )
 
-                            viewModel.hideDialog() },
+                                viewModel.setSelectedProjectId(null)
+                            } else {
+                                viewModel.createProject(title = projectDialogData.value, icon = "")
+                            }
+
+                            viewModel.setEditMode(WorkspaceEditMode.NONE)
+                            viewModel.hideDialog()
+                        },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
-                    ) { Text(text = "Save") }
+                    ) { Text(text = if (editMode.value == WorkspaceEditMode.UPDATE) "Update" else "Create") }
                 }
             }
         )
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = ExtendedTheme.colors.background05,
-                shape = RoundedCornerShape(size = 24.dp)
-            )
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        // Workspace title
-        item {
-            Text(
-                text = workspace.value?.title ?: "",
-                style = OutfitTypography.headlineSmall,
-                color = MaterialTheme.colorScheme.onBackground
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (editMode.value != WorkspaceEditMode.NONE) {
+            FloatingStatusDialog(
+                onClose = { viewModel.setEditMode(WorkspaceEditMode.NONE) },
+                message = when (editMode.value) {
+                    WorkspaceEditMode.DELETE -> "On Delete Mode"
+                    WorkspaceEditMode.UPDATE -> "On Update Mode"
+                    else -> "Invalid Mode"
+                }
             )
         }
 
-
-        // Projects Section
-        item {
-            Container(title = "Projects") {
-                val chunkedProjects = projects.value.chunked(2)
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    chunkedProjects.forEach { rowItems ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(
-                                8.dp,
-                                Alignment.CenterHorizontally
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            rowItems.forEach { project ->
-                                ProjectCard(
-                                    name = project.title,
-                                    modifier = Modifier.weight(1f),
-                                    onClick = { onProjectCardClick(project.id) }
-                                )
-                            }
-                        }
-                    }
-                }
-
-
-                // "Create new project" button
-                TextButton(
-                    onClick = { viewModel.showDialog() },
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                ) {
-                    Text(
-                        text = "Create new project",
-                        style = OutfitTypography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add icon",
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(16.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // "See more" button
-                Button(
-                    onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
-                    },
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(size = 8.dp)
-                        )
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "See more",
-                        style = OutfitTypography.bodyMedium,
-                        color = MaterialTheme.colorScheme.background
-                    )
-                }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = ExtendedTheme.colors.background05,
+                    shape = RoundedCornerShape(size = 24.dp)
+                )
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Workspace title
+            item {
+                Text(
+                    text = workspace.value?.title ?: "",
+                    style = OutfitTypography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
-        }
 
 
-        // Members Section
-        item {
-
-            Container(title = "Members") {
-                val chunkedUsers = members.value.chunked(3)
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+            // Projects Section
+            item {
+                Container(
+                    title = "Projects", dropdownMenuOptions = listOf(
+                        DropdownMenuOption(
+                            label = "Delete",
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Delete,
+                                    contentDescription = "Delete icon"
+                                )
+                            },
+                            onClick = { viewModel.setEditMode(WorkspaceEditMode.DELETE) }),
+                        DropdownMenuOption(
+                            label = "Update",
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Sync,
+                                    contentDescription = "Edit icon"
+                                )
+                            },
+                            onClick = { viewModel.setEditMode(WorkspaceEditMode.UPDATE) })
+                    )
                 ) {
-                    chunkedUsers.forEach { rowItems ->
-                        Row(
+                    if (projects.value.isNotEmpty()) {
+                        //                    Show projects section
+                        val chunkedProjects = projects.value.chunked(2)
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            rowItems.forEach { member ->
-                                UserCard(
-                                    member.username,
+                            chunkedProjects.forEach { rowItems ->
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(
+                                        8.dp,
+                                        Alignment.CenterHorizontally
+                                    ),
                                     modifier = Modifier
-                                        .width(80.dp)
-                                        .fillMaxHeight()
-                                )
+                                        .fillMaxWidth()
+                                ) {
+                                    rowItems.forEach { project ->
+                                        ProjectCard(
+                                            name = project.title,
+                                            modifier = Modifier.weight(1f),
+                                            onClick = {
+                                                when (editMode.value) {
+//                            Set the selected project ID when in update mode and show the dialog
+
+                                                    WorkspaceEditMode.UPDATE -> {
+                                                        viewModel.setSelectedProjectId(project.id)
+                                                        viewModel.setProjectDialogData(project.title)
+                                                        viewModel.showDialog()
+                                                    }
+
+//                                Delete the project clicked when in delete mode
+//                                TODO: Add a confirmation dialog before deleting
+                                                    WorkspaceEditMode.DELETE -> {
+                                                        viewModel.deleteProject(project.id)
+                                                        viewModel.setEditMode(WorkspaceEditMode.NONE)
+                                                    }
+
+                                                    else -> onNavigateProject(project.id)
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
                             }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "No projects found...",
+                                color = ExtendedTheme.colors.onBackground50
+                            )
+                        }
+
+                    }
+
+                    // "Create new project" button
+                    TextButton(
+                        onClick = { viewModel.showDialog() },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                    ) {
+                        Text(
+                            text = "Create new project",
+                            style = OutfitTypography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add icon",
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .size(16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // "See more" button
+                    if (projects.value.size > 2) {
+                        Button(
+                            onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
+                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
+                            },
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(size = 8.dp)
+                                )
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "See more",
+                                style = OutfitTypography.bodyMedium,
+                                color = MaterialTheme.colorScheme.background
+                            )
                         }
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
-                    onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
+            // Members Section
+            item {
+
+                Container(title = "Members") {
+                    val chunkedUsers = members.value.chunked(3)
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        chunkedUsers.forEach { rowItems ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                rowItems.forEach { member ->
+                                    UserCard(
+                                        member.username,
+                                        modifier = Modifier
+                                            .width(80.dp)
+                                            .fillMaxHeight()
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
                     //  This should be delegated to the ViewModel to follow proper architecture practices. */
-                    },
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(size = 8.dp)
+                        },
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(size = 8.dp)
+                            )
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Manage members",
+                            style = OutfitTypography.bodyMedium,
+                            color = MaterialTheme.colorScheme.background
                         )
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Manage members",
-                        style = OutfitTypography.bodyMedium,
-                        color = MaterialTheme.colorScheme.background
-                    )
+                    }
                 }
             }
         }
+
     }
 }
 
@@ -292,7 +390,7 @@ fun WorkspaceScreen(
 fun WorkspaceScreenPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            WorkspaceScreen(workspaceId = 1, onProjectCardClick = {})
+            WorkspaceScreen(workspaceId = 1, onNavigateProject = {})
         }
     }
 }
@@ -307,7 +405,7 @@ fun WorkspaceScreenPreviewLight() {
 fun WorkspaceScreenNotFoundPreviewLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            WorkspaceScreen(workspaceId = 0, onProjectCardClick = {})
+            WorkspaceScreen(workspaceId = 0, onNavigateProject = {})
         }
     }
 }
@@ -322,7 +420,7 @@ fun WorkspaceScreenNotFoundPreviewLight() {
 fun WorkspaceScreenPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            WorkspaceScreen(workspaceId = 1, onProjectCardClick = {})
+            WorkspaceScreen(workspaceId = 1, onNavigateProject = {})
         }
     }
 }
@@ -337,7 +435,7 @@ fun WorkspaceScreenPreviewDark() {
 fun WorkspaceScreenNotFoundPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            WorkspaceScreen(workspaceId = 0, onProjectCardClick = {})
+            WorkspaceScreen(workspaceId = 0, onNavigateProject = {})
         }
     }
 }

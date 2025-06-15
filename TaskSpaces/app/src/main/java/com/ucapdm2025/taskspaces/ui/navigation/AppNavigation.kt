@@ -24,7 +24,7 @@ fun AppNavigation(navController: NavHostController) {
 
         composable<WorkspaceRoute> { backStackEntry ->
             val workspaceId: Int = backStackEntry.arguments?.getInt("workspaceId") ?: 0
-            WorkspaceScreen(workspaceId = workspaceId, onProjectCardClick = { projectId ->
+            WorkspaceScreen(workspaceId = workspaceId, onNavigateProject = { projectId ->
                 navController.navigate(ProjectRoute(projectId))
             })
         }

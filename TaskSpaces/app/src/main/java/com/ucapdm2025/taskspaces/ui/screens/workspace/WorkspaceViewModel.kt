@@ -156,7 +156,6 @@ class WorkspaceViewModel(
 
     //  Dialog functions
     fun showDialog() {
-        _projectDialogData.value = ""
         _showProjectDialog.value = true
     }
 
