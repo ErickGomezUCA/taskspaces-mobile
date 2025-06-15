@@ -173,8 +173,30 @@ class WorkspaceRepositoryImpl(
         }
     }
 
-    override suspend fun deleteWorkspace(id: Int) {
-        workspaceDao.deleteWorkspace(id = id)
+    override suspend fun deleteWorkspace(id: Int): Result<WorkspaceModel> {
+        return try {
+            val response = workspaceService.deleteWorkspace(id)
+
+            val deletedWorkspace: WorkspaceModel = response.content.toDomain()
+
+            workspaceDao.deleteWorkspace(workspace = deletedWorkspace.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: deleteWorkspace",
+                "Workspace deleted successfully: $deletedWorkspace"
+            )
+
+            Result.success(deletedWorkspace)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: deleteWorkspace", "Error deleting workspace: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: deleteWorkspace", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: deleteWorkspace", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
     }
 
     //    Members

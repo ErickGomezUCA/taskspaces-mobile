@@ -29,6 +29,6 @@ interface WorkspaceService {
     suspend fun updateWorkspace(@Path("id") id: Int, @Body request: WorkspaceRequest): BaseResponse<WorkspaceResponse>
 
     @DELETE("workspaces/{id}")
-    suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<Unit>
+    suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<WorkspaceResponse>
 }
 

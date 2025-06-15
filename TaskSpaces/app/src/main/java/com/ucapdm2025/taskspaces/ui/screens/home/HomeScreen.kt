@@ -162,7 +162,10 @@ fun HomeScreen(
                                     viewModel.showDialog()
                                 }
 
-                                HomeEditMode.DELETE -> viewModel.deleteWorkspace(workspace.id)
+                                HomeEditMode.DELETE -> {
+                                    viewModel.deleteWorkspace(workspace.id)
+                                    viewModel.setEditMode(HomeEditMode.NONE)
+                                }
                                 else -> onNavigateWorkspace(workspace.id)
                             }
                         },

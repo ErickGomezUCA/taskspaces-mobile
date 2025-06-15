@@ -97,13 +97,31 @@ class HomeViewModel(private val workspaceRepository: WorkspaceRepository) : View
 
     fun updateWorkspace(id: Int, title: String) {
         viewModelScope.launch {
-            workspaceRepository.updateWorkspace(id, title)
+            val response = workspaceRepository.updateWorkspace(id, title)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    println("Error updating workspace: ${exception.message}")
+                }
+            }
         }
     }
 
     fun deleteWorkspace(id: Int) {
         viewModelScope.launch {
-            workspaceRepository.deleteWorkspace(id)
+            val response = workspaceRepository.deleteWorkspace(id)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    println("Error deleting workspace: ${exception.message}")
+                }
+            }
         }
     }
 
