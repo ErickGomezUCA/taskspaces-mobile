@@ -6,12 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
-import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
-import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
+import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
-import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +24,8 @@ import java.time.LocalDateTime
  */
 class ProjectViewModel(
     private val projectId: Int,
-    private val projectRepository: ProjectRepository) : ViewModel() {
+    private val projectRepository: ProjectRepository
+) : ViewModel() {
     private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
     private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
@@ -43,8 +42,22 @@ class ProjectViewModel(
 
     init {
         viewModelScope.launch {
-            projectRepository.getProjectById(projectId).collect { project ->
-//                _project.value = project
+            projectRepository.getProjectById(projectId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val project = resource.data
+                        _project.value = project
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+                }
+
             }
         }
 
