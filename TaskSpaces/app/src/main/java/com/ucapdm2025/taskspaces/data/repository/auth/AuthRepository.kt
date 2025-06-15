@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import coil3.network.HttpException
+import com.ucapdm2025.taskspaces.data.remote.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.requests.LoginRequest
 import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
 import kotlinx.coroutines.flow.Flow
@@ -57,6 +58,8 @@ class AuthRepository(
     suspend fun saveAuthToken(
         token: String
     ) {
+        TokenHolder.token = token // Update the global holder
+
         dataStore.edit { preferences ->
             preferences[AUTH_TOKEN] = token
         }

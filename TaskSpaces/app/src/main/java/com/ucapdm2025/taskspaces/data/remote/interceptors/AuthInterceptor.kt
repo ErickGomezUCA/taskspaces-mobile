@@ -4,11 +4,16 @@ import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthInterceptor(private val authToken: String): Interceptor {
+class AuthInterceptor(
+    private val tokenProvider: () -> String
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request().newBuilder()
-            .addHeader("Authorization", "Bearer $authToken")
-            .build()
+        val token = tokenProvider()
+        val request = chain.request().newBuilder().apply {
+            if (token.isNotEmpty()) {
+                addHeader("Authorization", "Bearer $token")
+            }
+        }.build()
 
         return chain.proceed(request)
     }

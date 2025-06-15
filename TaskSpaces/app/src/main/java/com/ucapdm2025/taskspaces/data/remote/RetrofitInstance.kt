@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.remote
 
+import com.ucapdm2025.taskspaces.data.remote.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.auth.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.user.UserService
@@ -10,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-//    IMPORTANT: Include "/" at the end of the base url
+    //    IMPORTANT: Include "/" at the end of the base url
 //    TODO: This is the local ip of my pc, please change it to a proper ip for production
     private const val BASE_URL = "http://192.168.0.29:3000/api/"
 
@@ -18,7 +19,7 @@ object RetrofitInstance {
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
-        .addInterceptor(AuthInterceptor("")) // Replace with actual auth token if needed
+        .addInterceptor(AuthInterceptor { TokenHolder.token })
         .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()
