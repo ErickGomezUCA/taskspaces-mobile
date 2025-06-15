@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.ui.screens.test.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -67,7 +67,7 @@ fun TestLoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Submit button
-            Button (
+            Button(
                 onClick = {
                     // TODO: Implement login logic here.
                     println("Attempting to log in with Email: $email, Password: $password")
@@ -86,7 +86,12 @@ fun TestLoginScreen(
                 Text(text = authToken.value)
             }
 
-            Button(onClick = onSuccessfulLogin) { Text(text = "Go to home") }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(onClick = onSuccessfulLogin) { Text(text = "Go to home") }
+                Button(onClick = { viewModel.logout() }) { Text(text = "Log out") }
+            }
         }
     }
 }

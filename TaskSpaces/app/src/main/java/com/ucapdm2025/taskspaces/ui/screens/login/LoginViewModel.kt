@@ -35,6 +35,9 @@ class LoginViewModel(
 
             if (response.isSuccess) {
                 token = response.getOrThrow()
+
+                Log.d("test1", response.toString())
+
                 saveToken(token)
             } else {
                 // Handle login failure, e.g., show a message to the user
@@ -52,6 +55,12 @@ class LoginViewModel(
     ) {
         viewModelScope.launch {
             authRepository.saveAuthToken(token)
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.saveAuthToken("")
         }
     }
 

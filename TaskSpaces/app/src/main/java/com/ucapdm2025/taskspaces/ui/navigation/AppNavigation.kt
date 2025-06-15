@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,8 +9,6 @@ import com.ucapdm2025.taskspaces.ui.screens.home.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
 import com.ucapdm2025.taskspaces.ui.screens.project.ProjectScreen
-import com.ucapdm2025.taskspaces.ui.screens.test.home.TestHomeScreen
-import com.ucapdm2025.taskspaces.ui.screens.test.login.TestLoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 
