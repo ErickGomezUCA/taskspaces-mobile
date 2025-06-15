@@ -86,13 +86,13 @@ fun TestWorkspaceScreen(
             fontSize = 20.sp
         )
 
-        Container(title = "- Workspace info", showOptionsButton = false) {
+        Container(title = "- Workspace info") {
             Text(text = "ID: ${workspace.value?.id ?: "Loading..."}")
             Text(text = "Title: ${workspace.value?.title ?: "Loading..."}")
             Text(text = "Owner ID: ${workspace.value?.ownerId ?: "Loading..."}")
         }
 
-        Container(title = "- Get all projects by workspace id", showOptionsButton = false) {
+        Container(title = "- Get all projects by workspace id") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -110,7 +110,7 @@ fun TestWorkspaceScreen(
             }
         }
 
-        Container(title = "- Create new project", showOptionsButton = false) {
+        Container(title = "- Create new project") {
             TextField(
                 value = mutableProjectInfo.value.title.value,
                 onValueChange = { mutableProjectInfo.value.title.value = it },
@@ -145,7 +145,7 @@ fun TestWorkspaceScreen(
             }
         }
 
-        Container(title = "- Update project", showOptionsButton = false) {
+        Container(title = "- Update project") {
             TextField(
                 value = selectedProjectId.value,
                 onValueChange = { selectedProjectId.value = it },
@@ -190,7 +190,7 @@ fun TestWorkspaceScreen(
             }
         }
 
-        Container(title = "- Delete workspace", showOptionsButton = false) {
+        Container(title = "- Delete workspace") {
             TextField(
                 value = selectedProjectId.value,
                 onValueChange = { selectedProjectId.value = it },
@@ -210,7 +210,7 @@ fun TestWorkspaceScreen(
             }
         }
 
-        Container(title = "- Get all members", showOptionsButton = false) {
+        Container(title = "- Get all members") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -227,7 +227,7 @@ fun TestWorkspaceScreen(
             }
         }
 
-        Container(title = "- Add member", showOptionsButton = false) {
+        Container(title = "- Add member") {
             TextField(
                 value = mutableMemberInfo.value.username.value,
                 onValueChange = { mutableMemberInfo.value.username.value = it },
@@ -262,7 +262,7 @@ fun TestWorkspaceScreen(
 
         }
 
-        Container(title = "- Remove member", showOptionsButton = false) {
+        Container(title = "- Remove member") {
             TextField(
                 value = mutableMemberInfo.value.username.value,
                 onValueChange = { mutableMemberInfo.value.username.value = it },

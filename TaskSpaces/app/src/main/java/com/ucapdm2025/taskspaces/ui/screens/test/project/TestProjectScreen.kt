@@ -71,14 +71,14 @@ fun TestProjectScreen(
             fontSize = 20.sp
         )
 
-        Container(title = "- Project info", showOptionsButton = false) {
+        Container(title = "- Project info") {
             Text(text = "ID: ${project.value?.id ?: "Loading..."}")
             Text(text = "Title: ${project.value?.title ?: "Loading..."}")
             Text(text = "Icon: ${project.value?.icon ?: "Loading..."}")
             Text(text = "Workspace ID: ${project.value?.workspaceId ?: "Loading..."}")
         }
 
-        Container(title = "- Get all tasks by status: PENDING", showOptionsButton = false) {
+        Container(title = "- Get all tasks by status: PENDING") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -101,7 +101,7 @@ fun TestProjectScreen(
             }
         }
 
-        Container(title = "- Get all tasks by status: DOING", showOptionsButton = false) {
+        Container(title = "- Get all tasks by status: DOING") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -124,7 +124,7 @@ fun TestProjectScreen(
             }
         }
 
-        Container(title = "- Get all tasks by status: DONE", showOptionsButton = false) {
+        Container(title = "- Get all tasks by status: DONE") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -147,7 +147,7 @@ fun TestProjectScreen(
             }
         }
 
-        Container(title = "- Create new task", showOptionsButton = false) {
+        Container(title = "- Create new task") {
             TextField(
                 value = mutableTaskInfo.value.title.value,
                 onValueChange = { mutableTaskInfo.value.title.value = it },
@@ -196,7 +196,7 @@ fun TestProjectScreen(
             }
         }
 
-        Container(title = "- Delete task", showOptionsButton = false) {
+        Container(title = "- Delete task") {
             TextField(
                 value = selectedTaskId.value,
                 onValueChange = { selectedTaskId.value = it },

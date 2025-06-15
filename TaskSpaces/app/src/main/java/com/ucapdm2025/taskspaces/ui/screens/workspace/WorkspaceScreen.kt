@@ -151,7 +151,7 @@ fun WorkspaceScreen(
 
         // Projects Section
         item {
-            Container(title = "Projects", showOptionsButton = true) {
+            Container(title = "Projects") {
                 val chunkedProjects = projects.value.chunked(2)
 
                 Column(
@@ -229,7 +229,7 @@ fun WorkspaceScreen(
         // Members Section
         item {
 
-            Container(title = "Members", showOptionsButton = true) {
+            Container(title = "Members") {
                 val chunkedUsers = members.value.chunked(3)
 
                 Column(

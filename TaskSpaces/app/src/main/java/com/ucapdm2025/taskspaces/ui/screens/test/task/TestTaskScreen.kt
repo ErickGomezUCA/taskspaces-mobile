@@ -79,7 +79,7 @@ fun TestTaskScreen(
             fontSize = 20.sp
         )
 
-        Container(title = "- Task info", showOptionsButton = false) {
+        Container(title = "- Task info") {
             Text(text = "ID: ${task.value?.id ?: "Loading..."}")
             Text(text = "Title: ${task.value?.title ?: "Loading..."}")
             Text(text = "Description: ${task.value?.description ?: "Loading..."}")
@@ -88,7 +88,7 @@ fun TestTaskScreen(
             Text(text = "ProjectID: ${task.value?.projectId ?: "Loading..."}")
         }
 
-        Container(title = "- Update task", showOptionsButton = false) {
+        Container(title = "- Update task") {
             TextField(
                 value = mutableTaskInfo.value.title.value,
                 onValueChange = { mutableTaskInfo.value.title.value = it },
@@ -138,7 +138,7 @@ fun TestTaskScreen(
             }
         }
 
-        Container(title = "- Get all Comments by Task ID", showOptionsButton = false) {
+        Container(title = "- Get all Comments by Task ID") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -156,7 +156,7 @@ fun TestTaskScreen(
             }
         }
 
-        Container(title = "- Create Comment", showOptionsButton = false) {
+        Container(title = "- Create Comment") {
             TextField(
                 value = mutableCommentInfo.value.content.value,
                 onValueChange = { mutableCommentInfo.value.content.value = it },
@@ -180,7 +180,7 @@ fun TestTaskScreen(
             }
         }
 
-        Container(title = "- Update Comment", showOptionsButton = false) {
+        Container(title = "- Update Comment") {
             TextField(
                 value = selectedCommentId.value,
                 onValueChange = { selectedCommentId.value = it },
@@ -214,7 +214,7 @@ fun TestTaskScreen(
             }
         }
 
-        Container(title = "- Delete Comment", showOptionsButton = false) {
+        Container(title = "- Delete Comment") {
             TextField(
                 value = selectedCommentId.value,
                 onValueChange = { selectedCommentId.value = it },
@@ -236,7 +236,7 @@ fun TestTaskScreen(
             }
         }
 
-        Container(title = "- Bookmark", showOptionsButton = false) {
+        Container(title = "- Bookmark") {
             Button(
                 onClick = {
                     viewModel.bookmarkTask()

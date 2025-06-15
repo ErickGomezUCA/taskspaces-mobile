@@ -71,7 +71,7 @@ fun TestHomeScreen(
     ) {
         Text(text = "TestHomeViewModel example", fontWeight = FontWeight.Medium, fontSize = 20.sp)
 
-        Container(title = "- Get workspaces from user Id", showOptionsButton = false) {
+        Container(title = "- Get workspaces from user Id") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -89,7 +89,7 @@ fun TestHomeScreen(
             }
         }
 
-        Container(title = "- Create new workspace", showOptionsButton = false) {
+        Container(title = "- Create new workspace") {
             TextField(
                 value = mutableWorkspaceInfo.value.title.value,
                 onValueChange = { mutableWorkspaceInfo.value.title.value = it },
@@ -112,7 +112,7 @@ fun TestHomeScreen(
             }
         }
 
-        Container(title = "- Update workspace", showOptionsButton = false) {
+        Container(title = "- Update workspace") {
             TextField(
                 value = selectedWorkspaceId.value,
                 onValueChange = { selectedWorkspaceId.value = it },
@@ -147,7 +147,7 @@ fun TestHomeScreen(
             }
         }
 
-        Container(title = "- Delete workspace", showOptionsButton = false) {
+        Container(title = "- Delete workspace") {
             TextField(
                 value = selectedWorkspaceId.value,
                 onValueChange = { selectedWorkspaceId.value = it },
@@ -167,7 +167,7 @@ fun TestHomeScreen(
             }
         }
 
-        Container(title = "- Get shared workspaces", showOptionsButton = false) {
+        Container(title = "- Get shared workspaces") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -185,7 +185,7 @@ fun TestHomeScreen(
             }
         }
 
-        Container(title = "- Get assigned tasks", showOptionsButton = false) {
+        Container(title = "- Get assigned tasks") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)

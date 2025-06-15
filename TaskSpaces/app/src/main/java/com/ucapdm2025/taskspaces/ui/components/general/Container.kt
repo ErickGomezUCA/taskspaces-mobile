@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,16 +31,16 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 /**
  * A composable function that displays a container with a title and optional options button.
  *
- * @param title The title of the container.
  * @param modifier A [Modifier] for customizing the layout or behavior of the container.
- * @param showOptionsButton Whether to show the options button (default is true).
+ * @param title The title of the container.
+ * @param dropdownMenuOptions A list of options for the dropdown menu that appears when the options button is clicked.
  * @param content The content to be displayed inside the container.
  */
 @Composable
 fun Container(
-    title: String = "",
     modifier: Modifier = Modifier,
-    showOptionsButton: Boolean = true,
+    title: String = "",
+    dropdownMenuOptions: List<DropdownMenuOption> = emptyList(),
     content: @Composable () -> Unit
 ) {
     Column(
@@ -69,23 +71,10 @@ fun Container(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-
-                if (showOptionsButton) {
-                    IconButton(
-                        onClick = { /* TODO: This will become a button to open a menu (e.g., dropdown for project actions). */ },
-                        modifier = Modifier
-                            .height(24.dp)
-                            .padding(0.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreHoriz,
-                            contentDescription = "More options",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                if (dropdownMenuOptions.isNotEmpty()) {
+                    DropdownMenu(options = dropdownMenuOptions)
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
         }
 
@@ -105,7 +94,31 @@ fun Container(
 fun ContainerPreviewLightMode() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
-            Container(title = "Container Title") {
+            Container(
+                title = "Container Title",
+                dropdownMenuOptions = listOf(
+                    DropdownMenuOption(
+                        label = "Option 1",
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Icon 1"
+                            )
+                        },
+                        onClick = {}),
+
+                    DropdownMenuOption(
+                        label = "Option 2",
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Groups,
+                                contentDescription = "Icon 2"
+                            )
+                        },
+                        onClick = {})
+
+                )
+            ) {
                 Text(text = "Container Preview", color = MaterialTheme.colorScheme.onSurface)
             }
         }
@@ -122,7 +135,31 @@ fun ContainerPreviewLightMode() {
 fun ContainerPreviewDarkMode() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            Container(title = "Container Title") {
+            Container(
+                title = "Container Title",
+                dropdownMenuOptions = listOf(
+                    DropdownMenuOption(
+                        label = "Option 1",
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Icon 1"
+                            )
+                        },
+                        onClick = {}),
+
+                    DropdownMenuOption(
+                        label = "Option 2",
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Groups,
+                                contentDescription = "Icon 2"
+                            )
+                        },
+                        onClick = {})
+
+                )
+            ) {
                 Text(text = "Container Preview", color = MaterialTheme.colorScheme.onSurface)
             }
         }

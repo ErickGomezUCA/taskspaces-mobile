@@ -75,7 +75,7 @@ fun TestUserScreen(
     ) {
         Text(text = "UserRepository example", fontWeight = FontWeight.Medium, fontSize = 20.sp)
 
-        Container(title = "- All users", showOptionsButton = false) {
+        Container(title = "- All users") {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -94,7 +94,7 @@ fun TestUserScreen(
             }
         }
 
-        Container(title = "- Get user by ID", showOptionsButton = false) {
+        Container(title = "- Get user by ID") {
             TextField(
                 value = selectedUserId.value,
                 onValueChange = { selectedUserId.value = it },
@@ -126,7 +126,7 @@ fun TestUserScreen(
             }
         }
 
-        Container(title = "- Create user", showOptionsButton = false) {
+        Container(title = "- Create user") {
             TextField(
                 value = mutableUserInfo.value.fullname.value,
                 onValueChange = { mutableUserInfo.value.fullname.value = it },
@@ -170,7 +170,7 @@ fun TestUserScreen(
             }
         }
 
-        Container(title = "- Update user", showOptionsButton = false) {
+        Container(title = "- Update user") {
             TextField(
                 value = selectedUserId.value,
                 onValueChange = { selectedUserId.value = it },
@@ -224,7 +224,7 @@ fun TestUserScreen(
             }
         }
 
-        Container(title = "- Delete user", showOptionsButton = false) {
+        Container(title = "- Delete user") {
             TextField(
                 value = selectedUserId.value,
                 onValueChange = { selectedUserId.value = it },
