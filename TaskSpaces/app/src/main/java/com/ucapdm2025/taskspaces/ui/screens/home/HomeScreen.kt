@@ -98,6 +98,7 @@ fun HomeScreen(
                                 viewModel.createWorkspace(workspaceDialogData.value)
                             }
 
+                            viewModel.setEditMode(HomeEditMode.NONE)
                             viewModel.hideDialog()
                         },
                         modifier = Modifier.weight(1f),
