@@ -19,8 +19,8 @@ data class ProjectModel (
     val title: String,
     val icon: String? = null,
     val workspaceId: Int,
-    override val createdAt: String = "",
-    override val updatedAt: String = ""
+    override val createdAt: String? = null,
+    override val updatedAt: String? = null
 ): BaseModel(id, createdAt, updatedAt)
 
 /**

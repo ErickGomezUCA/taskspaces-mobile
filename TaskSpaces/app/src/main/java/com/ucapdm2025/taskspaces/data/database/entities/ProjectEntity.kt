@@ -21,8 +21,8 @@ data class ProjectEntity (
     val title: String,
     val icon: String,
     val workspaceId: Int,
-    override val createdAt: String = "",
-    override val updatedAt: String = ""
+    override val createdAt: String? = null,
+    override val updatedAt: String? = null
 ): BaseEntity(id, createdAt, updatedAt)
 
 /**
