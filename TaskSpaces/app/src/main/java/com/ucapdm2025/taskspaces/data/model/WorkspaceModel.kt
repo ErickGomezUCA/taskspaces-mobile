@@ -15,8 +15,8 @@ data class WorkspaceModel(
     override val id: Int,
     val title: String,
     val ownerId: Int,
-    override val createdAt: String = "",
-    override val updatedAt: String = "",
+    override val createdAt: String? = null,
+    override val updatedAt: String? = null,
 ): BaseModel(id, createdAt, updatedAt)
 
 /**

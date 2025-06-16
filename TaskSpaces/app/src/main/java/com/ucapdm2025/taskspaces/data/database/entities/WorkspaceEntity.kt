@@ -20,8 +20,8 @@ data class WorkspaceEntity (
     override val id: Int = 0,
     val title: String,
     val ownerId: Int,
-    override val createdAt: String = "",
-    override val updatedAt: String = ""
+    override val createdAt: String? = null,
+    override val updatedAt: String? = null
 ): BaseEntity(id, createdAt, updatedAt)
 
 /**

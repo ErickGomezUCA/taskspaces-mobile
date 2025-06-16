@@ -24,16 +24,16 @@ data class UserEntity(
     val username: String,
     val email: String,
     val avatar: String? = null,
-    override val createdAt: String = "",
-    override val updatedAt: String = ""
+    override val createdAt: String? = null,
+    override val updatedAt: String? = null
 ) : BaseEntity(id, createdAt, updatedAt)
 
 fun UserEntity.toDomain(): UserModel {
     return UserModel(
         id = id,
-        fullname = "",
+        fullname = fullname,
         username = username,
-        avatar = "",
+        avatar = avatar,
         email = email,
         createdAt = createdAt,
         updatedAt = updatedAt
