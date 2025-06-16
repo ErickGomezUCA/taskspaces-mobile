@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.dummy.usersDummies
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
@@ -96,7 +98,9 @@ fun TaskDialog(
     taskId: Int,
     onDismissRequest: () -> Unit,
 ) {
-    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskId))
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val taskRepository = application.appProvider.provideTaskRepository()
+    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskId, taskRepository))
 
     val task = viewModel.task.collectAsStateWithLifecycle()
 
@@ -238,9 +242,10 @@ fun TaskDialog(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            task.value?.tags?.forEach { tag ->
-                                Tag(tag = tag)
-                            }
+//                            TODO: Implement tags
+//                            task.value?.tags?.forEach { tag ->
+//                                Tag(tag = tag)
+//                            }
                         }
                         OutlinedButton(
                             onClick = { /*TODO*/ },
@@ -304,35 +309,35 @@ fun TaskDialog(
                             )
                         }
                         Column {
-                            val formatter = DateTimeFormatter.ofPattern("d/MMM/yyyy - hh:mm a")
-                            val dateText = task.value?.deadline?.format(formatter)
-                            val weeksLeft =
-                                java.time.Duration.between(
-                                    LocalDateTime.now(),
-                                    task.value?.deadline
-                                ).toDays() / 7
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .border(
-                                        1.dp,
-                                        MaterialTheme.colorScheme.onBackground,
-                                        RoundedCornerShape(8.dp)
-                                    ),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    dateText ?: "",
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(4.dp),
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                            }
-                            Text(
-                                "$weeksLeft weeks left until deadline",
-                                color = ExtendedTheme.colors.background50,
-                                fontSize = 12.sp
-                            )
+//                            val formatter = DateTimeFormatter.ofPattern("d/MMM/yyyy - hh:mm a")
+//                            val dateText = task.value?.deadline?.format(formatter)
+//                            val weeksLeft =
+//                                java.time.Duration.between(
+//                                    LocalDateTime.now(),
+//                                    task.value?.deadline
+//                                ).toDays() / 7
+//                            Row(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .border(
+//                                        1.dp,
+//                                        MaterialTheme.colorScheme.onBackground,
+//                                        RoundedCornerShape(8.dp)
+//                                    ),
+//                                horizontalArrangement = Arrangement.Center
+//                            ) {
+//                                Text(
+//                                    dateText ?: "",
+//                                    fontWeight = FontWeight.Medium,
+//                                    modifier = Modifier.padding(4.dp),
+//                                    color = MaterialTheme.colorScheme.onBackground
+//                                )
+//                            }
+//                            Text(
+//                                "$weeksLeft weeks left until deadline",
+//                                color = ExtendedTheme.colors.background50,
+//                                fontSize = 12.sp
+//                            )
                         }
                         OutlinedButton(
                             onClick = { /*TODO*/ },
@@ -416,15 +421,16 @@ fun TaskDialog(
                             )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            task.value?.assignedMembers?.forEach { user ->
-                                Image(
-                                    painter = painterResource(id = android.R.drawable.ic_menu_camera),
-                                    contentDescription = user.fullname,
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .background(ExtendedTheme.colors.primary50, CircleShape)
-                                )
-                            }
+//                            TODO: Implement members
+//                            task.value?.assignedMembers?.forEach { user ->
+//                                Image(
+//                                    painter = painterResource(id = android.R.drawable.ic_menu_camera),
+//                                    contentDescription = user.fullname,
+//                                    modifier = Modifier
+//                                        .size(36.dp)
+//                                        .background(ExtendedTheme.colors.primary50, CircleShape)
+//                                )
+//                            }
                         }
                         OutlinedButton(
                             onClick = { /*TODO*/ },
@@ -453,42 +459,43 @@ fun TaskDialog(
                             )
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            task.value?.comments?.forEach { comment ->
-                                val user = usersDummies.find { it.id == comment.authorId }
-                                Row(
-                                    verticalAlignment = Alignment.Top,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = android.R.drawable.ic_menu_camera),
-                                        contentDescription = user?.username ?: "User",
-                                        modifier = Modifier
-                                            .size(36.dp)
-                                            .background(ExtendedTheme.colors.primary50, CircleShape)
-                                    )
-                                    Column {
-                                        Row {
-                                            Text(
-                                                text = user?.username ?: "Unknown",
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onBackground
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(
-                                                text = comment.createdAt,
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                fontSize = 12.sp
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(
-                                            text = comment.content,
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    }
-                                }
-                            }
+//                            TODO: Implement comments
+//                            task.value?.comments?.forEach { comment ->
+//                                val user = usersDummies.find { it.id == comment.authorId }
+//                                Row(
+//                                    verticalAlignment = Alignment.Top,
+//                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                                    modifier = Modifier.fillMaxWidth()
+//                                ) {
+//                                    Image(
+//                                        painter = painterResource(id = android.R.drawable.ic_menu_camera),
+//                                        contentDescription = user?.username ?: "User",
+//                                        modifier = Modifier
+//                                            .size(36.dp)
+//                                            .background(ExtendedTheme.colors.primary50, CircleShape)
+//                                    )
+//                                    Column {
+//                                        Row {
+//                                            Text(
+//                                                text = user?.username ?: "Unknown",
+//                                                fontWeight = FontWeight.Bold,
+//                                                color = MaterialTheme.colorScheme.onBackground
+//                                            )
+//                                            Spacer(modifier = Modifier.width(8.dp))
+//                                            Text(
+//                                                text = comment.createdAt,
+//                                                color = MaterialTheme.colorScheme.onBackground,
+//                                                fontSize = 12.sp
+//                                            )
+//                                        }
+//                                        Spacer(modifier = Modifier.height(2.dp))
+//                                        Text(
+//                                            text = comment.content,
+//                                            color = MaterialTheme.colorScheme.onBackground
+//                                        )
+//                                    }
+//                                }
+//                            }
                         }
 //                        Row(
 //                            modifier = Modifier.fillMaxWidth(),

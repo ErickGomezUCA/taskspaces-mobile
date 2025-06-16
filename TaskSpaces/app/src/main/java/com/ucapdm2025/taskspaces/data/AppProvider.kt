@@ -10,6 +10,8 @@ import com.ucapdm2025.taskspaces.data.remote.RetrofitInstance
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
+import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
@@ -45,9 +47,10 @@ class AppProvider(context: Context) {
     private val projectService = RetrofitInstance.projectService
     private val projectRepository: ProjectRepository = ProjectRepositoryImpl(projectDao, projectService)
 
-    fun provideWorkspaceRepository(): WorkspaceRepository {
-        return workspaceRepository
-    }
+//    Task
+    private val taskDao = appDatabase.taskDao()
+    private val taskService = RetrofitInstance.taskService
+    private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, taskService)
 
     fun provideUserRepository(): UserRepository {
         return userRepository
@@ -57,7 +60,15 @@ class AppProvider(context: Context) {
         return authRepository
     }
 
+    fun provideWorkspaceRepository(): WorkspaceRepository {
+        return workspaceRepository
+    }
+
     fun provideProjectRepository(): ProjectRepository {
         return projectRepository
+    }
+
+    fun provideTaskRepository(): TaskRepository {
+        return taskRepository
     }
 }

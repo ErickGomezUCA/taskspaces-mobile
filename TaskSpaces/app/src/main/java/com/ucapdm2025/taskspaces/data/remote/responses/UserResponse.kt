@@ -21,8 +21,8 @@ data class UserResponse (
     val username: String,
     val avatar: String,
     val email: String,
-    val createdAt: String,
-    val updatedAt: String
+    val createdAt: String? = null,
+    val updatedAt: String? = null
 )
 
 /**

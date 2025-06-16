@@ -43,7 +43,8 @@ fun ProjectScreen(
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val projectRepository = application.appProvider.provideProjectRepository()
-    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository))
+    val taskRepository = application.appProvider.provideTaskRepository()
+    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, taskRepository))
 
     val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
@@ -100,9 +101,7 @@ fun ProjectScreen(
                         viewModel.createTask(
                             title = "New task",
                             status = StatusVariations.PENDING,
-                            projectId = projectId
                         )
-
                         viewModel.showTaskDialog()
                     }
                 )
@@ -118,9 +117,7 @@ fun ProjectScreen(
                         viewModel.createTask(
                             title = "New task",
                             status = StatusVariations.DOING,
-                            projectId = projectId
                         )
-
                         viewModel.showTaskDialog()
                     }
                 )
@@ -136,9 +133,7 @@ fun ProjectScreen(
                         viewModel.createTask(
                             title = "New task",
                             status = StatusVariations.DONE,
-                            projectId = projectId
                         )
-
                         viewModel.showTaskDialog()
                     }
                 )
@@ -148,7 +143,7 @@ fun ProjectScreen(
 }
 
 /**
- * A preview composable for the [ProjectsScreen] component.
+ * A preview composable for the [ProjectScreen] component.
  *
  * Displays a sample Projects screen with mock data for each task status,
  * allowing developers to visualize the layout and styling during design time.
@@ -156,67 +151,6 @@ fun ProjectScreen(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun ProjectsScreenPreviewLight() {
-//    TODO: Resolve these problems with task tag in model
-    val pendingTasks = listOf<TaskModel>(
-        TaskModel(
-            id = 1,
-            title = "Revisar requisitos",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "Análisis",
-                    color = Color(0xFF2E88DD),
-                    projectId = 1
-                )
-            ),
-            projectId = 1,
-        ),
-        TaskModel(
-            id = 2,
-            title = "Diseñar UI",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "UI",
-                    color = Color(0xFF2E88DD),
-                    projectId = 1
-                )
-            ),
-            projectId = 1
-        )
-    )
-
-    val doingTasks = listOf<TaskModel>(
-        TaskModel(
-            id = 3,
-            title = "Desarrollar login",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "Backend",
-                    color = Color(0xFFDD972E),
-                    projectId = 1
-                )
-            ),
-            projectId = 1
-        )
-    )
-
-    val doneTasks = listOf<TaskModel>(
-        TaskModel(
-            id = 3,
-            title = "Crear mockups",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "Diseño",
-                    color = Color(0xFF26AA5D),
-                    projectId = 1
-                )
-            ),
-            projectId = 1
-        )
-    )
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
             ProjectScreen(
@@ -235,66 +169,6 @@ fun ProjectsScreenPreviewLight() {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun ProjectsScreenPreviewDark() {
-    val pendingTasks = listOf<TaskModel>(
-        TaskModel(
-            id = 1,
-            title = "Revisar requisitos",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "Análisis",
-                    color = Color(0xFF2E88DD),
-                    projectId = 1
-                )
-            ),
-            projectId = 1,
-        ),
-        TaskModel(
-            id = 2,
-            title = "Diseñar UI",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "UI",
-                    color = Color(0xFF2E88DD),
-                    projectId = 1
-                )
-            ),
-            projectId = 1
-        )
-    )
-
-    val doingTasks = listOf<TaskModel>(
-        TaskModel(
-            id = 3,
-            title = "Desarrollar login",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "Backend",
-                    color = Color(0xFFDD972E),
-                    projectId = 1
-                )
-            ),
-            projectId = 1
-        )
-    )
-
-    val doneTasks = listOf<TaskModel>(
-        TaskModel(
-            id = 3,
-            title = "Crear mockups",
-            tags = listOf<TagModel>(
-                TagModel(
-                    id = 1,
-                    title = "Diseño",
-                    color = Color(0xFF26AA5D),
-                    projectId = 1
-                )
-            ),
-            projectId = 1
-        )
-    )
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             ProjectScreen(

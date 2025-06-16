@@ -145,7 +145,6 @@ class ProjectRepositoryImpl(
         id: Int,
         title: String,
         icon: String,
-        workspaceId: Int
     ): Result<ProjectModel> {
         val request = ProjectRequest(title, icon)
 

@@ -53,14 +53,15 @@ fun TaskStatusColumn(
             .padding(16.dp)
             .width(200.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
-
     ) {
         TaskStatus(status)
 
         tasks.forEach { task ->
             TaskCard(
                 title = task.title,
-                tags = task.tags,
+//                tags = task.tags,
+                //TODO: Revert this
+                tags = emptyList<TagModel>(),
                 onClick = { onTaskCardClick(task.id) }
             )
         }
@@ -108,28 +109,8 @@ fun TaskStatusColumnPreviewLight() {
                             breadcrumb = "",
                             title = "Design login screen",
                             description = "",
-                            deadline = LocalDateTime.now(),
+                            deadline = "",
                             status = StatusVariations.PENDING,
-                            tags = listOf(
-                                TagModel(
-                                    id = 1,
-                                    title = "UI",
-                                    color = Color(0xFF2E88DD),
-                                    projectId = 1,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                ),
-                                TagModel(
-                                    id = 2,
-                                    title = "Priority",
-                                    color = Color(0xFFDD972E),
-                                    projectId = 1,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                )
-                            ),
-                            assignedMembers = emptyList(),
-                            comments = emptyList(),
                             projectId = 1,
                             createdAt = "",
                             updatedAt = ""
@@ -139,20 +120,8 @@ fun TaskStatusColumnPreviewLight() {
                             breadcrumb = "",
                             title = "Connect API",
                             description = "",
-                            deadline = LocalDateTime.now(),
+                            deadline = "",
                             status = StatusVariations.PENDING,
-                            tags = listOf(
-                                TagModel(
-                                    id = 1,
-                                    title = "Backend",
-                                    color = Color(0xFF26AA5D),
-                                    projectId = 1,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                )
-                            ),
-                            assignedMembers = emptyList(),
-                            comments = emptyList(),
                             projectId = 1,
                             createdAt = "",
                             updatedAt = ""
@@ -191,28 +160,8 @@ fun TaskStatusColumnPreviewDark() {
                             breadcrumb = "",
                             title = "Design login screen",
                             description = "",
-                            deadline = LocalDateTime.now(),
+                            deadline = "",
                             status = StatusVariations.PENDING,
-                            tags = listOf(
-                                TagModel(
-                                    id = 1,
-                                    title = "UI",
-                                    color = Color(0xFF2E88DD),
-                                    projectId = 1,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                ),
-                                TagModel(
-                                    id = 2,
-                                    title = "Priority",
-                                    color = Color(0xFFDD972E),
-                                    projectId = 1,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                )
-                            ),
-                            assignedMembers = emptyList(),
-                            comments = emptyList(),
                             projectId = 1,
                             createdAt = "",
                             updatedAt = ""
@@ -222,20 +171,8 @@ fun TaskStatusColumnPreviewDark() {
                             breadcrumb = "",
                             title = "Connect API",
                             description = "",
-                            deadline = LocalDateTime.now(),
+                            deadline = "",
                             status = StatusVariations.PENDING,
-                            tags = listOf(
-                                TagModel(
-                                    id = 1,
-                                    title = "Backend",
-                                    color = Color(0xFF26AA5D),
-                                    projectId = 1,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                )
-                            ),
-                            assignedMembers = emptyList(),
-                            comments = emptyList(),
                             projectId = 1,
                             createdAt = "",
                             updatedAt = ""

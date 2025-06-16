@@ -4,6 +4,7 @@ import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
+import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.data.remote.services.UserService
 import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
 import okhttp3.OkHttpClient
@@ -47,5 +48,9 @@ object RetrofitInstance {
 
     val projectService: ProjectService by lazy {
         retrofit.create(ProjectService::class.java)
+    }
+
+    val taskService: TaskService by lazy {
+        retrofit.create(TaskService::class.java)
     }
 }

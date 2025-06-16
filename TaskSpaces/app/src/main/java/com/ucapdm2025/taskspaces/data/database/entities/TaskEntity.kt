@@ -48,7 +48,7 @@ fun TaskEntity.toDomain(): TaskModel {
         breadcrumb = breadcrumb,
         title = title,
         description = description,
-        deadline = LocalDateTime.parse(deadline), // TODO: Parse correctly into LocalDateTime
+        deadline = deadline, // TODO: Parse correctly into LocalDateTime
         timer = timer,
         status = when (status.uppercase()) {
             "PENDING" -> StatusVariations.PENDING

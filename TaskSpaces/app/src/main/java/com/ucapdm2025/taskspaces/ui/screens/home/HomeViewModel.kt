@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -25,9 +26,9 @@ import kotlinx.coroutines.launch
  */
 class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+//    private val taskRepository: TaskRepository
 ) : ViewModel() {
-    private val taskRepository: TaskRepository = TaskRepositoryImpl()
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
 
@@ -89,11 +90,11 @@ class HomeViewModel(
                 }
         }
 
-        viewModelScope.launch {
-            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
-                _assignedTasks.value = assignedTasksList
-            }
-        }
+//        viewModelScope.launch {
+//            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
+//                _assignedTasks.value = assignedTasksList
+//            }
+//        }
     }
 
     fun createWorkspace(title: String) {
@@ -105,7 +106,7 @@ class HomeViewModel(
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    println("Error creating workspace: ${exception.message}")
+                    Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
                 }
             }
         }
@@ -120,7 +121,7 @@ class HomeViewModel(
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    println("Error updating workspace: ${exception.message}")
+                    Log.e("HomeViewModel", "Error updating workspace: ${exception.message}")
                 }
             }
         }
@@ -135,7 +136,7 @@ class HomeViewModel(
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    println("Error deleting workspace: ${exception.message}")
+                    Log.e("HomeViewModel", "Error deleting workspace: ${exception.message}")
                 }
             }
         }

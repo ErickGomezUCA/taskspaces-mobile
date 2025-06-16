@@ -126,7 +126,9 @@ fun BookmarkList(bookmarks: List<TaskModel>) {
                 bookmarks.forEach { task ->
                     TaskCard(
                         title = task.title,
-                        tags = task.tags
+//                        tags = task.tags
+                        //TODO: Revert this
+                        tags = emptyList<TagModel>()
                         // TODO: Add onClick to navigate to task details
                     )
                 }
@@ -146,10 +148,10 @@ fun sampleTasks(): List<TaskModel> = listOf<TaskModel>(
     TaskModel(
         id = 2,
         title = "Task Title",
-        tags = listOf<TagModel>(
-            TagModel(id = 1, title = "Tag", color = Color.Red, projectId = 1),
-            TagModel(id = 2, title = "Tag", color = Color.Blue, projectId = 2)
-        ),
+//        tags = listOf<TagModel>(
+//            TagModel(id = 1, title = "Tag", color = Color.Red, projectId = 1),
+//            TagModel(id = 2, title = "Tag", color = Color.Blue, projectId = 2)
+//        ),
         projectId = 2
     )
 )

@@ -13,6 +13,6 @@ interface ProjectRepository {
     fun getProjectsByWorkspaceId(workspaceId: Int): Flow<Resource<List<ProjectModel>>>
     suspend fun getProjectById(id: Int): Flow<Resource<ProjectModel?>>
     suspend fun createProject(title: String, icon: String, workspaceId: Int): Result<ProjectModel>
-    suspend fun updateProject(id: Int, title: String, icon: String, workspaceId: Int): Result<ProjectModel>
+    suspend fun updateProject(id: Int, title: String, icon: String): Result<ProjectModel>
     suspend fun deleteProject(id: Int): Result<ProjectModel>
 }

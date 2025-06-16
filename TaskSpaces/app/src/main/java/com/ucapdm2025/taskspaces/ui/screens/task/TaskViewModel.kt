@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.task
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,7 +9,7 @@ import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
-import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
+import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +20,14 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
+/**
+ * ViewModel for managing a single task's data, including its comments.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
-class TaskViewModel(taskId: Int) : ViewModel() {
-    private val taskRepository: TaskRepository = TaskRepositoryImpl()
+class TaskViewModel(
+    private val taskId: Int,
+    private val taskRepository: TaskRepository,
+) : ViewModel() {
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
 
     private val _task: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
@@ -31,7 +37,6 @@ class TaskViewModel(taskId: Int) : ViewModel() {
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
     private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
-    val currentTaskId: StateFlow<Int?> = _currentTaskId.asStateFlow()
 
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
@@ -42,8 +47,23 @@ class TaskViewModel(taskId: Int) : ViewModel() {
                 } else {
                     flowOf(null) // Emit null if no task ID is set
                 }
-            }.collect { task ->
-                _task.value = task
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val task = resource.data
+                        _task.value = task
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _task.value = null
+                }
             }
         }
 
@@ -80,20 +100,29 @@ class TaskViewModel(taskId: Int) : ViewModel() {
     fun updateTask(
         id: Int,
         title: String,
-        description: String,
-        status: StatusVariations,
-        projectId: Int
+        description: String? = null,
+        deadline: String? = null,
+        timer: Float? = null,
+        status: StatusVariations = StatusVariations.PENDING,
     ) {
         viewModelScope.launch {
-            taskRepository.updateTask(
-                id = id,
-                title = title,
-                description = description,
-                deadline = LocalDateTime.now(),
-                status = status,
-                breadcrumb = "Workspace 1 / Project 1",
-                projectId = projectId
+            val response = taskRepository.updateTask(
+                id,
+                title,
+                description,
+                deadline,
+                timer,
+                status,
             )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating task: ${exception.message}")
+                }
+            }
         }
     }
 
@@ -134,10 +163,17 @@ class TaskViewModel(taskId: Int) : ViewModel() {
     }
 }
 
-class TaskViewModelFactory(private val taskId: Int) : ViewModelProvider.Factory {
+/**
+ * Factory for creating instances of TaskViewModel.
+ */
+class TaskViewModelFactory(
+    private val taskId: Int,
+    private val taskRepository: TaskRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
-            return TaskViewModel(taskId) as T
+            @Suppress("UNCHECKED_CAST")
+            return TaskViewModel(taskId, taskRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -18,8 +18,8 @@ data class ProjectResponse (
     val title: String,
     val icon: String? = null,
     val workspaceId: Int,
-    val createdAt: String = "",
-    val updatedAt: String = ""
+    val createdAt: String? = null,
+    val updatedAt: String? = null
 )
 
 /**

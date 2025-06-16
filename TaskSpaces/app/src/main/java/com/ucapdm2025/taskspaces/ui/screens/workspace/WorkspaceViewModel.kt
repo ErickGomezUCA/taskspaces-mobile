@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -103,7 +104,7 @@ class WorkspaceViewModel(
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    println("Error creating project: ${exception.message}")
+                    Log.e("WorkspaceViewModel", "Error creating project: ${exception.message}")
                 }
             }
         }
@@ -111,14 +112,14 @@ class WorkspaceViewModel(
 
     fun updateProject(id: Int, title: String, icon: String) {
         viewModelScope.launch {
-            val response = projectRepository.updateProject(id, title, icon, workspaceId)
+            val response = projectRepository.updateProject(id, title, icon)
 
             if (!response.isSuccess) {
                 // Handle error, e.g., show a message to the user
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    println("Error creating workspace: ${exception.message}")
+                    Log.e("WorkspaceViewModel", "Error updating project: ${exception.message}")
                 }
             }
 
@@ -134,10 +135,9 @@ class WorkspaceViewModel(
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    println("Error creating workspace: ${exception.message}")
+                    Log.e("WorkspaceViewModel", "Error deleting project: ${exception.message}")
                 }
             }
-
         }
     }
 

@@ -1,8 +1,10 @@
 package com.ucapdm2025.taskspaces.data.repository.task
 
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.Flow
+import okhttp3.internal.concurrent.Task
 import java.time.LocalDateTime
 
 /**
@@ -11,29 +13,28 @@ import java.time.LocalDateTime
  * get a task by its ID, create a new task, update an existing task, delete a task, and bookmark a task.
  */
 interface TaskRepository {
-    fun getTasksByProjectId(projectId: Int): Flow<List<TaskModel>>
-    fun getBookmarkedTasks(): Flow<List<TaskModel>>
-    fun getAssignedTasks(userId: Int): Flow<List<TaskModel>>
-    fun getTaskById(id: Int): Flow<TaskModel?>
+    fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>>
+    fun getBookmarkedTasks(): Flow<List<TaskModel>> // TODO: Implement this method
+    fun getAssignedTasks(userId: Int): Flow<List<TaskModel>> // TODO: Implement this method
+    fun getTaskById(id: Int): Flow<Resource<TaskModel?>>
     suspend fun createTask(
         title: String,
-        description: String,
-        deadline: LocalDateTime,
-        status: StatusVariations,
-        breadcrumb: String,
+        description: String? = null,
+        deadline: String? = null,
+        timer: Float? = null,
+        status: StatusVariations = StatusVariations.PENDING,
         projectId: Int
-    ): TaskModel
+    ): Result<TaskModel>
 
     suspend fun updateTask(
         id: Int,
         title: String,
-        description: String,
-        deadline: LocalDateTime,
-        status: StatusVariations,
-        breadcrumb: String,
-        projectId: Int
-    ): TaskModel
+        description: String? = null,
+        deadline: String? = null,
+        timer: Float? = null,
+        status: StatusVariations = StatusVariations.PENDING,
+    ): Result<TaskModel>
 
-    suspend fun deleteTask(id: Int): Boolean
-    suspend fun bookmarkTask(id: Int): Boolean
+    suspend fun deleteTask(id: Int): Result<TaskModel>
+    suspend fun bookmarkTask(id: Int): Boolean // TODO: Implement this method
 }

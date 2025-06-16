@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.project
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -24,21 +26,20 @@ import java.time.LocalDateTime
  */
 class ProjectViewModel(
     private val projectId: Int,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
-    private val taskRepository: TaskRepository = TaskRepositoryImpl()
-
     private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
-    val project: StateFlow<ProjectModel?> = _project
+    val project: StateFlow<ProjectModel?> = _project.asStateFlow()
 
     private val _tasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
-    val tasks: StateFlow<List<TaskModel>> = _tasks
+    val tasks: StateFlow<List<TaskModel>> = _tasks.asStateFlow()
 
     private val _showTaskDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val showTaskDialog: StateFlow<Boolean> = _showTaskDialog
+    val showTaskDialog: StateFlow<Boolean> = _showTaskDialog.asStateFlow()
 
     private val _selectedTaskId: MutableStateFlow<Int> = MutableStateFlow(0)
-    val selectedTaskId: StateFlow<Int> = _selectedTaskId
+    val selectedTaskId: StateFlow<Int> = _selectedTaskId.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -57,36 +58,74 @@ class ProjectViewModel(
                         // Handle error state if necessary
                     }
                 }
-
             }
         }
 
         viewModelScope.launch {
-            taskRepository.getTasksByProjectId(projectId).collect { tasks ->
-                _tasks.value = tasks
+            taskRepository.getTasksByProjectId(projectId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val tasks = resource.data
+                        _tasks.value = tasks
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+                }
             }
         }
     }
 
     // Add more fields here
-    fun createTask(title: String, description: String? = "", status: StatusVariations, projectId: Int) {
+    fun createTask(
+        title: String,
+        description: String? = null,
+        deadline: String? = null,
+        timer: Float? = null,
+        status: StatusVariations = StatusVariations.PENDING,
+    ) {
         viewModelScope.launch {
-            val newTask = taskRepository.createTask(
-                title = title,
-                description = description ?: "",
-                deadline = LocalDateTime.now(),
-                status = status,
-                breadcrumb = "Workspace 1 / ${project.value?.title}",
-                projectId = projectId
+            val response = taskRepository.createTask(
+                title,
+                description,
+                deadline,
+                timer,
+                status,
+                projectId
             )
 
-            _selectedTaskId.value = newTask.id
+            if (response.isSuccess) {
+                _selectedTaskId.value = response.getOrThrow().id
+            } else {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("ProjectViewModel", "Error creating task: ${exception.message}")
+                }
+
+            }
         }
     }
 
     fun deleteTask(id: Int) {
         viewModelScope.launch {
-            taskRepository.deleteTask(id)
+            val response = taskRepository.deleteTask(id)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("ProjectViewModel", "Error deleting task: ${exception.message}")
+                }
+            }
+
         }
     }
 
@@ -113,11 +152,12 @@ class ProjectViewModel(
 class ProjectViewModelFactory(
     private val projectId: Int,
     private val projectRepository: ProjectRepository,
+    private val taskRepository: TaskRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProjectViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ProjectViewModel(projectId, projectRepository) as T
+            return ProjectViewModel(projectId, projectRepository, taskRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

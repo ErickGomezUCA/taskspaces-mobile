@@ -16,8 +16,8 @@ data class WorkspaceResponse (
     val id: Int,
     val title: String,
     val ownerId: Int,
-    val createdAt: String,
-    val updatedAt: String
+    val createdAt: String? = null,
+    val updatedAt: String? = null
 )
 
 /**
