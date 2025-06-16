@@ -1,7 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,21 +27,12 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * password, and confirm password, and two actions: log in and sign up.
  * The screen uses a decorative background image and white fields to ensure
  * readability on top of it.
- *
- * All colors, spacings, and styles adapt to light and dark themes via MaterialTheme
- * and ExtendedTheme.
  */
 @Composable
-fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
-    val backgroundRes = if (isDarkTheme) {
-        R.drawable.signup_background_dark
-    } else {
-        R.drawable.signup_background
-    }
-
+fun SignUpScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = backgroundRes),
+            painter = painterResource(id = R.drawable.login_background),
             contentDescription = "Sign up background",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -71,7 +61,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
             var password by remember { mutableStateOf("") }
             var confirmPassword by remember { mutableStateOf("") }
 
-            // Row for name and username
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -112,7 +101,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Email input
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -133,7 +121,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password input
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -154,7 +141,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Confirm password input
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
@@ -175,7 +161,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Redirect to login
             TextButton(onClick = { /* Navigate to login */ }) {
                 Text(
                     text = "Have an account? Log in",
@@ -186,7 +171,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Sign up button
             Button(
                 onClick = { /* Sign up action */ },
                 modifier = Modifier
@@ -202,7 +186,6 @@ fun SignUpScreen(isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
 /**
  * Preview of [SignUpScreen] in light mode.
- * Useful for verifying layout, padding, spacing and text contrast.
  */
 @Preview(showBackground = true)
 @Composable
@@ -216,14 +199,13 @@ fun SignUpScreenPreviewLight() {
 
 /**
  * Preview of [SignUpScreen] in dark mode.
- * Useful to check color contrast and theming consistency.
  */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun SignUpScreenPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SignUpScreen(isDarkTheme = true)
+            SignUpScreen()
         }
     }
 }
