@@ -37,7 +37,7 @@ class LoginViewModel(
         password: String
     ) {
         viewModelScope.launch {
-            val response = authRepository.login(email, password)
+            val response = authRepository.login(email.trim(), password.trim())
 
             if (response.isSuccess) {
 //                Save token and user ID from remote server
