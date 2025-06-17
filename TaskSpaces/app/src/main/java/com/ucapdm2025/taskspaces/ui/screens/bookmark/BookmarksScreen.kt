@@ -1,8 +1,9 @@
-package com.ucapdm2025.taskspaces.ui.screens
+package com.ucapdm2025.taskspaces.ui.screens.bookmark
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -14,9 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
@@ -26,6 +30,8 @@ import com.ucapdm2025.taskspaces.ui.components.general.SortOption
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 // TODO: Connect BookmarksScreen to real ViewModel state.
 
@@ -35,19 +41,24 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * - No results if the search query returns nothing
  * - A list of bookmarked tasks otherwise
  *
- * @param bookmarks The list of bookmarked tasks
+ * @param bookmarkedTasks The list of bookmarked tasks
  * @param searchQuery The current search filter applied to task titles
  */
 @Composable
 fun BookmarksScreen(
-    bookmarks: List<TaskModel> = sampleTasks(),
     searchQuery: String = ""
 ) { //change to show no results
-    val filtered = bookmarks.filter {
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val bookmarkRepository = application.appProvider.provideBookmarkRepository()
+    val viewModel: BookmarkViewModel = viewModel(factory = BookmarkViewModelFactory(bookmarkRepository))
+
+    val bookmarkedTasks = viewModel.bookmarkedTasks.collectAsStateWithLifecycle()
+
+    val filtered = bookmarkedTasks.value.filter {
         it.title.contains(searchQuery, ignoreCase = true)
     }
     when {
-        bookmarks.isEmpty() -> {
+        bookmarkedTasks.value.isEmpty() -> {
             EmptyBookmarks()
         }
 
@@ -119,42 +130,27 @@ fun BookmarkList(bookmarks: List<TaskModel>) {
             onSelect = { sortOption = it }
         )
 
+        val groupedTasks: Map<String, List<TaskModel>> = bookmarks.groupBy { it.breadcrumb }
         // TODO: Apply real sorting logic later based on sortOption
 
-        Container(title = "Workspace 1 / Project 1") {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                bookmarks.forEach { task ->
-                    TaskCard(
-                        title = task.title,
-//                        tags = task.tags
-                        //TODO: Revert this
-                        tags = emptyList<TagModel>()
-                        // TODO: Add onClick to navigate to task details
-                    )
+//        Show bookmarked tasks grouped by breadcrumb
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            groupedTasks.forEach { (breadcrumb, tasksInGroup) ->
+                Container(title = breadcrumb) {
+                    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        tasksInGroup.forEach { task ->
+                            TaskCard(
+                                title = task.title,
+//                                TODO: Add tags
+                                tags = emptyList() // or task.tags if available
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-
-// Simulated data
-fun sampleTasks(): List<TaskModel> = listOf<TaskModel>(
-    TaskModel(
-        id = 1,
-        title = "Task Title",
-        projectId = 1
-    ),
-    TaskModel(
-        id = 2,
-        title = "Task Title",
-//        tags = listOf<TagModel>(
-//            TagModel(id = 1, title = "Tag", color = Color.Red, projectId = 1),
-//            TagModel(id = 2, title = "Tag", color = Color.Blue, projectId = 2)
-//        ),
-        projectId = 2
-    )
-)
 
 /**
  * Preview of the bookmarks screen with content.
@@ -190,7 +186,6 @@ fun BookmarksNoResultsPreview() {
     TaskSpacesTheme {
         ExtendedColors {
             BookmarksScreen(
-                bookmarks = sampleTasks(),
                 searchQuery = "ZZZ" //empty search example
             )
         }
@@ -203,7 +198,6 @@ fun BookmarksNoResultsDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             BookmarksScreen(
-                bookmarks = sampleTasks(),
                 searchQuery = "ZZZ"  //empty search example
             )
         }
@@ -221,7 +215,6 @@ fun BookmarksEmptyPreview() {
     TaskSpacesTheme {
         ExtendedColors {
             BookmarksScreen(
-                bookmarks = emptyList(),
                 searchQuery = ""
             )
         }
@@ -234,7 +227,6 @@ fun BookmarksEmptyDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             BookmarksScreen(
-                bookmarks = emptyList(),
                 searchQuery = ""
             )
         }
