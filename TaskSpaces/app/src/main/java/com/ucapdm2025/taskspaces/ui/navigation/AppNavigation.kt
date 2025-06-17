@@ -33,7 +33,8 @@ fun AppNavigation(navController: NavHostController) {
             val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
             // taskId is optional, used for navigating and opening a task dialog within a project
             val taskId: Int? = backStackEntry.arguments?.getInt("taskId")
-            ProjectScreen(projectId = projectId, taskId = taskId)
+
+            ProjectScreen(projectId = projectId, taskId = if (taskId == 0) null else taskId)
         }
 
         composable<TimeTrackerRoute> { backStackEntry ->
