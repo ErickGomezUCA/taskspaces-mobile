@@ -1,0 +1,28 @@
+package com.ucapdm2025.taskspaces.data.remote.services
+
+import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+
+interface TaskService {
+    @GET("tasks/{id}")
+    suspend fun getTaskById(@Path("id") id: Int): BaseResponse<TaskResponse>
+
+    @GET("tasks/p/{projectId}")
+    suspend fun getTasksByProjectId(@Path("projectId") projectId: Int): BaseResponse<List<TaskResponse>>
+
+    @POST("tasks/p/{projectId}")
+    suspend fun createTask(@Path("projectId") projectId: Int, @Body request: TaskRequest): BaseResponse<TaskResponse>
+
+    @PUT("tasks/{id}")
+    suspend fun updateTask(@Path("id") id: Int, @Body request: TaskRequest): BaseResponse<TaskResponse>
+
+    @DELETE("tasks/{id}")
+    suspend fun deleteTask(@Path("id") id: Int): BaseResponse<TaskResponse>
+}

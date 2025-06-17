@@ -16,14 +16,14 @@ import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
 fun OnboardingNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = OnboardingRoute) {
+    NavHost(navController = navController, startDestination = LoginRoute) {
         composable<OnboardingRoute> {
             OnboardingScreen(navController = navController)
         }
 
         composable<LoginRoute> {
             LoginScreen(
-                onLogin = {},
+                onSuccessfulLogin = { navController.navigate(AppRoute) },
                 onNavigateToSignUp = {}
             )
         }

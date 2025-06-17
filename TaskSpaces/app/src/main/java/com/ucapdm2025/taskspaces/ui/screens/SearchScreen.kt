@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.*
 import com.ucapdm2025.taskspaces.ui.components.home.WorkspaceCard
-import com.ucapdm2025.taskspaces.ui.components.projects.Task
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
@@ -42,7 +42,7 @@ fun SearchScreen(
     searchQuery: String = "", //switch to see "" default , "example" with results , "zzz" without results
     workspaces: List<String> = sampleWorkspaces(searchQuery),
     projects: List<String> = sampleProjects(searchQuery),
-    tasks: List<Task> = sampleTasks(searchQuery),
+    tasks: List<TaskModel> = sampleTasks(searchQuery),
     users: List<String> = sampleUsers(searchQuery),
 ) {
     val hasAnyResults =
@@ -104,7 +104,7 @@ fun SearchNoResults() {
 fun SearchResults(
     workspaces: List<String>,
     projects: List<String>,
-    tasks: List<Task>,
+    tasks: List<TaskModel>,
     users: List<String>
 ) {
     LazyColumn(
@@ -149,7 +149,7 @@ fun SearchResults(
                 SearchContainer(title = "Tasks", onViewMoreClick = { }) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(tasks) {
-                            TaskCard(title = it.title, tags = it.tags)
+//                            TaskCard(title = it.title, tags = it.tags)
                         }
                     }
                 }
@@ -177,10 +177,14 @@ fun sampleWorkspaces(query: String): List<String> =
 fun sampleProjects(query: String): List<String> =
     if (query == "zzz") emptyList() else listOf("Project name", "Project name","Project name", "Project name")
 
-fun sampleTasks(query: String): List<Task> =
+fun sampleTasks(query: String): List<TaskModel> =
     if (query == "zzz") emptyList() else listOf(
-        Task("Task Title 1", listOf(Tag("Tag", Color.Red), Tag("Tag", Color.Green))),
-        Task("Task Title 2", listOf(Tag("Tag", Color.Blue)))
+        TaskModel(1, "TaskModel Title 1", projectId = 1,
+//            listOf(Tag("Tag", Color.Red), Tag("Tag", Color.Green))
+        ),
+        TaskModel(2, "TaskModel Title 2", projectId = 1,
+//            listOf(Tag("Tag", Color.Blue))
+        )
     )
 
 fun sampleUsers(query: String): List<String> =
