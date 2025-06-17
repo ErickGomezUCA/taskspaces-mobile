@@ -8,6 +8,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.ucapdm2025.taskspaces.data.database.AppDatabase
 import com.ucapdm2025.taskspaces.data.remote.RetrofitInstance
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
+import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
+import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
@@ -52,6 +54,16 @@ class AppProvider(context: Context) {
     private val taskService = RetrofitInstance.taskService
     private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, taskService)
 
+//    Bookmark
+    private val bookmarkDao = appDatabase.bookmarkDao()
+    private val bookmarkService = RetrofitInstance.bookmarkService
+    private val bookmarkRepository: BookmarkRepository = BookmarkRepositoryImpl(
+        authRepository = authRepository,
+        bookmarkDao = bookmarkDao,
+        bookmarkService = bookmarkService,
+        taskDao = taskDao
+    )
+
     fun provideUserRepository(): UserRepository {
         return userRepository
     }
@@ -70,5 +82,9 @@ class AppProvider(context: Context) {
 
     fun provideTaskRepository(): TaskRepository {
         return taskRepository
+    }
+
+    fun provideBookmarkRepository(): BookmarkRepository {
+        return bookmarkRepository
     }
 }

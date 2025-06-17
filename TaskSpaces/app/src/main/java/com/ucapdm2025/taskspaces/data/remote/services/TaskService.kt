@@ -10,6 +10,9 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
+/**
+ * TaskService is an interface that defines the API endpoints for managing tasks.
+ */
 interface TaskService {
     @GET("tasks/{id}")
     suspend fun getTaskById(@Path("id") id: Int): BaseResponse<TaskResponse>

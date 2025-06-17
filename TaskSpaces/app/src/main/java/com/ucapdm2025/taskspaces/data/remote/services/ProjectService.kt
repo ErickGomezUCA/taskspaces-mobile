@@ -10,6 +10,9 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
+/**
+ * ProjectService is an interface that defines the API endpoints for managing projects.
+ */
 interface ProjectService {
     @GET("projects/{id}")
     suspend fun getProjectById(@Path("id") id: Int): BaseResponse<ProjectResponse>

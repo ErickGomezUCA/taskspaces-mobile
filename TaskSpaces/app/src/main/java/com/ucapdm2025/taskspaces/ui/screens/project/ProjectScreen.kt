@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +40,8 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  */
 @Composable
 fun ProjectScreen(
-    projectId: Int
+    projectId: Int,
+    taskId: Int? = null
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val projectRepository = application.appProvider.provideProjectRepository()
@@ -58,6 +60,15 @@ fun ProjectScreen(
     fun onTaskCardClick(taskId: Int) {
         viewModel.setSelectedTaskId(taskId)
         viewModel.showTaskDialog()
+    }
+
+//    Automatically open task dialog of the specified taskId if provided.
+//    Do this only on first load of project screen.
+    LaunchedEffect(taskId) {
+        if (taskId != null) {
+            viewModel.setSelectedTaskId(taskId)
+            viewModel.showTaskDialog()
+        }
     }
     
 //    Show feedback icon if the project is not found

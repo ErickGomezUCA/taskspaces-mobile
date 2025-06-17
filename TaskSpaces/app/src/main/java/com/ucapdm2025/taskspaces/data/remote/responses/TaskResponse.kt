@@ -25,6 +25,7 @@ import java.time.LocalDateTime
  */
 data class TaskResponse(
     val id: Int,
+    val breadcrumb: String = "/",
     val title: String,
     val description: String? = null,
     val status: String, // Assuming status is a string, could be an enum or similar
@@ -46,6 +47,7 @@ data class TaskResponse(
 fun TaskResponse.toDomain(): TaskModel {
     return TaskModel(
         id = id,
+        breadcrumb = breadcrumb,
         title = title,
         description = description,
         status = when (status.uppercase()) {
@@ -70,6 +72,7 @@ fun TaskResponse.toDomain(): TaskModel {
 fun TaskResponse.toEntity(): TaskEntity {
     return TaskEntity(
         id = id,
+        breadcrumb = breadcrumb,
         title = title,
         description = description,
         status = status.uppercase(),

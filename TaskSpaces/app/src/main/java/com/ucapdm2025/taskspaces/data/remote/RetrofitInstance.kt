@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.data.remote
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
+import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.data.remote.services.UserService
@@ -20,9 +21,6 @@ object RetrofitInstance {
     //    IMPORTANT: Include "/" at the end of the base url
 //    Production backend URL
     private const val BASE_URL = "https://taskspaces-backend-ox3g.onrender.com/api/"
-
-//    TODO: Remove this on production.
-//    private const val BASE_URL = "http://192.168.0.29:3000/api/"
 
     val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
@@ -55,5 +53,9 @@ object RetrofitInstance {
 
     val taskService: TaskService by lazy {
         retrofit.create(TaskService::class.java)
+    }
+
+    val bookmarkService: BookmarkService by lazy {
+        retrofit.create(BookmarkService::class.java)
     }
 }

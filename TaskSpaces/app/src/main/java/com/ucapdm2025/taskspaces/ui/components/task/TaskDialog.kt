@@ -1,25 +1,21 @@
 package com.ucapdm2025.taskspaces.ui.components.task
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
@@ -42,7 +38,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,9 +45,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
-import com.ucapdm2025.taskspaces.data.dummy.usersDummies
+import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
+import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
-import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatus
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
@@ -60,8 +55,6 @@ import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 /**
@@ -100,14 +93,19 @@ fun TaskDialog(
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val taskRepository = application.appProvider.provideTaskRepository()
-    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskId, taskRepository))
+    val bookmarkRepository = application.appProvider.provideBookmarkRepository()
+    val viewModel: TaskViewModel =
+        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, bookmarkRepository))
 
     val task = viewModel.task.collectAsStateWithLifecycle()
+    val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
 
+//    Change task id on dialog load
     LaunchedEffect(taskId) {
         viewModel.loadTask(taskId)
     }
 
+    //    Remove saved task id and then hide the dialog
     fun hideDialog() {
         viewModel.clearTask()
         onDismissRequest()
@@ -116,6 +114,7 @@ fun TaskDialog(
     AlertDialog(
         onDismissRequest = { hideDialog() },
         containerColor = MaterialTheme.colorScheme.background,
+//        Cancel and save buttons
         confirmButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -136,6 +135,8 @@ fun TaskDialog(
             }
         },
         text = {
+//            Show feedback icon if task is not found
+//            TODO: Add loading and error states
             if (task.value == null) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -159,15 +160,50 @@ fun TaskDialog(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    //BREADCRUMB
-                    Column {
-                        Text(
-                            task.value?.breadcrumb ?: "No data",
-                            fontSize = 14.sp,
-                            color = ExtendedTheme.colors.background50
+                    //BREADCRUMB AND DROPDOWN MENU
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                task.value?.breadcrumb ?: "/",
+                                fontSize = 14.sp,
+                                color = ExtendedTheme.colors.background50
+                            )
+                        }
+
+                        DropdownMenu(
+                            options = listOf(
+                                DropdownMenuOption(
+                                    label = if (!isBookmarked.value) "Bookmark" else "Remove Bookmark",
+                                    icon = {
+                                        if (!isBookmarked.value) {
+                                            Icon(
+                                                Icons.Default.BookmarkBorder,
+                                                contentDescription = "Bookmark",
+                                                tint = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        } else {
+                                            Icon(
+                                                Icons.Default.BookmarkRemove,
+                                                contentDescription = "Remove Bookmark",
+                                                tint = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        if (!isBookmarked.value) {
+                                            viewModel.bookmarkTask()
+                                        } else {
+                                            viewModel.removeBookmarkTask()
+                                        }
+                                    }
+                                ),
+                            ),
                         )
                     }
-
 
                     //TITLE
                     Column {
