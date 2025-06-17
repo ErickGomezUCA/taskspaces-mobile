@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
+import com.ucapdm2025.taskspaces.ui.screens.bookmark.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.home.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
@@ -31,7 +31,11 @@ fun AppNavigation(navController: NavHostController) {
 
         composable<ProjectRoute> { backStackEntry ->
             val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
-            ProjectScreen(projectId = projectId)
+            // taskId is optional, used for navigating and opening a task dialog within a project
+            val taskId: Int? = backStackEntry.arguments?.getInt("taskId")
+
+//            Fixed: Avoid opening a task dialog when taskId is 0 (it will show a task not found error)
+            ProjectScreen(projectId = projectId, taskId = if (taskId == 0) null else taskId)
         }
 
         composable<TimeTrackerRoute> { backStackEntry ->
@@ -44,7 +48,9 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable<BookmarksRoute> {
-            BookmarksScreen()
+            BookmarksScreen(onBookmarkedTaskClick = { projectId, taskId ->
+                navController.navigate(ProjectRoute(projectId = projectId, taskId = taskId))
+            })
         }
 
         composable<UserRoute> {

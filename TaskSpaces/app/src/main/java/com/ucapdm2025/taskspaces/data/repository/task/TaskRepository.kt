@@ -14,7 +14,6 @@ import java.time.LocalDateTime
  */
 interface TaskRepository {
     fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>>
-    fun getBookmarkedTasks(): Flow<List<TaskModel>> // TODO: Implement this method
     fun getAssignedTasks(userId: Int): Flow<List<TaskModel>> // TODO: Implement this method
     fun getTaskById(id: Int): Flow<Resource<TaskModel?>>
     suspend fun createTask(
@@ -36,5 +35,4 @@ interface TaskRepository {
     ): Result<TaskModel>
 
     suspend fun deleteTask(id: Int): Result<TaskModel>
-    suspend fun bookmarkTask(id: Int): Boolean // TODO: Implement this method
 }

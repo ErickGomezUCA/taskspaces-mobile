@@ -89,8 +89,6 @@ class AuthRepository(
     suspend fun saveAuthUserId(
         user: Int
     ) {
-
-
         dataStore.edit { preferences ->
             preferences[AUTH_USER_ID] = user
         }

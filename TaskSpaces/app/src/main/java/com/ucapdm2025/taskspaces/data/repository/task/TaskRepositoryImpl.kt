@@ -5,7 +5,6 @@ import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
-import com.ucapdm2025.taskspaces.data.dummy.tasksDummies
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
@@ -38,9 +37,6 @@ class TaskRepositoryImpl(
     private val taskDao: TaskDao,
     private val taskService: TaskService
 ) : TaskRepository {
-    private val tasks = MutableStateFlow(tasksDummies)
-    private val bookmarkedTasks =
-        MutableStateFlow(com.ucapdm2025.taskspaces.data.dummy.bookmarkedTasksDummies)
     private val assignedTasks = MutableStateFlow(assignedTasksDummies)
 
     override fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>> = flow {
@@ -80,11 +76,6 @@ class TaskRepositoryImpl(
 
         emitAll(localTasks)
     }.flowOn(Dispatchers.IO)
-
-    // TODO: Implement this method
-    override fun getBookmarkedTasks(): Flow<List<TaskModel>> {
-        return bookmarkedTasks.asStateFlow()
-    }
 
     // TODO: Implement this method
     override fun getAssignedTasks(userId: Int): Flow<List<TaskModel>> {
@@ -245,18 +236,5 @@ class TaskRepositoryImpl(
             Result.failure(e)
         }
 
-    }
-
-    // TODO: Implement this method
-    override suspend fun bookmarkTask(id: Int): Boolean {
-        val task = tasks.value.find { it.id == id } ?: return false
-
-        if (bookmarkedTasks.value.any { it.id == id }) {
-            bookmarkedTasks.value = bookmarkedTasks.value.filter { it.id != id }
-        } else {
-            bookmarkedTasks.value = bookmarkedTasks.value + task
-        }
-
-        return true
     }
 }

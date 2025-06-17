@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.CommentModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 /**
  * ViewModel for managing a single task's data, including its comments.
@@ -27,16 +27,21 @@ import java.time.LocalDateTime
 class TaskViewModel(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
+    private val bookmarkRepository: BookmarkRepository
 ) : ViewModel() {
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
+
+    private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
 
     private val _task: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
     val task: StateFlow<TaskModel?> = _task.asStateFlow()
 
+    private val _isBookmarked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isBookmarked: StateFlow<Boolean> = _isBookmarked.asStateFlow()
+
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
-    private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
 
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
@@ -76,6 +81,33 @@ class TaskViewModel(
                 }
             }.collect { comments ->
                 _comments.value = comments
+            }
+        }
+
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    bookmarkRepository.isBookmarked(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val bookmark = resource.data
+                        _isBookmarked.value = bookmark
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _isBookmarked.value = false
+                }
             }
         }
     }
@@ -156,8 +188,30 @@ class TaskViewModel(
     //    TODO: Define how this function should work in the viewmodel
     fun bookmarkTask() {
         viewModelScope.launch {
-            task.value?.let { task ->
-                taskRepository.bookmarkTask(task.id)
+            val response = bookmarkRepository.createBookmark(_currentTaskId.value ?: 0)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error bookmarking task: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun removeBookmarkTask() {
+        viewModelScope.launch {
+            val response = bookmarkRepository.deleteBookmark(_currentTaskId.value ?: 0)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error removing bookmark to task: ${exception.message}")
+                }
             }
         }
     }
@@ -168,12 +222,13 @@ class TaskViewModel(
  */
 class TaskViewModelFactory(
     private val taskId: Int,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val bookmarkRepository: BookmarkRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskId, taskRepository) as T
+            return TaskViewModel(taskId, taskRepository, bookmarkRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

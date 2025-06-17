@@ -11,16 +11,16 @@ import java.time.LocalDateTime
 /**
  * TaskEntity is a data class that represents a task in the database.
  *
- * @param id The unique identifier for the task.
- * @param breadcrumb The breadcrumb path for the task, default is "/".
- * @param title The title of the task.
- * @param description An optional description of the task.
- * @param deadline An optional deadline for the task, represented as a String (TODO: should be LocalDateTime).
- * @param timer An optional timer for the task, represented as a Float.
- * @param status The status of the task, represented by StatusVariations.
- * @param projectId The ID of the project to which the task belongs.
- * @param createdAt The timestamp when the task was created.
- * @param updatedAt The timestamp when the task was last updated.
+ * @property id The unique identifier for the task.
+ * @property breadcrumb The breadcrumb path for the task, default is "/".
+ * @property title The title of the task.
+ * @property description An optional description of the task.
+ * @property deadline An optional deadline for the task, represented as a String (TODO: should be LocalDateTime).
+ * @property timer An optional timer for the task, represented as a Float.
+ * @property status The status of the task, represented by StatusVariations.
+ * @property projectId The ID of the project to which the task belongs.
+ * @property createdAt The timestamp when the task was created.
+ * @property updatedAt The timestamp when the task was last updated.
  */
 @Entity(tableName = "task")
 data class TaskEntity (

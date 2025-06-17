@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.data.remote
 import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
+import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.data.remote.services.UserService
@@ -55,5 +56,9 @@ object RetrofitInstance {
 
     val taskService: TaskService by lazy {
         retrofit.create(TaskService::class.java)
+    }
+
+    val bookmarkService: BookmarkService by lazy {
+        retrofit.create(BookmarkService::class.java)
     }
 }

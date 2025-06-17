@@ -21,7 +21,8 @@ object HomeRoute
 data class WorkspaceRoute(val workspaceId: Int)
 
 @Serializable
-data class ProjectRoute(val projectId: Int)
+// taskId is optional, used for navigating and opening a task dialog within a project
+data class ProjectRoute(val projectId: Int, val taskId : Int? = null)
 
 @Serializable
 data class TimeTrackerRoute(val taskId: Int)
