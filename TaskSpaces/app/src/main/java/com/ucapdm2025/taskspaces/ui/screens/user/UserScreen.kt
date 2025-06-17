@@ -181,11 +181,14 @@ fun UserScreen(onNavigateToSettings: () -> Unit = {}) {
                     onCheckedChange = { notificationsEnabled = it },
                     modifier = Modifier.align(Alignment.CenterVertically),
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color(0xFF9966E2),
+                        checkedThumbColor = Color.White,
                         checkedTrackColor = Color(0xFF9966E2),
-                        checkedBorderColor = Color(0xFF9966E2),
-                        uncheckedThumbColor = Color(0xFF9966E2)
+                        uncheckedThumbColor = Color.LightGray,
+                        uncheckedTrackColor = Color(0xFFE0E0E0),
+                        checkedBorderColor = Color.Transparent,
+                        uncheckedBorderColor = Color.Transparent
                     )
+
                 )
             }
 
@@ -207,11 +210,14 @@ fun UserScreen(onNavigateToSettings: () -> Unit = {}) {
                     onCheckedChange = { darkModeEnabled = it },
                     modifier = Modifier.align(Alignment.CenterVertically),
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color(0xFF9966E2),
+                        checkedThumbColor = Color.White,
                         checkedTrackColor = Color(0xFF9966E2),
-                        checkedBorderColor = Color(0xFF9966E2),
-                        uncheckedThumbColor = Color(0xFF9966E2)
+                        uncheckedThumbColor = Color.LightGray,
+                        uncheckedTrackColor = Color(0xFFE0E0E0),
+                        checkedBorderColor = Color.Transparent,
+                        uncheckedBorderColor = Color.Transparent
                     )
+
                 )
             }
         }
@@ -242,6 +248,14 @@ private fun CardButton(text: String, onClick: () -> Unit) {
     }
 }
 
+
+/**
+ * Preview for the User screen using the light theme.
+ *
+ * Displays the UserScreen composable with light mode styles applied
+ * via TaskSpacesTheme and ExtendedColors.
+ *
+ */
 @Preview(showBackground = true)
 @Composable
 fun UserScreenPreviewLight() {
@@ -252,6 +266,13 @@ fun UserScreenPreviewLight() {
     }
 }
 
+/**
+ * Preview for the User screen using the dark theme.
+ *
+ * Displays the UserScreen composable with dark mode styles applied,
+ * including a custom dark background color for better contrast.
+ *
+ */
 @Preview(showBackground = true, backgroundColor = 0xFF27272A)
 @Composable
 fun UserScreenPreviewDark() {
