@@ -34,6 +34,7 @@ fun AppNavigation(navController: NavHostController) {
             // taskId is optional, used for navigating and opening a task dialog within a project
             val taskId: Int? = backStackEntry.arguments?.getInt("taskId")
 
+//            Fixed: Avoid opening a task dialog when taskId is 0 (it will show a task not found error)
             ProjectScreen(projectId = projectId, taskId = if (taskId == 0) null else taskId)
         }
 
