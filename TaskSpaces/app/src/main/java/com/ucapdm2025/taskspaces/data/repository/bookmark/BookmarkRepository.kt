@@ -13,6 +13,7 @@ interface BookmarkRepository {
 //    information of a task, only the user ID and task ID.
     fun getUserBookmarks(): Flow<Resource<List<TaskModel>>>
     fun getBookmarkByTaskId(taskId: Int): Flow<Resource<TaskModel?>>
+    suspend fun isBookmarked(taskId: Int): Flow<Resource<Boolean>>
     suspend fun createBookmark(taskId: Int): Result<BookmarkModel>
     suspend fun deleteBookmark(taskId: Int): Result<BookmarkModel>
 }

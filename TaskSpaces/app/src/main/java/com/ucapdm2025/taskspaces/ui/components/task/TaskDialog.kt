@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.components.task
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
@@ -92,9 +93,12 @@ fun TaskDialog(
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val taskRepository = application.appProvider.provideTaskRepository()
-    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskId, taskRepository))
+    val bookmarkRepository = application.appProvider.provideBookmarkRepository()
+    val viewModel: TaskViewModel =
+        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, bookmarkRepository))
 
     val task = viewModel.task.collectAsStateWithLifecycle()
+    val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -156,7 +160,7 @@ fun TaskDialog(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    //BREADCRUMB
+                    //BREADCRUMB AND DROPDOWN MENU
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -173,14 +177,29 @@ fun TaskDialog(
                         DropdownMenu(
                             options = listOf(
                                 DropdownMenuOption(
-                                    label = "Bookmark",
+                                    label = if (!isBookmarked.value) "Bookmark" else "Remove Bookmark",
                                     icon = {
-                                        Icon(
-                                            imageVector = Icons.Default.BookmarkBorder,
-                                            contentDescription = "Bookmark"
-                                        )
+                                        if (!isBookmarked.value) {
+                                            Icon(
+                                                Icons.Default.BookmarkBorder,
+                                                contentDescription = "Bookmark",
+                                                tint = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        } else {
+                                            Icon(
+                                                Icons.Default.BookmarkRemove,
+                                                contentDescription = "Remove Bookmark",
+                                                tint = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        }
                                     },
-                                    onClick = { Log.d("TaskDialog", "Bookmark clicked") },
+                                    onClick = {
+                                        if (!isBookmarked.value) {
+                                            viewModel.bookmarkTask()
+                                        } else {
+                                            viewModel.removeBookmarkTask()
+                                        }
+                                    }
                                 ),
                             ),
                         )

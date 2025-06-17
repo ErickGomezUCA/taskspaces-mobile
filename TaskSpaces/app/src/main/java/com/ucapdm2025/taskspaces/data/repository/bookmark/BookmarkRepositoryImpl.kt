@@ -110,8 +110,8 @@ class BookmarkRepositoryImpl(
 //        Use local bookmarks tasks
         val localBookmarkedTask =
             bookmarkDao.getBookmarkByUserIdAndTaskId(userId = userId, taskId = taskId)
-                .map { entities ->
-                    val bookmark = entities?.toDomain()
+                .map { entity ->
+                    val bookmark = entity?.toDomain()
 
                     if (bookmark == null) {
                         //                Logs an error if no projects are found for the user
@@ -128,7 +128,24 @@ class BookmarkRepositoryImpl(
                 }.distinctUntilChanged()
 
         emitAll(localBookmarkedTask)
+    }
 
+    override suspend fun isBookmarked(taskId: Int): Flow<Resource<Boolean>> = flow {
+        emit(Resource.Loading)
+
+        val userId: Int = authRepository.authUserId.first()
+
+        val isBookmarked = bookmarkDao.getBookmarkByUserIdAndTaskId(userId = userId, taskId = taskId).map { entity ->
+            val bookmark = entity?.toDomain()
+
+            if (bookmark == null) {
+                Resource.Success(false)
+            } else {
+                Resource.Success(true)
+            }
+        }.distinctUntilChanged()
+
+        emitAll(isBookmarked)
     }
 
     override suspend fun createBookmark(taskId: Int): Result<BookmarkModel> {
