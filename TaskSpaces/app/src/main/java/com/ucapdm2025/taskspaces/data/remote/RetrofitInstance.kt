@@ -18,8 +18,11 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object RetrofitInstance {
     //    IMPORTANT: Include "/" at the end of the base url
-//    TODO: This is the local ip of my pc, please change it to a proper ip for production
-    private const val BASE_URL = "http://192.168.0.29:3000/api/"
+//    Production backend URL
+    private const val BASE_URL = "https://taskspaces-backend-ox3g.onrender.com/api/"
+
+//    TODO: Remove this on production.
+//    private const val BASE_URL = "http://192.168.0.29:3000/api/"
 
     val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
