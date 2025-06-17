@@ -14,6 +14,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * BookmarkViewModel is a ViewModel that manages the state of bookmarked tasks.
+ *
+ * @param bookmarkRepository The repository used to manage bookmarks.
+ */
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository
 ): ViewModel() {
@@ -40,6 +45,11 @@ class BookmarkViewModel(
     }
 }
 
+/**
+ * BookmarkViewModelFactory is a factory class for creating instances of BookmarkViewModel.
+ *
+ * @param bookmarkRepository The repository used to manage bookmarks.
+ */
 class BookmarkViewModelFactory(
     private val bookmarkRepository: BookmarkRepository
 ) : ViewModelProvider.Factory {

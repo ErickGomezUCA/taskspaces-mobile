@@ -38,14 +38,14 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * - No results if the search query returns nothing
  * - A list of bookmarked tasks otherwise
  *
- * @param bookmarkedTasks The list of bookmarked tasks
  * @param searchQuery The current search filter applied to task titles
+ * @param onBookmarkedTaskClick Callback invoked when a bookmarked task is clicked
  */
 @Composable
 fun BookmarksScreen(
     searchQuery: String = "",
     onBookmarkedTaskClick: (projectId: Int, taskId: Int) -> Unit
-) { //change to show no results
+) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
     val viewModel: BookmarkViewModel =
