@@ -8,6 +8,8 @@ import com.ucapdm2025.taskspaces.ui.screens.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.home.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
 import com.ucapdm2025.taskspaces.ui.screens.UserScreen
+import com.ucapdm2025.taskspaces.ui.screens.project.ProjectScreen
+import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 
 @Composable
@@ -15,30 +17,25 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
         composable<HomeRoute> {
-            HomeScreen()
+            HomeScreen(onNavigateWorkspace = { workspaceId ->
+                navController.navigate(WorkspaceRoute(workspaceId))
+            })
         }
 
         composable<WorkspaceRoute> { backStackEntry ->
-//                Use this ID to get the workspace
-            backStackEntry.arguments?.getString("workspaceId") ?: 0
-//            Workspace screen goes here
+            val workspaceId: Int = backStackEntry.arguments?.getInt("workspaceId") ?: 0
+            WorkspaceScreen(workspaceId = workspaceId, onNavigateProject = { projectId ->
+                navController.navigate(ProjectRoute(projectId))
+            })
         }
 
-        composable<ProjectRout> { backStackEntry ->
-//                Use this ID to get the project
-            backStackEntry.arguments?.getString("projectId") ?: 0
-//            Project screen goes here
-        }
-
-        composable<TaskRoute> { backStackEntry ->
-//                Use this ID to get the task
-//                TODO: See if this is correct, because tasks are handled by a dialog instead of a view
-            backStackEntry.arguments?.getString("taskId") ?: 0
-//            Task screen goes here
+        composable<ProjectRoute> { backStackEntry ->
+            val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
+            ProjectScreen(projectId = projectId)
         }
 
         composable<TimeTrackerRoute> { backStackEntry ->
-            backStackEntry.arguments?.getString("taskId") ?: 0
+            backStackEntry.arguments?.getInt("taskId") ?: 0
 //            Time Tracker screen goes here
         }
 

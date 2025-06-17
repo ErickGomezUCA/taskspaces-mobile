@@ -5,9 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
+import com.ucapdm2025.taskspaces.ui.navigation.OnboardingNavigation
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.ui.screens.WorkspaceScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -23,12 +23,12 @@ class MainActivity : ComponentActivity() {
 //                To avoid that navigation and start straight into the main app navigation,
 //                just uncomment AppScaffold and comment the OnboardingNavigation
 
-//                    OnboardingNavigation()
+                    OnboardingNavigation()
 
                     // Just testing the screen for now — will be replaced by real flow later.
 //                    WorkspaceScreen(workspaceName = "Workspace 1")
 
-                    AppScaffold()
+//                    AppScaffold()
 
                 }
             }

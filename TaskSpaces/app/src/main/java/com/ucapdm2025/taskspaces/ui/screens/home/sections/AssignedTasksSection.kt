@@ -1,14 +1,22 @@
 package com.ucapdm2025.taskspaces.ui.screens.home.sections
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ucapdm2025.taskspaces.data.model.TagModel
+import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
-import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -16,15 +24,34 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * A section that displays a list of tasks assigned to the user.
  *
  * Each task is shown using [TaskCard], with associated colored tags and a "See more" button.
+ *
+ * @param assignedTasks A list of [TaskModel] representing the tasks assigned to the user.
  */
 @Composable
-fun AssignedTasksSection(modifier: Modifier = Modifier) {
+fun AssignedTasksSection(
+    modifier: Modifier = Modifier,
+    assignedTasks: List<TaskModel> = emptyList<TaskModel>(),
+) {
     Column(modifier = modifier.fillMaxWidth()) {
         TaskCard(
             title = "Task Title",
             tags = listOf(
-                Tag("Tag", Color.Red),
-                Tag("Tag", Color.Blue)
+                TagModel(
+                    id = 1,
+                    title = "Tag",
+                    color = Color.Red,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                ),
+                TagModel(
+                    id = 2,
+                    title = "Tag",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -32,8 +59,22 @@ fun AssignedTasksSection(modifier: Modifier = Modifier) {
         TaskCard(
             title = "Task Title",
             tags = listOf(
-                Tag("Tag", Color(0xFFE67E22)),
-                Tag("Tag", Color(0xFF27AE60))
+                TagModel(
+                    id = 1,
+                    title = "Tag",
+                    color = Color.Red,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                ),
+                TagModel(
+                    id = 2,
+                    title = "Tag",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -41,22 +82,38 @@ fun AssignedTasksSection(modifier: Modifier = Modifier) {
         TaskCard(
             title = "Task Title",
             tags = listOf(
-                Tag("Tag", Color(0xFF9B59B6)),
-                Tag("Tag", Color(0xFF3498DB))
+                TagModel(
+                    id = 1,
+                    title = "Tag",
+                    color = Color.Red,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                ),
+                TagModel(
+                    id = 2,
+                    title = "Tag",
+                    color = Color.Blue,
+                    projectId = 1,
+                    createdAt = "",
+                    updatedAt = ""
+                )
             )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = { /* See more tasks */ },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            Text("See more")
+        if (assignedTasks.size > 2) {
+            Button(
+                onClick = { /* See more tasks */ },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("See more")
+            }
         }
     }
 }
