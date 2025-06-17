@@ -5,28 +5,41 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.R
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight100
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
- * A composable screen that allows users to register an account.
+ * A composable function that displays the sign-up screen UI.
  *
- * Includes input fields for name, username, email, password, and confirmation.
- * Visual style adapts to the current theme (light/dark) and uses a shared background.
+ * This screen includes input fields for name, username, email, password, and confirm password.
+ * It displays a background image and branding similar to the login screen.
+ *
+ * @param onSignUp Callback triggered when the user submits valid information.
+ * @param onNavigateToLogin Callback triggered when the user taps the "Log in" link.
  */
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(
+    onSignUp: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
+) {
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -41,8 +54,7 @@ fun SignUpScreen() {
         Image(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         Column(
@@ -52,55 +64,46 @@ fun SignUpScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = "Welcome",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
+                text = "Welcome to",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                ),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    )
-                )
 
-                TextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Username") },
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    )
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo",
+                    Modifier.size(40.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "TaskSpaces",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp
+                    ),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,7 +111,46 @@ fun SignUpScreen() {
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
                 )
             )
 
@@ -119,6 +161,7 @@ fun SignUpScreen() {
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
+                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,7 +169,8 @@ fun SignUpScreen() {
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
                 )
             )
 
@@ -137,6 +181,7 @@ fun SignUpScreen() {
                 onValueChange = { confirmPassword = it },
                 label = { Text("Confirm password") },
                 visualTransformation = PasswordVisualTransformation(),
+                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -144,7 +189,8 @@ fun SignUpScreen() {
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
                 )
             )
 
@@ -152,13 +198,15 @@ fun SignUpScreen() {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     "Have an account?",
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(0.dp)
                 )
-                TextButton(onClick = { /* Navigate to login */ }) {
+                TextButton(onClick = onNavigateToLogin, modifier = Modifier.padding(0.dp)) {
                     Text("Log in", color = PrimaryLight100)
                 }
             }
@@ -166,7 +214,7 @@ fun SignUpScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* Sign up */ },
+                onClick = onSignUp,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -177,11 +225,11 @@ fun SignUpScreen() {
 }
 
 /**
- * Preview of [SignUpScreen] in light theme.
+ * A preview composable for the [SignUpScreen] using the light theme.
  */
-@Preview(showBackground = true)
+@Preview()
 @Composable
-fun SignUpScreenPreviewLight() {
+fun PreviewSignUpScreenLight() {
     TaskSpacesTheme(darkTheme = false) {
         ExtendedColors(darkTheme = false) {
             SignUpScreen()
@@ -190,11 +238,11 @@ fun SignUpScreenPreviewLight() {
 }
 
 /**
- * Preview of [SignUpScreen] in dark theme.
+ * A preview composable for the [SignUpScreen] using the dark theme.
  */
-@Preview(showBackground = true)
+@Preview()
 @Composable
-fun SignUpScreenPreviewDark() {
+fun PreviewSignUpScreenDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             SignUpScreen()
