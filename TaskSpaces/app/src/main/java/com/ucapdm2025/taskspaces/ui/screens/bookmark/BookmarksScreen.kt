@@ -44,7 +44,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun BookmarksScreen(
     searchQuery: String = "",
-    onBookmarkedTaskClick: (Int) -> Unit
+    onBookmarkedTaskClick: (projectId: Int, taskId: Int) -> Unit
 ) { //change to show no results
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
@@ -117,7 +117,7 @@ fun NoResults() {
  * @param bookmarks List of tasks to display as cards
  */
 @Composable
-fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (Int) -> Unit) {
+fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (projectId: Int, taskId: Int) -> Unit) {
     var sortOption by remember { mutableStateOf(SortOption.NAME) }
     Column(
         modifier = Modifier
@@ -148,7 +148,7 @@ fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (Int) -> Uni
                                 title = task.title,
 //                                TODO: Add tags
                                 tags = emptyList(), // or task.tags if available,
-                                onClick = { onBookmarkedTaskClick(task.id) }
+                                onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
                             )
                         }
                     }
@@ -167,7 +167,7 @@ fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (Int) -> Uni
 fun BookmarksScreenLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            BookmarksScreen(onBookmarkedTaskClick = {})
+            BookmarksScreen(onBookmarkedTaskClick = { projectId, taskId ->})
         }
     }
 }
@@ -177,7 +177,7 @@ fun BookmarksScreenLightPreview() {
 fun BookmarksScreenDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            BookmarksScreen(onBookmarkedTaskClick = {})
+            BookmarksScreen(onBookmarkedTaskClick = { projectId, taskId ->})
         }
     }
 }
@@ -193,7 +193,7 @@ fun BookmarksNoResultsPreview() {
         ExtendedColors {
             BookmarksScreen(
                 searchQuery = "ZZZ", //empty search example
-                onBookmarkedTaskClick = {}
+                onBookmarkedTaskClick = { projectId, taskId ->}
             )
         }
     }
@@ -206,7 +206,7 @@ fun BookmarksNoResultsDarkPreview() {
         ExtendedColors(darkTheme = true) {
             BookmarksScreen(
                 searchQuery = "ZZZ",  //empty search example
-                onBookmarkedTaskClick = {}
+                onBookmarkedTaskClick = { projectId, taskId ->}
             )
         }
     }
@@ -224,7 +224,7 @@ fun BookmarksEmptyPreview() {
         ExtendedColors {
             BookmarksScreen(
                 searchQuery = "",
-                onBookmarkedTaskClick = {}
+                onBookmarkedTaskClick = { projectId, taskId ->}
             )
         }
     }
@@ -237,7 +237,7 @@ fun BookmarksEmptyDarkPreview() {
         ExtendedColors(darkTheme = true) {
             BookmarksScreen(
                 searchQuery = "",
-                onBookmarkedTaskClick = {}
+                onBookmarkedTaskClick = { projectId, taskId ->}
             )
         }
     }

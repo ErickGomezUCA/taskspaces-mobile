@@ -31,7 +31,9 @@ fun AppNavigation(navController: NavHostController) {
 
         composable<ProjectRoute> { backStackEntry ->
             val projectId: Int = backStackEntry.arguments?.getInt("projectId") ?: 0
-            ProjectScreen(projectId = projectId)
+            // taskId is optional, used for navigating and opening a task dialog within a project
+            val taskId: Int? = backStackEntry.arguments?.getInt("taskId")
+            ProjectScreen(projectId = projectId, taskId = taskId)
         }
 
         composable<TimeTrackerRoute> { backStackEntry ->
@@ -44,9 +46,8 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable<BookmarksRoute> {
-            BookmarksScreen(onBookmarkedTaskClick = { taskId ->
-//                TODO: Go to project route and open task dialog automatically
-//                navController.navigate(ProjectRoute(taskId))
+            BookmarksScreen(onBookmarkedTaskClick = { projectId, taskId ->
+                navController.navigate(ProjectRoute(projectId = projectId, taskId = taskId))
             })
         }
 
