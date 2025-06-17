@@ -44,7 +44,10 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable<BookmarksRoute> {
-            BookmarksScreen()
+            BookmarksScreen(onBookmarkedTaskClick = { taskId ->
+//                TODO: Go to project route and open task dialog automatically
+//                navController.navigate(ProjectRoute(taskId))
+            })
         }
 
         composable<UserRoute> {

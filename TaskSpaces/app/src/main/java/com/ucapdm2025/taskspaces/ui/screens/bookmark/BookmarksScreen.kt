@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
-import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
@@ -30,8 +29,6 @@ import com.ucapdm2025.taskspaces.ui.components.general.SortOption
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 // TODO: Connect BookmarksScreen to real ViewModel state.
 
@@ -46,11 +43,13 @@ import kotlin.collections.component2
  */
 @Composable
 fun BookmarksScreen(
-    searchQuery: String = ""
+    searchQuery: String = "",
+    onBookmarkedTaskClick: (Int) -> Unit
 ) { //change to show no results
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
-    val viewModel: BookmarkViewModel = viewModel(factory = BookmarkViewModelFactory(bookmarkRepository))
+    val viewModel: BookmarkViewModel =
+        viewModel(factory = BookmarkViewModelFactory(bookmarkRepository))
 
     val bookmarkedTasks = viewModel.bookmarkedTasks.collectAsStateWithLifecycle()
 
@@ -67,7 +66,7 @@ fun BookmarksScreen(
         }
 
         else -> {
-            BookmarkList(filtered)
+            BookmarkList(filtered, onBookmarkedTaskClick)
         }
     }
     // TODO: Replace sampleTasks() with actual ViewModel-backed state
@@ -118,7 +117,7 @@ fun NoResults() {
  * @param bookmarks List of tasks to display as cards
  */
 @Composable
-fun BookmarkList(bookmarks: List<TaskModel>) {
+fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (Int) -> Unit) {
     var sortOption by remember { mutableStateOf(SortOption.NAME) }
     Column(
         modifier = Modifier
@@ -134,15 +133,22 @@ fun BookmarkList(bookmarks: List<TaskModel>) {
         // TODO: Apply real sorting logic later based on sortOption
 
 //        Show bookmarked tasks grouped by breadcrumb
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             groupedTasks.forEach { (breadcrumb, tasksInGroup) ->
                 Container(title = breadcrumb) {
-                    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         tasksInGroup.forEach { task ->
                             TaskCard(
                                 title = task.title,
 //                                TODO: Add tags
-                                tags = emptyList() // or task.tags if available
+                                tags = emptyList(), // or task.tags if available,
+                                onClick = { onBookmarkedTaskClick(task.id) }
                             )
                         }
                     }
@@ -161,7 +167,7 @@ fun BookmarkList(bookmarks: List<TaskModel>) {
 fun BookmarksScreenLightPreview() {
     TaskSpacesTheme {
         ExtendedColors {
-            BookmarksScreen()
+            BookmarksScreen(onBookmarkedTaskClick = {})
         }
     }
 }
@@ -171,7 +177,7 @@ fun BookmarksScreenLightPreview() {
 fun BookmarksScreenDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            BookmarksScreen()
+            BookmarksScreen(onBookmarkedTaskClick = {})
         }
     }
 }
@@ -186,7 +192,8 @@ fun BookmarksNoResultsPreview() {
     TaskSpacesTheme {
         ExtendedColors {
             BookmarksScreen(
-                searchQuery = "ZZZ" //empty search example
+                searchQuery = "ZZZ", //empty search example
+                onBookmarkedTaskClick = {}
             )
         }
     }
@@ -198,7 +205,8 @@ fun BookmarksNoResultsDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             BookmarksScreen(
-                searchQuery = "ZZZ"  //empty search example
+                searchQuery = "ZZZ",  //empty search example
+                onBookmarkedTaskClick = {}
             )
         }
     }
@@ -215,7 +223,8 @@ fun BookmarksEmptyPreview() {
     TaskSpacesTheme {
         ExtendedColors {
             BookmarksScreen(
-                searchQuery = ""
+                searchQuery = "",
+                onBookmarkedTaskClick = {}
             )
         }
     }
@@ -227,7 +236,8 @@ fun BookmarksEmptyDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
             BookmarksScreen(
-                searchQuery = ""
+                searchQuery = "",
+                onBookmarkedTaskClick = {}
             )
         }
     }
