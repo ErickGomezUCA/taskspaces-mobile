@@ -168,7 +168,7 @@ fun TaskDialog(
                     ) {
                         Column {
                             Text(
-                                task.value?.breadcrumb ?: "No data",
+                                task.value?.breadcrumb ?: "/",
                                 fontSize = 14.sp,
                                 color = ExtendedTheme.colors.background50
                             )
