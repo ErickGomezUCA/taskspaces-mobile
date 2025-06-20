@@ -48,6 +48,9 @@ class WorkspaceViewModel(
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
 
+    private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
+
     init {
         viewModelScope.launch {
             workspaceRepository.getWorkspaceById(workspaceId).collect { resource ->
@@ -173,6 +176,15 @@ class WorkspaceViewModel(
 
     fun setSelectedProjectId(projectId: Int?) {
         _selectedProjectId.value = projectId
+    }
+
+//    Manage members dialog functions
+    fun showManageMembersDialog() {
+        _showManageMembersDialog.value = true
+    }
+
+    fun hideManageMembersDialog() {
+        _showManageMembersDialog.value = false
     }
 }
 

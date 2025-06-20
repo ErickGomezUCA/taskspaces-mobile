@@ -44,6 +44,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
+import com.ucapdm2025.taskspaces.ui.components.workspace.ManageMembersDialog
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
@@ -86,6 +87,7 @@ fun WorkspaceScreen(
     val projectDialogData = viewModel.projectDialogData.collectAsStateWithLifecycle()
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
     val selectedProjectId = viewModel.selectedProjectId.collectAsStateWithLifecycle()
+    val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
 
 //    TODO: Show error and loading states
 //    Show feedback icon if the workspace is not found
@@ -156,6 +158,10 @@ fun WorkspaceScreen(
                 }
             }
         )
+    }
+
+    if (showManageMembersDialog.value) {
+        ManageMembersDialog(onDismissRequest = { viewModel.hideManageMembersDialog() })
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -357,9 +363,7 @@ fun WorkspaceScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
-                        },
+                        onClick = { viewModel.showManageMembersDialog() },
                         modifier = Modifier
                             .background(
                                 color = MaterialTheme.colorScheme.primary,

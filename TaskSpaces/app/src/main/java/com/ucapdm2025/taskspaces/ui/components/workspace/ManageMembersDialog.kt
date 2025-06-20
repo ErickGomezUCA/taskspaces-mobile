@@ -50,7 +50,7 @@ fun ManageMembersDialog(
     var selectedRole by remember { mutableStateOf<MemberRoles>(MemberRoles.READER) }
 
     AlertDialog(
-        onDismissRequest = { /* Handle dismiss */ },
+        onDismissRequest = onDismissRequest,
         title = { Text(text = "Manage members") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -102,14 +102,14 @@ fun ManageMembersDialog(
                     }
                 }
 
-                TextButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = { onDismissRequest() }, modifier = Modifier.fillMaxWidth()) {
                     Text(text = "Add member +")
                 }
             }
         },
         confirmButton = {
             OutlinedButton(
-                onClick = { },
+                onClick = { onDismissRequest() },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
