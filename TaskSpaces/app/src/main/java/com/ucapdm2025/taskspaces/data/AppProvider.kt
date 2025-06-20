@@ -12,6 +12,8 @@ import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.search.SearchRepository
+import com.ucapdm2025.taskspaces.data.repository.search.SearchRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
@@ -54,6 +56,11 @@ class AppProvider(context: Context) {
     private val taskService = RetrofitInstance.taskService
     private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, taskService)
 
+//    Search
+    private val searchDao = appDatabase.searchDao()
+    private val searchService = RetrofitInstance.searchService
+    private val searchRepository: SearchRepository = SearchRepositoryImpl(searchDao, searchService)
+
 //    Bookmark
     private val bookmarkDao = appDatabase.bookmarkDao()
     private val bookmarkService = RetrofitInstance.bookmarkService
@@ -82,6 +89,10 @@ class AppProvider(context: Context) {
 
     fun provideTaskRepository(): TaskRepository {
         return taskRepository
+    }
+
+    fun provideSearchRepository(): SearchRepository {
+        return searchRepository
     }
 
     fun provideBookmarkRepository(): BookmarkRepository {

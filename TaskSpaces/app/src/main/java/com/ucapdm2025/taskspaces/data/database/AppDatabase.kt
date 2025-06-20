@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ucapdm2025.taskspaces.data.database.dao.BookmarkDao
 import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
+import com.ucapdm2025.taskspaces.data.database.dao.SearchDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
@@ -20,7 +21,7 @@ import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
  */
 @Database(
     entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class, TaskEntity::class, BookmarkEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -28,6 +29,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workspaceDao(): WorkspaceDao
     abstract fun projectDao(): ProjectDao
     abstract fun taskDao(): TaskDao
+    abstract fun searchDao(): SearchDao
     abstract fun bookmarkDao(): BookmarkDao
 
     companion object {
