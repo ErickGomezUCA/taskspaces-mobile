@@ -186,6 +186,12 @@ class WorkspaceViewModel(
     fun hideManageMembersDialog() {
         _showManageMembersDialog.value = false
     }
+
+    fun inviteMember(username: String) {
+        viewModelScope.launch {
+            workspaceRepository.inviteMember(username, workspaceId)
+        }
+    }
 }
 
 // Create a separate ViewModel factory for WorkspaceViewModel

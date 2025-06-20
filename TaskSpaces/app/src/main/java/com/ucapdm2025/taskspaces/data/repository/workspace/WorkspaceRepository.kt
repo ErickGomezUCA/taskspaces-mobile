@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.data.repository.workspace
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -18,6 +19,9 @@ interface WorkspaceRepository {
     suspend fun createWorkspace(title: String): Result<WorkspaceModel>
     suspend fun updateWorkspace(id: Int, title: String): Result<WorkspaceModel>
     suspend fun deleteWorkspace(id: Int): Result<WorkspaceModel>
+
+    suspend fun inviteMember(username: String, memberRole: MemberRoles, workspaceId: Int): Result<UserModel>
+
     fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<UserModel>>
     suspend fun addMember(username: String, memberRole: String, workspaceId: Int): Boolean
     suspend fun removeMember(username: String, workspaceId: Int): Boolean

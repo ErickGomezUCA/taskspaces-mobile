@@ -9,8 +9,8 @@ import com.ucapdm2025.taskspaces.data.model.BookmarkModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.responses.BookmarkResponse
-import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
-import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.helpers.Resource

@@ -161,7 +161,7 @@ fun WorkspaceScreen(
     }
 
     if (showManageMembersDialog.value) {
-        ManageMembersDialog(onDismissRequest = { viewModel.hideManageMembersDialog() })
+        ManageMembersDialog(onDismissRequest = { viewModel.hideManageMembersDialog() }, onInviteMember = {})
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

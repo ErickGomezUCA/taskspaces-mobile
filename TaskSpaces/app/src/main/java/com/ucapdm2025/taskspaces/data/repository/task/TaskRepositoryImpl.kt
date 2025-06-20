@@ -5,13 +5,12 @@ import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
-import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
-import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
-import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations

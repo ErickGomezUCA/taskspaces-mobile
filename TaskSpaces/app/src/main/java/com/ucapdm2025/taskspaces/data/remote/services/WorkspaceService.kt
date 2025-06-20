@@ -1,8 +1,10 @@
 package com.ucapdm2025.taskspaces.data.remote.services
 
-import com.ucapdm2025.taskspaces.data.remote.requests.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
-import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMemberResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -29,4 +31,8 @@ interface WorkspaceService {
 
     @DELETE("workspaces/{id}")
     suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<WorkspaceResponse>
+
+//    Members
+    @POST("workspaces/{workspaceId}/members")
+    suspend fun inviteMember(@Path("workspaceId") workspaceId: Int, @Body request: InviteWorkspaceMemberRequest): BaseResponse<WorkspaceMemberResponse>
 }

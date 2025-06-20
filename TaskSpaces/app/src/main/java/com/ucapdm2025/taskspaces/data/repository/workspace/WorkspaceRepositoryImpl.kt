@@ -10,12 +10,13 @@ import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
-import com.ucapdm2025.taskspaces.data.remote.requests.WorkspaceRequest
-import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
-import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
-import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -202,6 +203,15 @@ class WorkspaceRepositoryImpl(
     }
 
     //    Members
+    override suspend fun inviteMember(
+        username: String,
+        memberRole: MemberRoles,
+        workspaceId: Int
+    ): Result<UserModel> {
+        TODO("Not yet implemented")
+    }
+
+
     override fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<UserModel>> {
         return members.asStateFlow()
     }

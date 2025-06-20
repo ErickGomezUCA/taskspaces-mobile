@@ -43,6 +43,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun ManageMembersDialog(
     onDismissRequest: () -> Unit = {},
+    onInviteMember: (String) -> Unit = {},
     members: List<UserModel> = emptyList<UserModel>()
 ) {
     var expanded by remember { mutableStateOf(false) }
