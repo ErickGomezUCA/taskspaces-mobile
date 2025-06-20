@@ -11,6 +11,8 @@ import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
@@ -208,7 +210,31 @@ class WorkspaceRepositoryImpl(
         memberRole: MemberRoles,
         workspaceId: Int
     ): Result<UserModel> {
-        TODO("Not yet implemented")
+        val request = InviteWorkspaceMemberRequest(username, memberRole.value)
+
+        return try {
+            val response = workspaceService.inviteMember(workspaceId = workspaceId, request = request)
+
+            val invitedMember: UserModel = response.content.user.toDomain()
+
+            workspaceDao.deleteWorkspace(workspace = deletedWorkspace.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: deleteWorkspace",
+                "Workspace deleted successfully: $deletedWorkspace"
+            )
+
+            Result.success(deletedWorkspace)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: deleteWorkspace", "Error deleting workspace: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: deleteWorkspace", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: deleteWorkspace", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
     }
 
 
