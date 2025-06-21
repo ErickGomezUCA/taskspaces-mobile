@@ -3,13 +3,17 @@ package com.ucapdm2025.taskspaces.data.repository.workspace
 import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.WorkspaceMemberDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
+import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
 import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
 import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
+import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
@@ -37,6 +41,7 @@ import java.io.IOException
  */
 class WorkspaceRepositoryImpl(
     private val workspaceDao: WorkspaceDao,
+    private val workspaceMemberDao: WorkspaceMemberDao,
     private val workspaceService: WorkspaceService
 ) : WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummies)
@@ -205,34 +210,42 @@ class WorkspaceRepositoryImpl(
     }
 
     //    Members
+
+
     override suspend fun inviteMember(
         username: String,
         memberRole: MemberRoles,
         workspaceId: Int
-    ): Result<UserModel> {
+    ): Result<WorkspaceMemberModel> {
         val request = InviteWorkspaceMemberRequest(username, memberRole.value)
 
         return try {
             val response = workspaceService.inviteMember(workspaceId = workspaceId, request = request)
 
-            val invitedMember: UserModel = response.content.user.toDomain()
+            val invitedUser: UserModel = response.content.user.toDomain()
 
-            workspaceDao.deleteWorkspace(workspace = deletedWorkspace.toDatabase())
-
-            Log.d(
-                "WorkspaceRepository: deleteWorkspace",
-                "Workspace deleted successfully: $deletedWorkspace"
+            val invitedMember = WorkspaceMemberModel(
+                workspaceId = workspaceId,
+                userId = invitedUser.id,
+                memberRoleId = memberRole.id
             )
 
-            Result.success(deletedWorkspace)
+            workspaceMemberDao.createMember(invitedMember.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: inviteMember",
+                "Member invited successfully: $invitedMember"
+            )
+
+            Result.success(invitedMember)
         } catch (e: HttpException) {
-            Log.e("WorkspaceRepository: deleteWorkspace", "Error deleting workspace: ${e.message}")
+            Log.e("WorkspaceRepository: inviteMember", "Error inviting member: ${e.message}")
             Result.failure(e)
         } catch (e: IOException) {
-            Log.e("WorkspaceRepository: deleteWorkspace", "Network error: ${e.message}")
+            Log.e("WorkspaceRepository: inviteMember", "Network error: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e("WorkspaceRepository: deleteWorkspace", "Unexpected error: ${e.message}")
+            Log.e("WorkspaceRepository: inviteMember", "Unexpected error: ${e.message}")
             Result.failure(e)
         }
     }
