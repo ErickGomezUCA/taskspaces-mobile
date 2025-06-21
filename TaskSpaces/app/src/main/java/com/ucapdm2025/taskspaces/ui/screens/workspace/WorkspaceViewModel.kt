@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
@@ -33,9 +34,6 @@ class WorkspaceViewModel(
     private val _projects: MutableStateFlow<List<ProjectModel>> = MutableStateFlow(emptyList())
     val projects: StateFlow<List<ProjectModel>> = _projects.asStateFlow()
 
-    private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
-    val members: StateFlow<List<UserModel>> = _members.asStateFlow()
-
     private val _showProjectDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showProjectDialog: StateFlow<Boolean> = _showProjectDialog.asStateFlow()
 
@@ -48,6 +46,8 @@ class WorkspaceViewModel(
 
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
+
+    private val _members: MutableStateFlow<List<WorkspaceMemberModel>>
 
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()

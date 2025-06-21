@@ -1,7 +1,9 @@
 package com.ucapdm2025.taskspaces.data.database.entities.relational
 
 import androidx.room.Entity
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 
 /**
  * WorkspaceMemberEntity is a data class that represents a member of a workspace in the database.
@@ -22,10 +24,10 @@ data class WorkspaceMemberEntity(
  *
  * @return WorkspaceMemberModel representing the workspace member in the domain layer.
  */
-fun WorkspaceMemberEntity.toDomain(): WorkspaceMemberModel {
+fun WorkspaceMemberEntity.toDomain(user: UserModel, memberRole: MemberRoles): WorkspaceMemberModel {
     return WorkspaceMemberModel(
         workspaceId = workspaceId,
-        userId = userId,
-        memberRoleId = memberRoleId
+        user = user,
+        memberRole = memberRole
     )
 }

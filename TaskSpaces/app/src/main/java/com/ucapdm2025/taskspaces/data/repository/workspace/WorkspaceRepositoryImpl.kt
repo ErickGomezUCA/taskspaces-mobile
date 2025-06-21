@@ -223,6 +223,7 @@ class WorkspaceRepositoryImpl(
             val response = workspaceService.inviteMember(workspaceId = workspaceId, request = request)
 
             val invitedUser: UserModel = response.content.user.toDomain()
+            val memberRole: MemberRoles = MemberRoles.valueOf(response.content.memberRole)
 
             val invitedMember = WorkspaceMemberModel(
                 workspaceId = workspaceId,
