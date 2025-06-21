@@ -2,12 +2,12 @@ package com.ucapdm2025.taskspaces.data.repository.bookmark
 
 import android.util.Log
 import coil3.network.HttpException
-import com.ucapdm2025.taskspaces.data.database.dao.BookmarkDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.BookmarkDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
-import com.ucapdm2025.taskspaces.data.database.entities.toDomain
-import com.ucapdm2025.taskspaces.data.model.BookmarkModel
+import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
+import com.ucapdm2025.taskspaces.data.model.relational.BookmarkModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
-import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.responses.BookmarkResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity

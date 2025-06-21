@@ -1,6 +1,6 @@
 package com.ucapdm2025.taskspaces.data.repository.bookmark
 
-import com.ucapdm2025.taskspaces.data.model.BookmarkModel
+import com.ucapdm2025.taskspaces.data.model.relational.BookmarkModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow

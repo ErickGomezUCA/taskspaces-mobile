@@ -1,6 +1,6 @@
-package com.ucapdm2025.taskspaces.data.model
+package com.ucapdm2025.taskspaces.data.model.relational
 
-import com.ucapdm2025.taskspaces.data.database.entities.BookmarkEntity
+import com.ucapdm2025.taskspaces.data.database.entities.relational.BookmarkEntity
 
 /**
  * BookmarkModel represents a bookmark for a task in the application.

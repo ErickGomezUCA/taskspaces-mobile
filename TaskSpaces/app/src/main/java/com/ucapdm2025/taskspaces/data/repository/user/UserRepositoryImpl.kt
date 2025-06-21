@@ -2,9 +2,9 @@ package com.ucapdm2025.taskspaces.data.repository.user
 
 import android.util.Log
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
-import com.ucapdm2025.taskspaces.data.database.entities.toDomain
+import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
 import com.ucapdm2025.taskspaces.data.model.UserModel
-import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.UserService

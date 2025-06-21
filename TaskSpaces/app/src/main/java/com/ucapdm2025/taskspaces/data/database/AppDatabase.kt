@@ -4,13 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.ucapdm2025.taskspaces.data.database.dao.BookmarkDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.BookmarkDao
 import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.dao.catalog.MemberRoleDao
-import com.ucapdm2025.taskspaces.data.database.entities.BookmarkEntity
+import com.ucapdm2025.taskspaces.data.database.entities.relational.BookmarkEntity
 import com.ucapdm2025.taskspaces.data.database.entities.ProjectEntity
 import com.ucapdm2025.taskspaces.data.database.entities.TaskEntity
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
