@@ -10,6 +10,7 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -187,9 +188,18 @@ class WorkspaceViewModel(
         _showManageMembersDialog.value = false
     }
 
-    fun inviteMember(username: String) {
+    fun inviteMember(username: String, memberRole: MemberRoles) {
         viewModelScope.launch {
-            workspaceRepository.inviteMember(username, workspaceId)
+            val response = workspaceRepository.inviteMember(username, memberRole, workspaceId)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
+                }
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -161,7 +160,11 @@ fun WorkspaceScreen(
     }
 
     if (showManageMembersDialog.value) {
-        ManageMembersDialog(onDismissRequest = { viewModel.hideManageMembersDialog() }, onInviteMember = {})
+        ManageMembersDialog(
+            onDismissRequest = { viewModel.hideManageMembersDialog() },
+            onInviteMember = { username, memberRole ->
+                viewModel.inviteMember(username, memberRole)
+            })
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

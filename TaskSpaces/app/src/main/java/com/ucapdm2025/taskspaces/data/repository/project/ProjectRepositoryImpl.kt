@@ -4,10 +4,14 @@ import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
+import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
+import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.ProjectRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.ProjectResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService

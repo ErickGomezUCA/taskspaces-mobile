@@ -43,7 +43,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun ManageMembersDialog(
     onDismissRequest: () -> Unit = {},
-    onInviteMember: (String) -> Unit = {},
+    onInviteMember: (username: String, memberRole: MemberRoles) -> Unit = { username, memberRole -> },
     members: List<UserModel> = emptyList<UserModel>()
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -138,9 +138,8 @@ fun ManageMembersDialog(
                         label = { Text(text = "Username") })
                 }
 
-
                 TextButton(
-                    onClick = { onDismissRequest() },
+                    onClick = { onInviteMember(username, selectedRole) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                 ) {
