@@ -164,6 +164,7 @@ fun WorkspaceScreen(
             onDismissRequest = { viewModel.hideManageMembersDialog() },
             onInviteMember = { username, memberRole ->
                 viewModel.inviteMember(username, memberRole)
+                viewModel.hideManageMembersDialog()
             })
     }
 

@@ -192,6 +192,8 @@ class WorkspaceViewModel(
         viewModelScope.launch {
             val response = workspaceRepository.inviteMember(username, memberRole, workspaceId)
 
+            Log.d("WorkspaceViewModel", "Invite member response: $response")
+
             if (!response.isSuccess) {
                 // Handle error, e.g., show a message to the user
                 val exception = response.exceptionOrNull()
