@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.data.repository.workspace
 
 import android.util.Log
 import coil3.network.HttpException
+import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.WorkspaceMemberDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
@@ -17,6 +18,7 @@ import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMemberResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
@@ -35,9 +37,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.io.IOException
-import kotlin.collections.forEach
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
 
 /**
  * WorkspaceRepositoryImpl is an implementation of the WorkspaceRepository interface.
@@ -47,6 +46,7 @@ import kotlin.collections.mapNotNull
 class WorkspaceRepositoryImpl(
     private val workspaceDao: WorkspaceDao,
     private val workspaceMemberDao: WorkspaceMemberDao,
+    private val userDao: UserDao,
     private val workspaceService: WorkspaceService
 ) : WorkspaceRepository {
     private val workspaces = MutableStateFlow(workspacesDummies)
@@ -215,51 +215,65 @@ class WorkspaceRepositoryImpl(
     }
 
     //    Members
-    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<Resource<List<WorkspaceMemberModel>>> = flow {
-        emit(Resource.Loading)
+    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<Resource<List<WorkspaceMemberModel>>> =
+        flow {
+            emit(Resource.Loading)
 
-        try {
-            //            Fetch workspace members from remote
-            val remoteWorkspaceMembers: List<WorkspaceMemberResponse> =
-                workspaceService.getMembersByWorkspaceId(workspaceId).content
+            try {
+                //            Fetch workspace members from remote
+                val remoteWorkspaceMembers: List<WorkspaceMemberResponse> =
+                    workspaceService.getMembersByWorkspaceId(workspaceId).content
 
-            //            Save remote workspace members to the database
-            if (remoteWorkspaceMembers.isNotEmpty()) {
-                remoteWorkspaceMembers.forEach {
-                    workspaceMemberDao.createMember(it.toEntity(workspaceId))
+                //            Save remote workspace members to the database
+                if (remoteWorkspaceMembers.isNotEmpty()) {
+                    remoteWorkspaceMembers.forEach {
+                        workspaceMemberDao.createMember(it.toEntity(workspaceId))
+
+//                    Create fetched users IDs to local database
+                        userDao.createUser(it.user.toEntity())
+                    }
                 }
+            } catch (e: Exception) {
+                Log.d(
+                    "WorkspaceMemberRepository: getMembersByWorkspaceId",
+                    "Error fetching workspace members: ${e.message}"
+                )
             }
-        } catch (e: Exception) {
-            Log.d(
-                "WorkspaceMemberRepository: getMembersByWorkspaceId",
-                "Error fetching workspace members: ${e.message}"
-            )
-        }
 
 //        Use local workspace members
-        val localWorkspaceMembers =
-            workspaceMemberDao.getMembersByWorkspaceId(workspaceId = workspaceId).map { entities ->
-                val workspaceMembers = entities.map {
-                    val user: UserModel =
-                }
+            val localWorkspaceMembers =
+                workspaceMemberDao.getMembersByWorkspaceId(workspaceId = workspaceId)
+                    .map { entities ->
+                        val workspaceMembers = entities.map {
+                            val user: UserModel = userDao.getUserById(it.userId)
+                                .first()?.toDomain() ?: UserModel(
+                                id = it.userId,
+                                username = "Unknown",
+                                fullname = "Unknown",
+                                email = "Unknown",
+                            )
 
-                if (workspaceMembers.isEmpty()) {
-                    //                Logs an error if no projects are found for the user
-                    Resource.Error("No bookmarks found for  user with ID: $userId")
-                } else {
-//                    Convert bookmarks into tasks
-//                    Because bookmarks only have userId and taskId as their columns, but to obtain
-//                    the task information, we need to convert them into TaskModel
-                    val localTasks = workspaceMembers.mapNotNull { bookmark ->
-                        taskDao.getTaskById(bookmark.taskId).first()?.toDomain()
-                    }
+                            val parsedRole: MemberRoles = when (it.memberRoleId) {
+                                1 -> MemberRoles.READER
+                                2 -> MemberRoles.COLLABORATOR
+                                3 -> MemberRoles.ADMIN
+                                else -> MemberRoles.READER
+                            }
 
-//                Returns the tasks bookmarked as a success (to domain)
-                    Resource.Success(localTasks)
-                }
-            }.distinctUntilChanged()
+                            it.toDomain(user, parsedRole)
+                        }
 
-    }
+                        if (workspaceMembers.isEmpty()) {
+                            //                Logs an error if no projects are found for the user
+                            Resource.Error("No member found for workspace ID: $workspaceId")
+                        } else {
+//                Returns the workspace members as a success
+                            Resource.Success(workspaceMembers)
+                        }
+                    }.distinctUntilChanged()
+
+            emitAll(localWorkspaceMembers)
+        }
 
 
     override suspend fun inviteMember(
@@ -270,7 +284,8 @@ class WorkspaceRepositoryImpl(
         val request = InviteWorkspaceMemberRequest(username, memberRole.value)
 
         return try {
-            val response = workspaceService.inviteMember(workspaceId = workspaceId, request = request)
+            val response =
+                workspaceService.inviteMember(workspaceId = workspaceId, request = request)
 
             val invitedUser: UserModel = response.content.user.toDomain()
             val memberRole: MemberRoles = MemberRoles.valueOf(response.content.memberRole)

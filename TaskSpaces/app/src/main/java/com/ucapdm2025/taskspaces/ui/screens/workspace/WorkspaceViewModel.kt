@@ -91,14 +91,26 @@ class WorkspaceViewModel(
                         // TODO: Handle error state
                     }
                 }
-
             }
         }
 
 //        Get members list
         viewModelScope.launch {
-            workspaceRepository.getMembersByWorkspaceId(workspaceId).collect { memberList ->
-                _members.value = memberList
+            workspaceRepository.getMembersByWorkspaceId(workspaceId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val workspaceMembers = resource.data
+                        _members.value = workspaceMembers
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
+                }
             }
         }
     }

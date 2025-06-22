@@ -81,11 +81,11 @@ fun WorkspaceScreen(
 
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
-    val members = viewModel.members.collectAsStateWithLifecycle()
     val showProjectDialog = viewModel.showProjectDialog.collectAsStateWithLifecycle()
     val projectDialogData = viewModel.projectDialogData.collectAsStateWithLifecycle()
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
     val selectedProjectId = viewModel.selectedProjectId.collectAsStateWithLifecycle()
+    val members = viewModel.members.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
 
 //    TODO: Show error and loading states
@@ -165,7 +165,8 @@ fun WorkspaceScreen(
             onInviteMember = { username, memberRole ->
                 viewModel.inviteMember(username, memberRole)
                 viewModel.hideManageMembersDialog()
-            })
+            },
+            members = members.value,)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -354,7 +355,7 @@ fun WorkspaceScreen(
                             ) {
                                 rowItems.forEach { member ->
                                     UserCard(
-                                        member.username,
+                                        member.user.username,
                                         modifier = Modifier
                                             .width(80.dp)
                                             .fillMaxHeight()

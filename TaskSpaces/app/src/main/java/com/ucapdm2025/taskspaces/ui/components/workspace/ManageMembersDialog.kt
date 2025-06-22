@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.data.model.UserModel
+import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -44,10 +45,8 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun ManageMembersDialog(
     onDismissRequest: () -> Unit = {},
     onInviteMember: (username: String, memberRole: MemberRoles) -> Unit = { username, memberRole -> },
-    members: List<UserModel> = emptyList<UserModel>()
+    members: List<WorkspaceMemberModel> = emptyList<WorkspaceMemberModel>()
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedRole by remember { mutableStateOf<MemberRoles>(MemberRoles.READER) }
     var username by remember { mutableStateOf("") }
 
     AlertDialog(
@@ -69,13 +68,16 @@ fun ManageMembersDialog(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
+                                var expanded by remember { mutableStateOf(false) }
+                                var selectedRole by remember { mutableStateOf<MemberRoles>(member.memberRole) }
+
                                 Box(
                                     modifier = Modifier
                                         .size(24.dp)
                                         .background(Color(0xFFFFA726), CircleShape)
                                 )
 
-                                Text(text = member.username, modifier = Modifier.weight(1f))
+                                Text(text = member.user.username, modifier = Modifier.weight(1f))
 
                                 ExposedDropdownMenuBox(
                                     expanded = expanded,
@@ -139,7 +141,8 @@ fun ManageMembersDialog(
                 }
 
                 TextButton(
-                    onClick = { onInviteMember(username, selectedRole) },
+//                    TODO: Add field to select member role
+                    onClick = { onInviteMember(username, MemberRoles.READER) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                 ) {
@@ -161,7 +164,23 @@ fun ManageMembersDialog(
 @Composable
 fun ManageMembersDialogLightPreview() {
     val members = listOf(
-        UserModel(id = 1, fullname = "Test", username = "test", email = "test@email.com")
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(id = 1, fullname = "Test 1", username = "test", email = "test@email.com"),
+            memberRole = MemberRoles.READER
+        ),
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(id = 2, fullname = "Test 2", username = "test", email = "test@email.com"),
+            memberRole = MemberRoles.COLLABORATOR
+        ),
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(id = 3, fullname = "Test 3", username = "test", email = "test@email.com"),
+            memberRole = MemberRoles.ADMIN
+        )
+
+
     )
 
     TaskSpacesTheme {
@@ -185,8 +204,25 @@ fun ManageMembersDialogEmptyLightPreview() {
 @Composable
 fun ManageMembersDialogDarkPreview() {
     val members = listOf(
-        UserModel(id = 1, fullname = "Test", username = "test", email = "test@email.com")
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(id = 1, fullname = "Test 1", username = "test 1", email = "test@email.com"),
+            memberRole = MemberRoles.READER
+        ),
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(id = 2, fullname = "Test 2", username = "test 2", email = "test@email.com"),
+            memberRole = MemberRoles.COLLABORATOR
+        ),
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(id = 3, fullname = "Test 3", username = "test 3", email = "test@email.com"),
+            memberRole = MemberRoles.ADMIN
+        )
+
+
     )
+
 
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
