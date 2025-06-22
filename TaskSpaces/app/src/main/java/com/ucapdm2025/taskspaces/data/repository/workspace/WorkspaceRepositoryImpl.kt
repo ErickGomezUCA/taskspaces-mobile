@@ -17,6 +17,7 @@ import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMemberResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
@@ -29,10 +30,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import kotlin.collections.forEach
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
 
 /**
  * WorkspaceRepositoryImpl is an implementation of the WorkspaceRepository interface.
@@ -210,6 +215,51 @@ class WorkspaceRepositoryImpl(
     }
 
     //    Members
+    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<Resource<List<WorkspaceMemberModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch workspace members from remote
+            val remoteWorkspaceMembers: List<WorkspaceMemberResponse> =
+                workspaceService.getMembersByWorkspaceId(workspaceId).content
+
+            //            Save remote workspace members to the database
+            if (remoteWorkspaceMembers.isNotEmpty()) {
+                remoteWorkspaceMembers.forEach {
+                    workspaceMemberDao.createMember(it.toEntity(workspaceId))
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(
+                "WorkspaceMemberRepository: getMembersByWorkspaceId",
+                "Error fetching workspace members: ${e.message}"
+            )
+        }
+
+//        Use local workspace members
+        val localWorkspaceMembers =
+            workspaceMemberDao.getMembersByWorkspaceId(workspaceId = workspaceId).map { entities ->
+                val workspaceMembers = entities.map {
+                    val user: UserModel =
+                }
+
+                if (workspaceMembers.isEmpty()) {
+                    //                Logs an error if no projects are found for the user
+                    Resource.Error("No bookmarks found for  user with ID: $userId")
+                } else {
+//                    Convert bookmarks into tasks
+//                    Because bookmarks only have userId and taskId as their columns, but to obtain
+//                    the task information, we need to convert them into TaskModel
+                    val localTasks = workspaceMembers.mapNotNull { bookmark ->
+                        taskDao.getTaskById(bookmark.taskId).first()?.toDomain()
+                    }
+
+//                Returns the tasks bookmarked as a success (to domain)
+                    Resource.Success(localTasks)
+                }
+            }.distinctUntilChanged()
+
+    }
 
 
     override suspend fun inviteMember(
@@ -227,8 +277,8 @@ class WorkspaceRepositoryImpl(
 
             val invitedMember = WorkspaceMemberModel(
                 workspaceId = workspaceId,
-                userId = invitedUser.id,
-                memberRoleId = memberRole.id
+                user = invitedUser,
+                memberRole = memberRole
             )
 
             workspaceMemberDao.createMember(invitedMember.toDatabase())
@@ -249,11 +299,6 @@ class WorkspaceRepositoryImpl(
             Log.e("WorkspaceRepository: inviteMember", "Unexpected error: ${e.message}")
             Result.failure(e)
         }
-    }
-
-
-    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<UserModel>> {
-        return members.asStateFlow()
     }
 
     override suspend fun addMember(

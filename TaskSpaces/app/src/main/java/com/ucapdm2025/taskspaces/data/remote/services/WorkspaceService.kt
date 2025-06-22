@@ -33,6 +33,9 @@ interface WorkspaceService {
     suspend fun deleteWorkspace(@Path("id") id: Int): BaseResponse<WorkspaceResponse>
 
 //    Members
+    @GET("workspaces/{workspaceId}/members")
+    suspend fun getMembersByWorkspaceId(@Path("workspaceId") workspaceId: Int): BaseResponse<List<WorkspaceMemberResponse>>
+
     @POST("workspaces/{workspaceId}/members")
     suspend fun inviteMember(@Path("workspaceId") workspaceId: Int, @Body request: InviteWorkspaceMemberRequest): BaseResponse<WorkspaceMemberResponse>
 }

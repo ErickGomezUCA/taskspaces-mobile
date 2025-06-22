@@ -47,12 +47,14 @@ class WorkspaceViewModel(
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
 
-    private val _members: MutableStateFlow<List<WorkspaceMemberModel>>
+    private val _members: MutableStateFlow<List<WorkspaceMemberModel>> = MutableStateFlow(emptyList())
+    val members: StateFlow<List<WorkspaceMemberModel>> = _members.asStateFlow()
 
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
 
     init {
+//        Get current workspace info
         viewModelScope.launch {
             workspaceRepository.getWorkspaceById(workspaceId).collect { resource ->
                 when (resource) {
@@ -72,6 +74,7 @@ class WorkspaceViewModel(
             }
         }
 
+//        Get projects list
         viewModelScope.launch {
             projectRepository.getProjectsByWorkspaceId(workspaceId).collect { resource ->
                 when (resource) {
@@ -92,6 +95,7 @@ class WorkspaceViewModel(
             }
         }
 
+//        Get members list
         viewModelScope.launch {
             workspaceRepository.getMembersByWorkspaceId(workspaceId).collect { memberList ->
                 _members.value = memberList
