@@ -41,6 +41,7 @@ fun SharedWorkspacesSection(
                     name = workspace.title,
                     projectsCount = 1,
                     membersCount = 1,
+                    isWorkspaceShared = true,
                     onClick = { onClickWorkspaceCard(workspace) },
                 )
             }

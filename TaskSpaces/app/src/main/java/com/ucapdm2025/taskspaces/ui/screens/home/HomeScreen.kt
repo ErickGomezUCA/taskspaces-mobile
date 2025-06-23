@@ -186,7 +186,6 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-//            TODO: Check if the user is retrieving their workspaces or workspaces shared with them
 //            TODO: Add action to leave a workspace
             item {
                 Container(title = "Workspaces shared with me") {
