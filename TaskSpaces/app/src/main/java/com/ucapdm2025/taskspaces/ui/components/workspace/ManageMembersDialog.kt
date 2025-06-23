@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.components.workspace
 
-import android.text.Layout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +50,9 @@ fun ManageMembersDialog(
     onInviteMember: (username: String, memberRole: MemberRoles) -> Unit = { username, memberRole -> },
     members: List<WorkspaceMemberModel> = emptyList<WorkspaceMemberModel>()
 ) {
-    var username by remember { mutableStateOf("") }
+    var inviteUsername by remember { mutableStateOf("") }
+    var inviteRole by remember { mutableStateOf(MemberRoles.READER) }
+    var inviteRoleExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -86,7 +87,11 @@ fun ManageMembersDialog(
                                         }
 
 //                                        Avatar and username
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
                                             Box(
                                                 modifier = Modifier
                                                     .size(24.dp)
@@ -99,12 +104,15 @@ fun ManageMembersDialog(
                                         }
 
 //                                        Role dropdown and delete button
-                                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
                                             ExposedDropdownMenuBox(
                                                 expanded = expanded,
                                                 onExpandedChange = { expanded = !expanded },
                                                 modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
                                                     .weight(1f)
                                             ) {
                                                 OutlinedTextField(
@@ -168,15 +176,55 @@ fun ManageMembersDialog(
                         Text(text = "Invite a new member:")
                     }
 
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text(text = "Username") })
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = inviteUsername,
+                            onValueChange = { inviteUsername = it },
+                            label = { Text(text = "Username") }
+                        )
+
+                        ExposedDropdownMenuBox(
+                            expanded = inviteRoleExpanded,
+                            onExpandedChange = { inviteRoleExpanded = !inviteRoleExpanded },
+                        ) {
+                            OutlinedTextField(
+                                value = inviteRole.value,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Role") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = inviteRoleExpanded
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .clickable { inviteRoleExpanded = true }
+                            )
+                            ExposedDropdownMenu(
+                                expanded = inviteRoleExpanded,
+                                onDismissRequest = { inviteRoleExpanded = false }
+                            ) {
+                                MemberRoles.entries.forEach { role ->
+                                    DropdownMenuItem(
+                                        text = { Text(role.value.toString()) },
+                                        onClick = {
+                                            inviteRole = role
+                                            inviteRoleExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 TextButton(
-//                    TODO: Add field to select member role
-                    onClick = { onInviteMember(username, MemberRoles.READER) },
+                    onClick = { onInviteMember(inviteUsername.trim(), inviteRole) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                 ) {

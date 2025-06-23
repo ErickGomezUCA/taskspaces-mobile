@@ -281,7 +281,7 @@ class WorkspaceRepositoryImpl(
         memberRole: MemberRoles,
         workspaceId: Int
     ): Result<WorkspaceMemberModel> {
-        val request = InviteWorkspaceMemberRequest(username, memberRole.value)
+        val request = InviteWorkspaceMemberRequest(username, memberRole.toString())
 
         return try {
             val response =
