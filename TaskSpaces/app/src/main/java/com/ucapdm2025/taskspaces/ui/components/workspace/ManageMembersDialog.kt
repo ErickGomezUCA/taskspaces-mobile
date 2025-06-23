@@ -48,6 +48,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun ManageMembersDialog(
     onDismissRequest: () -> Unit = {},
     onInviteMember: (username: String, memberRole: MemberRoles) -> Unit = { username, memberRole -> },
+    onRoleUpdated: (userId: Int, memberRole: MemberRoles) -> Unit = { userId, memberRole -> },
     members: List<WorkspaceMemberModel> = emptyList<WorkspaceMemberModel>()
 ) {
     var inviteUsername by remember { mutableStateOf("") }
@@ -139,7 +140,7 @@ fun ManageMembersDialog(
                                                             onClick = {
                                                                 selectedRole = role
                                                                 expanded = false
-//                                                onRoleChange(member, role)
+                                                                onRoleUpdated(member.user.id, role)
                                                             }
                                                         )
                                                     }

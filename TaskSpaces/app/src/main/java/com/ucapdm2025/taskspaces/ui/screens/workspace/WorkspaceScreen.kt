@@ -166,6 +166,9 @@ fun WorkspaceScreen(
                 viewModel.inviteMember(username, memberRole)
                 viewModel.hideManageMembersDialog()
             },
+            onRoleUpdated = {userId, memberRole ->
+                viewModel.updateMemberRole(userId = userId, newMemberRole = memberRole)
+            },
             members = members.value,)
     }
 

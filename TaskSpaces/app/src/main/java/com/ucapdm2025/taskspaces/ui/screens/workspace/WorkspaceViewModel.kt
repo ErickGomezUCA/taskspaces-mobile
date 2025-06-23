@@ -161,19 +161,6 @@ class WorkspaceViewModel(
         }
     }
 
-    //    Members functions
-    fun addMember(username: String, memberRole: String, workspaceId: Int) {
-        viewModelScope.launch {
-            workspaceRepository.addMember(username, memberRole, workspaceId)
-        }
-    }
-
-    fun removeMember(username: String, workspaceId: Int) {
-        viewModelScope.launch {
-            workspaceRepository.removeMember(username, workspaceId)
-        }
-    }
-
     //  Dialog functions
     fun showDialog() {
         _showProjectDialog.value = true
@@ -209,6 +196,30 @@ class WorkspaceViewModel(
             val response = workspaceRepository.inviteMember(username, memberRole, workspaceId)
 
             Log.d("WorkspaceViewModel", "Invite member response: $response")
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun updateMemberRole(
+        userId: Int,
+        newMemberRole: MemberRoles
+    ) {
+        viewModelScope.launch {
+            val response = workspaceRepository.updateMember(
+                userId = userId,
+                memberRole = newMemberRole,
+                workspaceId = workspaceId
+            )
+
+            Log.d("WorkspaceViewModel", "Update member role response: $response")
 
             if (!response.isSuccess) {
                 // Handle error, e.g., show a message to the user

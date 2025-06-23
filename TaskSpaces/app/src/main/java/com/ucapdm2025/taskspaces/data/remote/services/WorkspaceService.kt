@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.data.remote.services
 
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.UpdateMemberRoleRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMemberResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
@@ -38,4 +39,7 @@ interface WorkspaceService {
 
     @POST("workspaces/{workspaceId}/members")
     suspend fun inviteMember(@Path("workspaceId") workspaceId: Int, @Body request: InviteWorkspaceMemberRequest): BaseResponse<WorkspaceMemberResponse>
+
+    @PUT("workspaces/{workspaceId}/members/{memberId}")
+    suspend fun updateMember(@Path("workspaceId") workspaceId: Int, @Path("memberId") memberId: Int, @Body request: UpdateMemberRoleRequest): BaseResponse<WorkspaceMemberResponse>
 }

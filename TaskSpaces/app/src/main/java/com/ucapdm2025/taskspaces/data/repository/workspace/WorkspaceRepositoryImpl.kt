@@ -17,6 +17,7 @@ import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
 import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.UpdateMemberRoleRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMemberResponse
@@ -316,31 +317,39 @@ class WorkspaceRepositoryImpl(
         }
     }
 
-    override suspend fun addMember(
-        username: String,
-        memberRole: String,
+    override suspend fun updateMember(
+        userId: Int,
+        memberRole: MemberRoles,
         workspaceId: Int
-    ): Boolean {
-        val userExists = members.value.find { it.username == username }
-        val workspaceExists = workspaces.value.any { it.id == workspaceId }
+    ): Result<WorkspaceMemberModel> {
+        return try {
+            val request = UpdateMemberRoleRequest(memberRole.toString())
 
-        if (userExists != null && workspaceExists) {
-            members.value = members.value + userExists
-            return true
+            val response = workspaceService.updateMember(
+                workspaceId = workspaceId,
+                memberId = userId,
+                request
+            )
+
+            val updatedMember: WorkspaceMemberModel = response.content.toDomain(workspaceId)
+
+            workspaceMemberDao.updateMember(updatedMember.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: updateMember",
+                "Member updated successfully: $updatedMember"
+            )
+
+            Result.success(updatedMember)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: updateMember", "Error updating member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: updateMember", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: updateMember", "Unexpected error: ${e.message}")
+            Result.failure(e)
         }
-
-        return false
-    }
-
-    override suspend fun removeMember(username: String, workspaceId: Int): Boolean {
-        val userExists = members.value.find { it.username == username }
-        val workspaceExists = workspaces.value.any { it.id == workspaceId }
-
-        if (userExists != null && workspaceExists) {
-            members.value = members.value.filter { it.username != username }
-            return true
-        }
-
-        return false
     }
 }

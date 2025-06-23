@@ -23,7 +23,5 @@ interface WorkspaceRepository {
 
     fun getMembersByWorkspaceId(workspaceId: Int): Flow<Resource<List<WorkspaceMemberModel>>>
     suspend fun inviteMember(username: String, memberRole: MemberRoles, workspaceId: Int): Result<WorkspaceMemberModel>
-
-    suspend fun addMember(username: String, memberRole: String, workspaceId: Int): Boolean
-    suspend fun removeMember(username: String, workspaceId: Int): Boolean
+    suspend fun updateMember(userId: Int, memberRole: MemberRoles, workspaceId: Int): Result<WorkspaceMemberModel>
 }
