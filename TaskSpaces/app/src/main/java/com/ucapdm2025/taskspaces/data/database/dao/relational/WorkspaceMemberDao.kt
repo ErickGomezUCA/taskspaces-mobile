@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WorkspaceMemberDao {
-    @Query("SELECT * FROM workspace_member WHERE workspaceId = :workspaceId")
-    fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<WorkspaceMemberEntity>>
+    @Query("SELECT * FROM workspace_member WHERE workspaceId = :workspaceId AND userId != :requestUserId")
+    fun getMembersByWorkspaceId(workspaceId: Int, requestUserId: Int): Flow<List<WorkspaceMemberEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createMember(member: WorkspaceMemberEntity)

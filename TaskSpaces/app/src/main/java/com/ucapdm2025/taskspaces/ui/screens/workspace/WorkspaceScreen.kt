@@ -166,13 +166,14 @@ fun WorkspaceScreen(
                 viewModel.inviteMember(username, memberRole)
                 viewModel.hideManageMembersDialog()
             },
-            onRoleUpdated = {userId, memberRole ->
+            onRoleUpdated = { userId, memberRole ->
                 viewModel.updateMemberRole(userId = userId, newMemberRole = memberRole)
             },
             onDeleteMember = { userId ->
                 viewModel.removeMember(userId)
             },
-            members = members.value,)
+            members = members.value,
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -343,29 +344,39 @@ fun WorkspaceScreen(
 
             // Members Section
             item {
-
                 Container(title = "Members") {
-                    val chunkedUsers = members.value.chunked(3)
+                    if (members.value.isEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "No members in this workspace")
+                        }
+                    } else {
+                        val chunkedUsers = members.value.chunked(3)
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        chunkedUsers.forEach { rowItems ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                rowItems.forEach { member ->
-                                    UserCard(
-                                        member.user.username,
-                                        modifier = Modifier
-                                            .width(80.dp)
-                                            .fillMaxHeight()
-                                    )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            chunkedUsers.forEach { rowItems ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(120.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    rowItems.forEach { member ->
+                                        UserCard(
+                                            member.user.username,
+                                            modifier = Modifier
+                                                .width(80.dp)
+                                                .fillMaxHeight()
+                                        )
+                                    }
                                 }
                             }
                         }

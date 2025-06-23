@@ -25,6 +25,7 @@ import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceRespon
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
+import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,7 @@ import java.io.IOException
  * creating, updating, and deleting workspaces, as well as managing workspace members.
  */
 class WorkspaceRepositoryImpl(
+    private val authRepository: AuthRepository,
     private val workspaceDao: WorkspaceDao,
     private val workspaceMemberDao: WorkspaceMemberDao,
     private val userDao: UserDao,
@@ -220,6 +222,11 @@ class WorkspaceRepositoryImpl(
         flow {
             emit(Resource.Loading)
 
+//        Used for fetching the user ID from the auth repository
+//        Specially for dao functions, because those does not have access to
+//        auth tokens
+            val userId: Int = authRepository.authUserId.first()
+
             try {
                 //            Fetch workspace members from remote
                 val remoteWorkspaceMembers: List<WorkspaceMemberResponse> =
@@ -243,8 +250,13 @@ class WorkspaceRepositoryImpl(
 
 //        Use local workspace members
             val localWorkspaceMembers =
-                workspaceMemberDao.getMembersByWorkspaceId(workspaceId = workspaceId)
+                workspaceMemberDao.getMembersByWorkspaceId(
+                    workspaceId = workspaceId,
+                    requestUserId = userId
+                )
                     .map { entities ->
+//                        TODO: Bug, shows unknown user when inviting a member
+//                        then it disappears when reloaded
                         val workspaceMembers = entities.map {
                             val user: UserModel = userDao.getUserById(it.userId)
                                 .first()?.toDomain() ?: UserModel(
@@ -353,6 +365,8 @@ class WorkspaceRepositoryImpl(
         }
     }
 
+//    TODO: Bug, no longer deletes removed member from screen, but it disappears after reloading
+//    might be auth repository
     override suspend fun removeMember(userId: Int, workspaceId: Int): Result<WorkspaceMemberModel> {
         return try {
             val response = workspaceService.removeMember(

@@ -43,7 +43,7 @@ class AppProvider(context: Context) {
     private val workspaceDao = appDatabase.workspaceDao()
     private val workspaceMemberDao = appDatabase.workspaceMemberDao()
     private val workspaceService = RetrofitInstance.workspaceService
-    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl(workspaceDao, workspaceMemberDao, userDao, workspaceService)
+    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl(authRepository, workspaceDao, workspaceMemberDao, userDao, workspaceService)
 
 //    Project
     private val projectDao = appDatabase.projectDao()
