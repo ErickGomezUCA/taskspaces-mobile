@@ -49,6 +49,7 @@ fun ManageMembersDialog(
     onDismissRequest: () -> Unit = {},
     onInviteMember: (username: String, memberRole: MemberRoles) -> Unit = { username, memberRole -> },
     onRoleUpdated: (userId: Int, memberRole: MemberRoles) -> Unit = { userId, memberRole -> },
+    onDeleteMember: (userId: Int) -> Unit = { userId -> },
     members: List<WorkspaceMemberModel> = emptyList<WorkspaceMemberModel>()
 ) {
     var inviteUsername by remember { mutableStateOf("") }
@@ -147,7 +148,10 @@ fun ManageMembersDialog(
                                                 }
                                             }
 
-                                            IconButton(onClick = {}) {
+//                                            TODO: Add confirm dialog
+                                            IconButton(onClick = {
+                                                onDeleteMember(member.user.id)
+                                            }) {
                                                 Icon(
                                                     imageVector = Icons.Default.Delete,
                                                     contentDescription = "Remove member"
@@ -178,6 +182,7 @@ fun ManageMembersDialog(
                     }
 
 
+//                    TODO: Validate username and avoid sending empty data
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)

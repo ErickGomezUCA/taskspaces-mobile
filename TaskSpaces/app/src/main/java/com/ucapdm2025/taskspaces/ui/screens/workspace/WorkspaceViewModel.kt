@@ -231,6 +231,26 @@ class WorkspaceViewModel(
             }
         }
     }
+
+    fun removeMember(userId: Int) {
+        viewModelScope.launch {
+            val response = workspaceRepository.removeMember(
+                userId = userId,
+                workspaceId = workspaceId
+            )
+
+            Log.d("WorkspaceViewModel", "Remove member response: $response")
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("WorkspaceViewModel", "Error removing member: ${exception.message}")
+                }
+            }
+        }
+    }
 }
 
 // Create a separate ViewModel factory for WorkspaceViewModel

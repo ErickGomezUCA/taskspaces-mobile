@@ -352,4 +352,33 @@ class WorkspaceRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun removeMember(userId: Int, workspaceId: Int): Result<WorkspaceMemberModel> {
+        return try {
+            val response = workspaceService.removeMember(
+                workspaceId = workspaceId,
+                memberId = userId
+            )
+
+            val removedMember: WorkspaceMemberModel = response.content.toDomain(workspaceId)
+
+            workspaceMemberDao.deleteMember(removedMember.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: removeMember",
+                "Member removed successfully: $removedMember"
+            )
+
+            Result.success(removedMember)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: removeMember", "Error removing member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: removeMember", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: removeMember", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
+    }
 }

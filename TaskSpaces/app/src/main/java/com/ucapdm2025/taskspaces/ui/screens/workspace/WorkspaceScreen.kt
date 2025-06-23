@@ -169,6 +169,9 @@ fun WorkspaceScreen(
             onRoleUpdated = {userId, memberRole ->
                 viewModel.updateMemberRole(userId = userId, newMemberRole = memberRole)
             },
+            onDeleteMember = { userId ->
+                viewModel.removeMember(userId)
+            },
             members = members.value,)
     }
 

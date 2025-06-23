@@ -42,4 +42,7 @@ interface WorkspaceService {
 
     @PUT("workspaces/{workspaceId}/members/{memberId}")
     suspend fun updateMember(@Path("workspaceId") workspaceId: Int, @Path("memberId") memberId: Int, @Body request: UpdateMemberRoleRequest): BaseResponse<WorkspaceMemberResponse>
+
+    @DELETE("workspaces/{workspaceId}/members/{memberId}")
+    suspend fun removeMember(@Path("workspaceId") workspaceId: Int, @Path("memberId") memberId: Int): BaseResponse<WorkspaceMemberResponse>
 }
