@@ -1,6 +1,8 @@
 package com.ucapdm2025.taskspaces.ui.components.workspace
 
+import android.text.Layout
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +20,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +43,7 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+//TODO: Improve UI, specially the dialog width and select role dropdown
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageMembersDialog(
@@ -54,7 +58,11 @@ fun ManageMembersDialog(
         title = { Text(text = "Manage members") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                ) {
                     if (members.isEmpty()) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -63,58 +71,84 @@ fun ManageMembersDialog(
                             Text(text = "No members in this workspace")
                         }
                     } else {
-                        members.forEach { member ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                var expanded by remember { mutableStateOf(false) }
-                                var selectedRole by remember { mutableStateOf<MemberRoles>(member.memberRole) }
 
-                                Box(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .background(Color(0xFFFFA726), CircleShape)
-                                )
-
-                                Text(text = member.user.username, modifier = Modifier.weight(1f))
-
-                                ExposedDropdownMenuBox(
-                                    expanded = expanded,
-                                    onExpandedChange = { expanded = !expanded },
-                                    modifier = Modifier.padding(horizontal = 8.dp)
+                        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                            members.forEach { member ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    TextButton(
-                                        onClick = { expanded = true }
-                                    ) {
-                                        Text(selectedRole.toString())
-                                    }
-                                    ExposedDropdownMenu(
-                                        expanded = expanded,
-                                        onDismissRequest = { expanded = false }
-                                    ) {
-                                        MemberRoles.entries.forEach { role ->
-                                            DropdownMenuItem(
-                                                text = { Text(role.toString()) },
-                                                onClick = {
-                                                    selectedRole = role
-                                                    expanded = false
-//                                                onRoleChange(member, role)
-                                                }
+                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        var expanded by remember { mutableStateOf(false) }
+                                        var selectedRole by remember {
+                                            mutableStateOf<MemberRoles>(
+                                                member.memberRole
                                             )
+                                        }
+
+//                                        Avatar and username
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(24.dp)
+                                                    .background(Color(0xFFFFA726), CircleShape)
+                                            )
+
+                                            Text(
+                                                text = member.user.username,
+                                            )
+                                        }
+
+//                                        Role dropdown and delete button
+                                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded },
+                                                modifier = Modifier
+                                                    .padding(horizontal = 8.dp)
+                                                    .weight(1f)
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = selectedRole.value,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Role") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .clickable { expanded = true }
+                                                )
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    MemberRoles.entries.forEach { role ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(role.value.toString()) },
+                                                            onClick = {
+                                                                selectedRole = role
+                                                                expanded = false
+//                                                onRoleChange(member, role)
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                            IconButton(onClick = {}) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = "Remove member"
+                                                )
+                                            }
                                         }
                                     }
                                 }
-
-                                IconButton(onClick = {}) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = "Remove member"
-                                    )
-                                }
                             }
                         }
-
                     }
                 }
 
@@ -166,17 +200,32 @@ fun ManageMembersDialogLightPreview() {
     val members = listOf(
         WorkspaceMemberModel(
             workspaceId = 1,
-            user = UserModel(id = 1, fullname = "Test 1", username = "test", email = "test@email.com"),
+            user = UserModel(
+                id = 1,
+                fullname = "Test 1",
+                username = "test",
+                email = "test@email.com"
+            ),
             memberRole = MemberRoles.READER
         ),
         WorkspaceMemberModel(
             workspaceId = 1,
-            user = UserModel(id = 2, fullname = "Test 2", username = "test", email = "test@email.com"),
+            user = UserModel(
+                id = 2,
+                fullname = "Test 2",
+                username = "test",
+                email = "test@email.com"
+            ),
             memberRole = MemberRoles.COLLABORATOR
         ),
         WorkspaceMemberModel(
             workspaceId = 1,
-            user = UserModel(id = 3, fullname = "Test 3", username = "test", email = "test@email.com"),
+            user = UserModel(
+                id = 3,
+                fullname = "Test 3",
+                username = "test",
+                email = "test@email.com"
+            ),
             memberRole = MemberRoles.ADMIN
         )
 
@@ -206,17 +255,32 @@ fun ManageMembersDialogDarkPreview() {
     val members = listOf(
         WorkspaceMemberModel(
             workspaceId = 1,
-            user = UserModel(id = 1, fullname = "Test 1", username = "test 1", email = "test@email.com"),
+            user = UserModel(
+                id = 1,
+                fullname = "Test 1",
+                username = "test 1",
+                email = "test@email.com"
+            ),
             memberRole = MemberRoles.READER
         ),
         WorkspaceMemberModel(
             workspaceId = 1,
-            user = UserModel(id = 2, fullname = "Test 2", username = "test 2", email = "test@email.com"),
+            user = UserModel(
+                id = 2,
+                fullname = "Test 2",
+                username = "test 2",
+                email = "test@email.com"
+            ),
             memberRole = MemberRoles.COLLABORATOR
         ),
         WorkspaceMemberModel(
             workspaceId = 1,
-            user = UserModel(id = 3, fullname = "Test 3", username = "test 3", email = "test@email.com"),
+            user = UserModel(
+                id = 3,
+                fullname = "Test 3",
+                username = "test 3",
+                email = "test@email.com"
+            ),
             memberRole = MemberRoles.ADMIN
         )
 
