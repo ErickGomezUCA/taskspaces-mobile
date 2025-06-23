@@ -24,6 +24,7 @@ import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMember
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
+import com.ucapdm2025.taskspaces.data.remote.services.UserService
 import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
@@ -32,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -39,6 +41,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import kotlin.collections.flatten
 
 /**
  * WorkspaceRepositoryImpl is an implementation of the WorkspaceRepository interface.
@@ -50,11 +53,10 @@ class WorkspaceRepositoryImpl(
     private val workspaceDao: WorkspaceDao,
     private val workspaceMemberDao: WorkspaceMemberDao,
     private val userDao: UserDao,
-    private val workspaceService: WorkspaceService
+    private val workspaceService: WorkspaceService,
+    private val userService: UserService
 ) : WorkspaceRepository {
-    private val workspaces = MutableStateFlow(workspacesDummies)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
-    private val members = MutableStateFlow(workspaceMembersDummy)
 
     override fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>> = flow {
         emit(Resource.Loading)
@@ -94,10 +96,64 @@ class WorkspaceRepositoryImpl(
         emitAll(localWorkspaces)
     }.flowOn(Dispatchers.IO)
 
-    // TODO: Refactor workspacesShared with a relational approach
-    override fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<WorkspaceModel>> {
-        return workspacesSharedWithMe.asStateFlow()
-    }
+    override fun getWorkspacesSharedWithMe(): Flow<Resource<List<WorkspaceModel>>> = flow {
+        emit(Resource.Loading)
+
+        var ownerIds: List<Int> = emptyList()
+
+        try {
+//            Fetch workspaces from remote
+            val remoteWorkspaces: List<WorkspaceResponse> =
+                workspaceService.getSharedWorkspaces().content
+
+//            Save all owners from remote
+            ownerIds = remoteWorkspaces.map { it.ownerId }.distinct()
+
+//            Save remote workspaces to the database
+            if (remoteWorkspaces.isNotEmpty()) {
+                remoteWorkspaces.forEach {
+                    workspaceDao.createWorkspace(it.toEntity())
+                }
+            }
+
+//            Save remote owners to database
+            if (ownerIds.isNotEmpty()) {
+                ownerIds.forEach { userId ->
+//                    Get user from remote
+                    val user: UserModel = userService.getUserById(userId).content.toDomain()
+
+//                    Save it to database if it does not exist or to update new user info
+                    userDao.createUser(user.toDatabase())
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.d(
+                "WorkspaceRepository: getWorkspacesByUserId",
+                "Error fetching workspaces: ${e.message}"
+            )
+        }
+
+//        Use local workspaces
+        val localWorkspaces: Flow<Resource<List<WorkspaceModel>>> = combine(
+            ownerIds.map { ownerId ->
+                workspaceDao.getWorkspacesByUserId(ownerId = ownerId)
+                    .map { entities -> entities.map { it.toDomain() } }
+                    .distinctUntilChanged()
+            }
+        ) { workspaceLists: Array<List<WorkspaceModel>> ->
+            val allWorkspaces = workspaceLists.toList().flatten()
+
+            if (allWorkspaces.isEmpty()) {
+                Resource.Error("No shared workspaces found")
+            } else {
+                Resource.Success(allWorkspaces)
+            }
+        }
+
+        emitAll(localWorkspaces)
+    }.flowOn(Dispatchers.IO)
+
 
     override fun getWorkspaceById(id: Int): Flow<Resource<WorkspaceModel?>> = flow {
         emit(Resource.Loading)

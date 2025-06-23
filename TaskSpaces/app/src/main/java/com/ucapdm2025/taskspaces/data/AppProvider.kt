@@ -2,7 +2,6 @@ package com.ucapdm2025.taskspaces.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.ucapdm2025.taskspaces.data.database.AppDatabase
@@ -30,32 +29,41 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class AppProvider(context: Context) {
     private val appDatabase = AppDatabase.getDatabase(context)
-//    Users
+
+    //    Users
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
     private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService)
 
-//    Auth
+    //    Auth
     private val authService = RetrofitInstance.authService
     private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
 
-//    Workspace
+    //    Workspace
     private val workspaceDao = appDatabase.workspaceDao()
     private val workspaceMemberDao = appDatabase.workspaceMemberDao()
     private val workspaceService = RetrofitInstance.workspaceService
-    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl(authRepository, workspaceDao, workspaceMemberDao, userDao, workspaceService)
+    private val workspaceRepository: WorkspaceRepository = WorkspaceRepositoryImpl(
+        authRepository,
+        workspaceDao,
+        workspaceMemberDao,
+        userDao,
+        workspaceService,
+        userService
+    )
 
-//    Project
+    //    Project
     private val projectDao = appDatabase.projectDao()
     private val projectService = RetrofitInstance.projectService
-    private val projectRepository: ProjectRepository = ProjectRepositoryImpl(projectDao, projectService)
+    private val projectRepository: ProjectRepository =
+        ProjectRepositoryImpl(projectDao, projectService)
 
-//    Task
+    //    Task
     private val taskDao = appDatabase.taskDao()
     private val taskService = RetrofitInstance.taskService
     private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, taskService)
 
-//    Bookmark
+    //    Bookmark
     private val bookmarkDao = appDatabase.bookmarkDao()
     private val bookmarkService = RetrofitInstance.bookmarkService
     private val bookmarkRepository: BookmarkRepository = BookmarkRepositoryImpl(

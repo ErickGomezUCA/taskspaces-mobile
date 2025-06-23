@@ -4,18 +4,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.ui.components.home.WorkspaceCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
@@ -29,23 +32,28 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun SharedWorkspacesSection(
     modifier: Modifier = Modifier,
     sharedWorkspaces: List<WorkspaceModel> = emptyList<WorkspaceModel>(),
+    onClickWorkspaceCard: (WorkspaceModel) -> Unit = { }
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        WorkspaceCard(
-            name = "Workspace 3",
-            projectsCount = 1,
-            membersCount = 1,
-            isWorkspaceShared = true
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        WorkspaceCard(
-            name = "Workspace 4",
-            projectsCount = 1,
-            membersCount = 1,
-            isWorkspaceShared = true
-        )
-        Spacer(modifier = Modifier.height(12.dp))
+        if (sharedWorkspaces.isNotEmpty()) {
+            sharedWorkspaces.forEach { workspace ->
+                WorkspaceCard(
+                    name = workspace.title,
+                    projectsCount = 1,
+                    membersCount = 1,
+                    onClick = { onClickWorkspaceCard(workspace) },
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "No workspaces found...", color = ExtendedTheme.colors.onBackground50)
+            }
+        }
 
         if (sharedWorkspaces.size > 2) {
             Button(

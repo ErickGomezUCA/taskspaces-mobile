@@ -21,6 +21,9 @@ interface WorkspaceService {
     @GET("workspaces/{id}")
     suspend fun getWorkspaceById(@Path("id") id: Int): BaseResponse<WorkspaceResponse>
 
+    @GET("workspaces/shared")
+    suspend fun getSharedWorkspaces(): BaseResponse<List<WorkspaceResponse>>
+
     @GET("workspaces/u/{userId}")
     suspend fun getWorkspacesByUserId(@Path("userId") userId: Int): BaseResponse<List<WorkspaceResponse>>
 

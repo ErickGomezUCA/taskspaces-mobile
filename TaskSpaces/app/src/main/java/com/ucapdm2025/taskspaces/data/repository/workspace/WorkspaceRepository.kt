@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface WorkspaceRepository {
     fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>>
-    fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<WorkspaceModel>>
+    fun getWorkspacesSharedWithMe(): Flow<Resource<List<WorkspaceModel>>>
     fun getWorkspaceById(id: Int): Flow<Resource<WorkspaceModel?>>
     suspend fun createWorkspace(title: String): Result<WorkspaceModel>
     suspend fun updateWorkspace(id: Int, title: String): Result<WorkspaceModel>

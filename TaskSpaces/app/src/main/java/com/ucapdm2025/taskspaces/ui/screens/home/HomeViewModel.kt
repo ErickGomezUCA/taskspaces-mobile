@@ -79,15 +79,26 @@ class HomeViewModel(
                         // TODO: Handle error state
                     }
                 }
-
             }
         }
 
         viewModelScope.launch {
-            workspaceRepository.getWorkspacesSharedWithMe(_authUserId.value)
-                .collect { sharedWorkspaceList ->
-                    _workspacesSharedWithMe.value = sharedWorkspaceList
+            workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val workspaces = resource.data
+                        _workspaces.value = workspaces
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
                 }
+            }
         }
 
 //        viewModelScope.launch {
