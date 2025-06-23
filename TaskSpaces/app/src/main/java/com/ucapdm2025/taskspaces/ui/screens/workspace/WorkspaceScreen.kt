@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +43,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.Container
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
+import com.ucapdm2025.taskspaces.ui.components.workspace.ManageMembersDialog
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
@@ -81,11 +81,12 @@ fun WorkspaceScreen(
 
     val workspace = viewModel.workspace.collectAsStateWithLifecycle()
     val projects = viewModel.projects.collectAsStateWithLifecycle()
-    val members = viewModel.members.collectAsStateWithLifecycle()
     val showProjectDialog = viewModel.showProjectDialog.collectAsStateWithLifecycle()
     val projectDialogData = viewModel.projectDialogData.collectAsStateWithLifecycle()
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
     val selectedProjectId = viewModel.selectedProjectId.collectAsStateWithLifecycle()
+    val members = viewModel.members.collectAsStateWithLifecycle()
+    val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
 
 //    TODO: Show error and loading states
 //    Show feedback icon if the workspace is not found
@@ -155,6 +156,23 @@ fun WorkspaceScreen(
                     ) { Text(text = if (editMode.value == WorkspaceEditMode.UPDATE) "Update" else "Create") }
                 }
             }
+        )
+    }
+
+    if (showManageMembersDialog.value) {
+        ManageMembersDialog(
+            onDismissRequest = { viewModel.hideManageMembersDialog() },
+            onInviteMember = { username, memberRole ->
+                viewModel.inviteMember(username, memberRole)
+                viewModel.hideManageMembersDialog()
+            },
+            onRoleUpdated = { userId, memberRole ->
+                viewModel.updateMemberRole(userId = userId, newMemberRole = memberRole)
+            },
+            onDeleteMember = { userId ->
+                viewModel.removeMember(userId)
+            },
+            members = members.value,
         )
     }
 
@@ -326,29 +344,39 @@ fun WorkspaceScreen(
 
             // Members Section
             item {
-
                 Container(title = "Members") {
-                    val chunkedUsers = members.value.chunked(3)
+                    if (members.value.isEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "No members in this workspace")
+                        }
+                    } else {
+                        val chunkedUsers = members.value.chunked(3)
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        chunkedUsers.forEach { rowItems ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                rowItems.forEach { member ->
-                                    UserCard(
-                                        member.username,
-                                        modifier = Modifier
-                                            .width(80.dp)
-                                            .fillMaxHeight()
-                                    )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            chunkedUsers.forEach { rowItems ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(120.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    rowItems.forEach { member ->
+                                        UserCard(
+                                            member.user.username,
+                                            modifier = Modifier
+                                                .width(80.dp)
+                                                .fillMaxHeight()
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -357,9 +385,7 @@ fun WorkspaceScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { /* // TODO: I shouldn't handle this logic directly here in the Composable.
-                    //  This should be delegated to the ViewModel to follow proper architecture practices. */
-                        },
+                        onClick = { viewModel.showManageMembersDialog() },
                         modifier = Modifier
                             .background(
                                 color = MaterialTheme.colorScheme.primary,

@@ -1,7 +1,7 @@
 package com.ucapdm2025.taskspaces.data.remote.responses
 
-import com.ucapdm2025.taskspaces.data.database.entities.BookmarkEntity
-import com.ucapdm2025.taskspaces.data.model.BookmarkModel
+import com.ucapdm2025.taskspaces.data.database.entities.relational.BookmarkEntity
+import com.ucapdm2025.taskspaces.data.model.relational.BookmarkModel
 
 /**
  * BookmarkResponse is a data class that represents the response for a bookmark operation.

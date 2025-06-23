@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,9 +34,6 @@ class WorkspaceViewModel(
     private val _projects: MutableStateFlow<List<ProjectModel>> = MutableStateFlow(emptyList())
     val projects: StateFlow<List<ProjectModel>> = _projects.asStateFlow()
 
-    private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
-    val members: StateFlow<List<UserModel>> = _members.asStateFlow()
-
     private val _showProjectDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showProjectDialog: StateFlow<Boolean> = _showProjectDialog.asStateFlow()
 
@@ -48,7 +47,14 @@ class WorkspaceViewModel(
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
 
+    private val _members: MutableStateFlow<List<WorkspaceMemberModel>> = MutableStateFlow(emptyList())
+    val members: StateFlow<List<WorkspaceMemberModel>> = _members.asStateFlow()
+
+    private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
+
     init {
+//        Get current workspace info
         viewModelScope.launch {
             workspaceRepository.getWorkspaceById(workspaceId).collect { resource ->
                 when (resource) {
@@ -68,6 +74,7 @@ class WorkspaceViewModel(
             }
         }
 
+//        Get projects list
         viewModelScope.launch {
             projectRepository.getProjectsByWorkspaceId(workspaceId).collect { resource ->
                 when (resource) {
@@ -84,13 +91,26 @@ class WorkspaceViewModel(
                         // TODO: Handle error state
                     }
                 }
-
             }
         }
 
+//        Get members list
         viewModelScope.launch {
-            workspaceRepository.getMembersByWorkspaceId(workspaceId).collect { memberList ->
-                _members.value = memberList
+            workspaceRepository.getMembersByWorkspaceId(workspaceId).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val workspaceMembers = resource.data
+                        _members.value = workspaceMembers
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
+                }
             }
         }
     }
@@ -141,19 +161,6 @@ class WorkspaceViewModel(
         }
     }
 
-    //    Members functions
-    fun addMember(username: String, memberRole: String, workspaceId: Int) {
-        viewModelScope.launch {
-            workspaceRepository.addMember(username, memberRole, workspaceId)
-        }
-    }
-
-    fun removeMember(username: String, workspaceId: Int) {
-        viewModelScope.launch {
-            workspaceRepository.removeMember(username, workspaceId)
-        }
-    }
-
     //  Dialog functions
     fun showDialog() {
         _showProjectDialog.value = true
@@ -173,6 +180,76 @@ class WorkspaceViewModel(
 
     fun setSelectedProjectId(projectId: Int?) {
         _selectedProjectId.value = projectId
+    }
+
+//    Manage members dialog functions
+    fun showManageMembersDialog() {
+        _showManageMembersDialog.value = true
+    }
+
+    fun hideManageMembersDialog() {
+        _showManageMembersDialog.value = false
+    }
+
+    fun inviteMember(username: String, memberRole: MemberRoles) {
+        viewModelScope.launch {
+            val response = workspaceRepository.inviteMember(username, memberRole, workspaceId)
+
+            Log.d("WorkspaceViewModel", "Invite member response: $response")
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun updateMemberRole(
+        userId: Int,
+        newMemberRole: MemberRoles
+    ) {
+        viewModelScope.launch {
+            val response = workspaceRepository.updateMember(
+                userId = userId,
+                memberRole = newMemberRole,
+                workspaceId = workspaceId
+            )
+
+            Log.d("WorkspaceViewModel", "Update member role response: $response")
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun removeMember(userId: Int) {
+        viewModelScope.launch {
+            val response = workspaceRepository.removeMember(
+                userId = userId,
+                workspaceId = workspaceId
+            )
+
+            Log.d("WorkspaceViewModel", "Remove member response: $response")
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("WorkspaceViewModel", "Error removing member: ${exception.message}")
+                }
+            }
+        }
     }
 }
 

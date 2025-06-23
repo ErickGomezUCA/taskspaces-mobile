@@ -11,8 +11,6 @@ import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
-import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
-import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
@@ -79,15 +77,26 @@ class HomeViewModel(
                         // TODO: Handle error state
                     }
                 }
-
             }
         }
 
         viewModelScope.launch {
-            workspaceRepository.getWorkspacesSharedWithMe(_authUserId.value)
-                .collect { sharedWorkspaceList ->
-                    _workspacesSharedWithMe.value = sharedWorkspaceList
+            workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val workspacesShared = resource.data
+                        _workspacesSharedWithMe.value = workspacesShared
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
                 }
+            }
         }
 
 //        viewModelScope.launch {

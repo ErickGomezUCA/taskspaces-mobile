@@ -52,7 +52,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
-//    val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
+    val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
 //    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
     val showWorkspaceDialog =
         viewModel.showWorkspaceDialog.collectAsStateWithLifecycle()
@@ -186,9 +186,13 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
+//            TODO: Add action to leave a workspace
             item {
                 Container(title = "Workspaces shared with me") {
-                    SharedWorkspacesSection()
+                    SharedWorkspacesSection(
+                        sharedWorkspaces = workspacesSharedWithMe.value,
+                        onClickWorkspaceCard = { workspace -> onNavigateWorkspace(workspace.id)}
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

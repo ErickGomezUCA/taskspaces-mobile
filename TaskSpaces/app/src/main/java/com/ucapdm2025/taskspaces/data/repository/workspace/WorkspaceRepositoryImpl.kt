@@ -2,30 +2,46 @@ package com.ucapdm2025.taskspaces.data.repository.workspace
 
 import android.util.Log
 import coil3.network.HttpException
+import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.WorkspaceMemberDao
+import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
 import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
 import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
+import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.model.toDatabase
-import com.ucapdm2025.taskspaces.data.remote.requests.WorkspaceRequest
-import com.ucapdm2025.taskspaces.data.remote.responses.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.WorkspaceRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.InviteWorkspaceMemberRequest
+import com.ucapdm2025.taskspaces.data.remote.requests.workspace.members.UpdateMemberRoleRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceMemberResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
+import com.ucapdm2025.taskspaces.data.remote.services.UserService
 import com.ucapdm2025.taskspaces.data.remote.services.WorkspaceService
+import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import kotlin.collections.flatten
 
 /**
  * WorkspaceRepositoryImpl is an implementation of the WorkspaceRepository interface.
@@ -33,12 +49,14 @@ import java.io.IOException
  * creating, updating, and deleting workspaces, as well as managing workspace members.
  */
 class WorkspaceRepositoryImpl(
+    private val authRepository: AuthRepository,
     private val workspaceDao: WorkspaceDao,
-    private val workspaceService: WorkspaceService
+    private val workspaceMemberDao: WorkspaceMemberDao,
+    private val userDao: UserDao,
+    private val workspaceService: WorkspaceService,
+    private val userService: UserService
 ) : WorkspaceRepository {
-    private val workspaces = MutableStateFlow(workspacesDummies)
     private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
-    private val members = MutableStateFlow(workspaceMembersDummy)
 
     override fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>> = flow {
         emit(Resource.Loading)
@@ -78,10 +96,64 @@ class WorkspaceRepositoryImpl(
         emitAll(localWorkspaces)
     }.flowOn(Dispatchers.IO)
 
-    // TODO: Refactor workspacesShared with a relational approach
-    override fun getWorkspacesSharedWithMe(ownerId: Int): Flow<List<WorkspaceModel>> {
-        return workspacesSharedWithMe.asStateFlow()
-    }
+    override fun getWorkspacesSharedWithMe(): Flow<Resource<List<WorkspaceModel>>> = flow {
+        emit(Resource.Loading)
+
+        var ownerIds: List<Int> = emptyList()
+
+        try {
+//            Fetch workspaces from remote
+            val remoteWorkspaces: List<WorkspaceResponse> =
+                workspaceService.getSharedWorkspaces().content
+
+//            Save all owners from remote
+            ownerIds = remoteWorkspaces.map { it.ownerId }.distinct()
+
+//            Save remote workspaces to the database
+            if (remoteWorkspaces.isNotEmpty()) {
+                remoteWorkspaces.forEach {
+                    workspaceDao.createWorkspace(it.toEntity())
+                }
+            }
+
+//            Save remote owners to database
+            if (ownerIds.isNotEmpty()) {
+                ownerIds.forEach { userId ->
+//                    Get user from remote
+                    val user: UserModel = userService.getUserById(userId).content.toDomain()
+
+//                    Save it to database if it does not exist or to update new user info
+                    userDao.createUser(user.toDatabase())
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.d(
+                "WorkspaceRepository: getWorkspacesByUserId",
+                "Error fetching workspaces: ${e.message}"
+            )
+        }
+
+//        Use local workspaces
+        val localWorkspaces: Flow<Resource<List<WorkspaceModel>>> = combine(
+            ownerIds.map { ownerId ->
+                workspaceDao.getWorkspacesByUserId(ownerId = ownerId)
+                    .map { entities -> entities.map { it.toDomain() } }
+                    .distinctUntilChanged()
+            }
+        ) { workspaceLists: Array<List<WorkspaceModel>> ->
+            val allWorkspaces = workspaceLists.toList().flatten()
+
+            if (allWorkspaces.isEmpty()) {
+                Resource.Error("No shared workspaces found")
+            } else {
+                Resource.Success(allWorkspaces)
+            }
+        }
+
+        emitAll(localWorkspaces)
+    }.flowOn(Dispatchers.IO)
+
 
     override fun getWorkspaceById(id: Int): Flow<Resource<WorkspaceModel?>> = flow {
         emit(Resource.Loading)
@@ -202,35 +274,181 @@ class WorkspaceRepositoryImpl(
     }
 
     //    Members
-    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<List<UserModel>> {
-        return members.asStateFlow()
-    }
+    override fun getMembersByWorkspaceId(workspaceId: Int): Flow<Resource<List<WorkspaceMemberModel>>> =
+        flow {
+            emit(Resource.Loading)
 
-    override suspend fun addMember(
+//        Used for fetching the user ID from the auth repository
+//        Specially for dao functions, because those does not have access to
+//        auth tokens
+            val userId: Int = authRepository.authUserId.first()
+
+            try {
+                //            Fetch workspace members from remote
+                val remoteWorkspaceMembers: List<WorkspaceMemberResponse> =
+                    workspaceService.getMembersByWorkspaceId(workspaceId).content
+
+                //            Save remote workspace members to the database
+                if (remoteWorkspaceMembers.isNotEmpty()) {
+                    remoteWorkspaceMembers.forEach {
+                        workspaceMemberDao.createMember(it.toEntity(workspaceId))
+
+//                    Create fetched users IDs to local database
+                        userDao.createUser(it.user.toEntity())
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d(
+                    "WorkspaceMemberRepository: getMembersByWorkspaceId",
+                    "Error fetching workspace members: ${e.message}"
+                )
+            }
+
+//        Use local workspace members
+            val localWorkspaceMembers =
+                workspaceMemberDao.getMembersByWorkspaceId(
+                    workspaceId = workspaceId,
+                    requestUserId = userId
+                )
+                    .map { entities ->
+//                        TODO: Bug, shows unknown user when inviting a member
+//                        then it disappears when reloaded
+                        val workspaceMembers = entities.map {
+                            val user: UserModel = userDao.getUserById(it.userId)
+                                .first()?.toDomain() ?: UserModel(
+                                id = it.userId,
+                                username = "Unknown",
+                                fullname = "Unknown",
+                                email = "Unknown",
+                            )
+
+                            val parsedRole: MemberRoles = when (it.memberRoleId) {
+                                1 -> MemberRoles.READER
+                                2 -> MemberRoles.COLLABORATOR
+                                3 -> MemberRoles.ADMIN
+                                else -> MemberRoles.READER
+                            }
+
+                            it.toDomain(user, parsedRole)
+                        }
+
+                        if (workspaceMembers.isEmpty()) {
+                            //                Logs an error if no projects are found for the user
+                            Resource.Error("No member found for workspace ID: $workspaceId")
+                        } else {
+//                Returns the workspace members as a success
+                            Resource.Success(workspaceMembers)
+                        }
+                    }.distinctUntilChanged()
+
+            emitAll(localWorkspaceMembers)
+        }
+
+
+    override suspend fun inviteMember(
         username: String,
-        memberRole: String,
+        memberRole: MemberRoles,
         workspaceId: Int
-    ): Boolean {
-        val userExists = members.value.find { it.username == username }
-        val workspaceExists = workspaces.value.any { it.id == workspaceId }
+    ): Result<WorkspaceMemberModel> {
+        val request = InviteWorkspaceMemberRequest(username, memberRole.toString())
 
-        if (userExists != null && workspaceExists) {
-            members.value = members.value + userExists
-            return true
+        return try {
+            val response =
+                workspaceService.inviteMember(workspaceId = workspaceId, request = request)
+
+            val invitedUser: UserModel = response.content.user.toDomain()
+            val memberRole: MemberRoles = MemberRoles.valueOf(response.content.memberRole)
+
+            val invitedMember = WorkspaceMemberModel(
+                workspaceId = workspaceId,
+                user = invitedUser,
+                memberRole = memberRole
+            )
+
+            workspaceMemberDao.createMember(invitedMember.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: inviteMember",
+                "Member invited successfully: $invitedMember"
+            )
+
+            Result.success(invitedMember)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: inviteMember", "Error inviting member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: inviteMember", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: inviteMember", "Unexpected error: ${e.message}")
+            Result.failure(e)
         }
-
-        return false
     }
 
-    override suspend fun removeMember(username: String, workspaceId: Int): Boolean {
-        val userExists = members.value.find { it.username == username }
-        val workspaceExists = workspaces.value.any { it.id == workspaceId }
+    override suspend fun updateMember(
+        userId: Int,
+        memberRole: MemberRoles,
+        workspaceId: Int
+    ): Result<WorkspaceMemberModel> {
+        return try {
+            val request = UpdateMemberRoleRequest(memberRole.toString())
 
-        if (userExists != null && workspaceExists) {
-            members.value = members.value.filter { it.username != username }
-            return true
+            val response = workspaceService.updateMember(
+                workspaceId = workspaceId,
+                memberId = userId,
+                request
+            )
+
+            val updatedMember: WorkspaceMemberModel = response.content.toDomain(workspaceId)
+
+            workspaceMemberDao.updateMember(updatedMember.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: updateMember",
+                "Member updated successfully: $updatedMember"
+            )
+
+            Result.success(updatedMember)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: updateMember", "Error updating member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: updateMember", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: updateMember", "Unexpected error: ${e.message}")
+            Result.failure(e)
         }
+    }
 
-        return false
+//    TODO: Bug, no longer deletes removed member from screen, but it disappears after reloading
+//    might be auth repository
+    override suspend fun removeMember(userId: Int, workspaceId: Int): Result<WorkspaceMemberModel> {
+        return try {
+            val response = workspaceService.removeMember(
+                workspaceId = workspaceId,
+                memberId = userId
+            )
+
+            val removedMember: WorkspaceMemberModel = response.content.toDomain(workspaceId)
+
+            workspaceMemberDao.deleteMember(removedMember.toDatabase())
+
+            Log.d(
+                "WorkspaceRepository: removeMember",
+                "Member removed successfully: $removedMember"
+            )
+
+            Result.success(removedMember)
+        } catch (e: HttpException) {
+            Log.e("WorkspaceRepository: removeMember", "Error removing member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("WorkspaceRepository: removeMember", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("WorkspaceRepository: removeMember", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
     }
 }
