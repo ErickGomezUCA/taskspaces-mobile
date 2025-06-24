@@ -42,9 +42,9 @@ class TaskViewModel(
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
-
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
+//        Load _task
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
@@ -72,6 +72,7 @@ class TaskViewModel(
             }
         }
 
+//        Load _comments
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
@@ -84,6 +85,7 @@ class TaskViewModel(
             }
         }
 
+//        Load _isBookmarked
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
