@@ -240,7 +240,8 @@ fun TaskDialog(
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            TaskStatus(status = task.value?.status ?: StatusVariations.PENDING)
+
+                            SelectStatusDropdown()
                         }
                     }
 
