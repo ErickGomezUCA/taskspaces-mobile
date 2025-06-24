@@ -140,7 +140,7 @@ class TaskRepositoryImpl(
             description,
             deadline,
             timer,
-            status
+            status.toString()
         )
 
         return try {
@@ -183,7 +183,7 @@ class TaskRepositoryImpl(
             description,
             deadline,
             timer,
-            status
+            status.toString()
         )
 
         return try {

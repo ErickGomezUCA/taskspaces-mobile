@@ -128,7 +128,16 @@ fun TaskDialog(
                 ) { Text(text = "Cancel") }
 
                 Button(
-                    onClick = { hideDialog() },
+                    onClick = {
+                        viewModel.updateTask(
+                            id = task.value?.id ?: 0,
+                            title = task.value?.title ?: "",
+                            description = task.value?.description ?: "",
+                            deadline = task.value?.deadline ?: "",
+                            timer = task.value?.timer ?: 0f,
+                            status = task.value?.status ?: StatusVariations.PENDING
+                        )
+                        hideDialog() },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                 ) { Text(text = "Save") }
@@ -214,10 +223,11 @@ fun TaskDialog(
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                task.value?.title ?: "No data",
-                                fontSize = 33.sp,
-                                color = MaterialTheme.colorScheme.onBackground
+
+                            TextField(
+                                value = task.value?.title ?: "No title",
+                                onValueChange = { viewModel.setTaskData(title = it) },
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }

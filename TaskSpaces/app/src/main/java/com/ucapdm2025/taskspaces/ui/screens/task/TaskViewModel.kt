@@ -131,6 +131,27 @@ class TaskViewModel(
         _comments.value = emptyList() // Explicitly clear comments
     }
 
+    fun setTaskData(
+        title: String? = null,
+        status: StatusVariations? = null,
+        description: String? = null,
+        tags: List<String>? = null, // TODO: Change to tag model
+        media: List<String>? = null, // TODO: Change to media model
+        deadline: String? = null,
+        timer: Float? = null,
+        members: List<Int>? = null, // TODO: Change to member model
+    ) {
+        val previousTask = _task.value
+
+        _task.value = previousTask?.copy(
+            title = title ?: previousTask.title,
+            status = status ?: previousTask.status,
+            description = description ?: previousTask.description,
+            deadline = deadline ?: previousTask.deadline,
+            timer = timer ?: previousTask.timer,
+        )
+    }
+
     fun updateTask(
         id: Int,
         title: String,

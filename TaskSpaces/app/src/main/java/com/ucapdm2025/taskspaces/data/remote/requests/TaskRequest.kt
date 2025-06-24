@@ -16,5 +16,5 @@ data class TaskRequest (
     val description: String? = null,
     val deadline: String? = null, // TODO: UseLocalDateTime instead of String
     val timer: Float? = null,
-    val status: StatusVariations = StatusVariations.PENDING,
+    val status: String = "PENDING",
 )
