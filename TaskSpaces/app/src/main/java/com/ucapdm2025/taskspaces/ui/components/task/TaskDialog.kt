@@ -241,7 +241,9 @@ fun TaskDialog(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
 
-                            SelectStatusDropdown()
+                            SelectStatusDropdown(value = task.value?.status ?: StatusVariations.PENDING) { status ->
+                                viewModel.setTaskData(status = status)
+                            }
                         }
                     }
 
