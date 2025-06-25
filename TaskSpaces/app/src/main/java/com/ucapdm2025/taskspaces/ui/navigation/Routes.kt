@@ -3,6 +3,9 @@ package com.ucapdm2025.taskspaces.ui.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
+object SplashRoute
+
+@Serializable
 object OnboardingRoute
 
 @Serializable

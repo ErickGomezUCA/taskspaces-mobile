@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.ucapdm2025.taskspaces.ui.components.onboarding.SplashScreen
 import com.ucapdm2025.taskspaces.ui.screens.bookmark.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.home.HomeScreen
 import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
@@ -18,8 +19,12 @@ import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = HomeRoute) {
+    NavHost(navController = navController, startDestination = SplashRoute) {
 //        TODO: Implement all views by their routes here
+        composable<SplashRoute> {
+            SplashScreen(navController = navController)
+        }
+
         composable<HomeRoute> {
             HomeScreen(onNavigateWorkspace = { workspaceId ->
                 navController.navigate(WorkspaceRoute(workspaceId))
