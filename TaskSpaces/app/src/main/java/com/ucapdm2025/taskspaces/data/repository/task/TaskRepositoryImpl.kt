@@ -48,8 +48,6 @@ class TaskRepositoryImpl(
     override fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>> = flow {
         emit(Resource.Loading)
 
-        var retrievedTags: List<TagModel> = emptyList()
-
         try {
             //            Fetch tasks from remote
             val remoteTasks: List<TaskResponse> =
@@ -59,10 +57,6 @@ class TaskRepositoryImpl(
             if (remoteTasks.isNotEmpty()) {
                 remoteTasks.forEach {
                     taskDao.createTask(it.toEntity())
-
-                    retrievedTags = it.tags.map { tagResponse ->
-                        tagResponse.toDomain()
-                    }
 
 //                    Save tags from task response
                     it.tags.forEach { tag ->
@@ -88,7 +82,10 @@ class TaskRepositoryImpl(
         //        Use local projects
         val localTasks =
             taskDao.getTasksByProjectId(projectId = projectId).map { entities ->
-                val tasks = entities.map { it.toDomain(tags = retrievedTags) }
+                val tasks = entities.map { entity ->
+                    val tags = taskTagDao.getTagsByTaskId(entity.id).first() // <-- Get tags here
+                    entity.toDomain(tags = tags.map { it.toDomain() }) // <-- Pass to domain
+                     }
 
                 if (tasks.isEmpty()) {
                     //                Logs an error if no projects are found for the user
@@ -122,6 +119,18 @@ class TaskRepositoryImpl(
             //            Save remote task to the database
             if (remoteTask != null) {
                 taskDao.createTask(remoteTask.toEntity())
+
+                remoteTask.tags.forEach { tag ->
+                    tagDao.createTag(tag.toEntity())
+
+//                    Assign tag to task
+                    taskTagDao.createTaskTag(
+                        TaskTagEntity(
+                            taskId = remoteTask.id,
+                            tagId = tag.id
+                        )
+                    )
+                }
             } else {
                 Log.d("TaskRepository", "No task found with ID: $id")
             }
@@ -135,7 +144,8 @@ class TaskRepositoryImpl(
         //        Use local project
         val localTask =
             taskDao.getTaskById(id = id).map { entity ->
-                val task = entity?.toDomain()
+                val tags = taskTagDao.getTagsByTaskId(entity?.id ?: 0).first()
+                val task = entity?.toDomain(tags = tags.map { it.toDomain() })
 
                 if (task == null) {
                     //                Logs an error if no tasks are found for the user
@@ -155,7 +165,7 @@ class TaskRepositoryImpl(
         deadline: String?,
         timer: Float?,
         status: StatusVariations,
-        projectId: Int
+        projectId: Int,
     ): Result<TaskModel> {
         val request = TaskRequest(
             title,
