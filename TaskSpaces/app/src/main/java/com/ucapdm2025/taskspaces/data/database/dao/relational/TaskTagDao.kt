@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskTagDao {
     @Query("SELECT * FROM task_tag WHERE taskId = :taskId")
-    fun getTasksByTaskId(taskId: Int): Flow<List<TaskTagEntity>>
+    fun getTagsByTaskId(taskId: Int): Flow<List<TaskTagEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createTaskTag(taskTag: TaskTagEntity)

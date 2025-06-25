@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.data.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ucapdm2025.taskspaces.data.model.BaseModel
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import java.time.LocalDateTime
@@ -42,7 +43,7 @@ data class TaskEntity (
  *
  * @return A TaskModel instance with the same properties as the TaskEntity.
  */
-fun TaskEntity.toDomain(): TaskModel {
+fun TaskEntity.toDomain(tags: List<TagModel>): TaskModel {
     return TaskModel(
         id = id,
         breadcrumb = breadcrumb,
@@ -57,6 +58,7 @@ fun TaskEntity.toDomain(): TaskModel {
             else -> StatusVariations.PENDING // Default case
         },
         projectId = projectId,
+        tags = tags,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

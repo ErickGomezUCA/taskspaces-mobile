@@ -32,7 +32,7 @@ data class TaskResponse(
     val deadline: String? = null, // TODO: Use LocalDateTime instead of String
     val timer: Float? = null,
     val projectId: Int,
-    val tags: List<Any> = emptyList(), // TODO: Handle tags in a separate entity
+    val tags: List<TagResponse> = emptyList(), // TODO: Handle tags in a separate entity
     val assignedMembers: List<Any> = emptyList(), // TODO: Handle assigned members in a separate entity
     val comments: List<Any> = emptyList(), // TODO: Handle comments in a separate entity
     val createdAt: String? = null,
@@ -59,6 +59,7 @@ fun TaskResponse.toDomain(): TaskModel {
         deadline = deadline, // TODO: Parse correctly into LocalDateTime
         timer = timer,
         projectId = projectId,
+        tags = tags.map { it.toDomain() },
         createdAt = createdAt,
         updatedAt = updatedAt
     )

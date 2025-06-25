@@ -2,19 +2,19 @@ package com.ucapdm2025.taskspaces.data.repository.task
 
 import android.util.Log
 import coil3.network.HttpException
+import com.ucapdm2025.taskspaces.data.database.dao.TagDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
-import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
+import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
+import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
-import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
-import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
-import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -38,12 +39,16 @@ import kotlin.collections.map
  */
 class TaskRepositoryImpl(
     private val taskDao: TaskDao,
+    private val tagDao: TagDao,
+    private val taskTagDao: TaskTagDao,
     private val taskService: TaskService
 ) : TaskRepository {
     private val assignedTasks = MutableStateFlow(assignedTasksDummies)
 
     override fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>> = flow {
         emit(Resource.Loading)
+
+        var retrievedTags: List<TagModel> = emptyList()
 
         try {
             //            Fetch tasks from remote
@@ -54,6 +59,23 @@ class TaskRepositoryImpl(
             if (remoteTasks.isNotEmpty()) {
                 remoteTasks.forEach {
                     taskDao.createTask(it.toEntity())
+
+                    retrievedTags = it.tags.map { tagResponse ->
+                        tagResponse.toDomain()
+                    }
+
+//                    Save tags from task response
+                    it.tags.forEach { tag ->
+                        tagDao.createTag(tag.toEntity())
+
+//                        Assign tag to task
+                        taskTagDao.createTaskTag(
+                            TaskTagEntity(
+                                taskId = it.id,
+                                tagId = tag.id
+                            )
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -66,7 +88,7 @@ class TaskRepositoryImpl(
         //        Use local projects
         val localTasks =
             taskDao.getTasksByProjectId(projectId = projectId).map { entities ->
-                val tasks = entities.map { it.toDomain() }
+                val tasks = entities.map { it.toDomain(tags = retrievedTags) }
 
                 if (tasks.isEmpty()) {
                     //                Logs an error if no projects are found for the user
