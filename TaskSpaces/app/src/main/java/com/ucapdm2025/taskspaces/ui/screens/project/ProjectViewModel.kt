@@ -10,6 +10,7 @@ import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,8 +30,8 @@ class ProjectViewModel(
     private val projectRepository: ProjectRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
-    private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
-    val project: StateFlow<ProjectModel?> = _project.asStateFlow()
+    private val _project: MutableStateFlow<UiState<ProjectModel>> = MutableStateFlow(UiState.Loading)
+    val project: StateFlow<UiState<ProjectModel>> = _project.asStateFlow()
 
     private val _tasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val tasks: StateFlow<List<TaskModel>> = _tasks.asStateFlow()
@@ -46,16 +47,16 @@ class ProjectViewModel(
             projectRepository.getProjectById(projectId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // Handle loading state if necessary
+                        _project.value = UiState.Loading
                     }
 
                     is Resource.Success -> {
                         val project = resource.data
-                        _project.value = project
+                        _project.value = UiState.Success(project!!)
                     }
 
                     is Resource.Error -> {
-                        // Handle error state if necessary
+                        _project.value = UiState.Error(resource.message)
                     }
                 }
             }
@@ -74,7 +75,7 @@ class ProjectViewModel(
                     }
 
                     is Resource.Error -> {
-                        // Handle error state if necessary
+                        Log.e("ProjectViewModel", "Error loading tasks: ${resource.message}")
                     }
                 }
             }
