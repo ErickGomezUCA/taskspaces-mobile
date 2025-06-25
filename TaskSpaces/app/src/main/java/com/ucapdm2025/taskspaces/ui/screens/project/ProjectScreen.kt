@@ -2,12 +2,14 @@ package com.ucapdm2025.taskspaces.ui.screens.project
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
@@ -48,11 +51,38 @@ fun ProjectScreen(
     val taskRepository = application.appProvider.provideTaskRepository()
     val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, taskRepository))
 
-    val project = viewModel.project.collectAsStateWithLifecycle()
+    val projectState = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
     val showTaskDialog = viewModel.showTaskDialog.collectAsStateWithLifecycle()
     val selectedTaskId = viewModel.selectedTaskId.collectAsStateWithLifecycle()
 
+    when (val state = projectState.value) {
+        UiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) { CircularProgressIndicator() }
+            return
+        }
+
+        is UiState.Error -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                FeedbackIcon(
+                    icon = Icons.Default.Close,
+                    title = state.message ?: "Sorry, we couldn't find this project."
+                )
+            }
+            return
+        }
+
+        is UiState.Success -> {
+            // seguimos debajo con la UI normal usando tasks
+        }
+    }
     val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
     val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
     val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
@@ -68,21 +98,6 @@ fun ProjectScreen(
         if (taskId != null) {
             viewModel.setSelectedTaskId(taskId)
             viewModel.showTaskDialog()
-        }
-    }
-    
-//    Show feedback icon if the project is not found
-    if (project.value == null) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FeedbackIcon(
-                icon = Icons.Default.Close,
-                title = "Sorry, we couldn't find this project.",
-            )
-            return
         }
     }
 
