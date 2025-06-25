@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -31,8 +31,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -49,7 +49,6 @@ import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
-import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatus
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -137,7 +136,8 @@ fun TaskDialog(
                             timer = task.value?.timer ?: 0f,
                             status = task.value?.status ?: StatusVariations.PENDING
                         )
-                        hideDialog() },
+                        hideDialog()
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                 ) { Text(text = "Save") }
@@ -224,9 +224,10 @@ fun TaskDialog(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
 
-                            TextField(
+                            OutlinedTextField(
                                 value = task.value?.title ?: "No title",
                                 onValueChange = { viewModel.setTaskData(title = it) },
+                                placeholder = { Text("Add a title...") },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
@@ -241,7 +242,9 @@ fun TaskDialog(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
 
-                            SelectStatusDropdown(value = task.value?.status ?: StatusVariations.PENDING) { status ->
+                            SelectStatusDropdown(
+                                value = task.value?.status ?: StatusVariations.PENDING
+                            ) { status ->
                                 viewModel.setTaskData(status = status)
                             }
                         }
@@ -264,10 +267,13 @@ fun TaskDialog(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         }
-                        TextField(
+                        OutlinedTextField(
                             value = task.value?.description ?: "",
-                            onValueChange = {},
-                            modifier = Modifier.fillMaxWidth()
+                            onValueChange = { viewModel.setTaskData(description = it) },
+                            placeholder = { Text("Add a description...") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
                         )
                     }
 
