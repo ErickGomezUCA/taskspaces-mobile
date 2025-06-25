@@ -55,6 +55,7 @@ import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import java.time.LocalDateTime
 
 
 /**
@@ -316,7 +317,6 @@ fun TaskDialog(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-//                            TODO: Implement tags
                             task.value?.tags?.forEach { tag ->
                                 Tag(tag = tag)
                             }
@@ -367,61 +367,10 @@ fun TaskDialog(
                     }
 
                     //DEADLINE
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.CalendarMonth,
-                                contentDescription = "Deadline",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                "Deadline",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 24.sp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                            )
-                        }
-                        Column {
-//                            val formatter = DateTimeFormatter.ofPattern("d/MMM/yyyy - hh:mm a")
-//                            val dateText = task.value?.deadline?.format(formatter)
-//                            val weeksLeft =
-//                                java.time.Duration.between(
-//                                    LocalDateTime.now(),
-//                                    task.value?.deadline
-//                                ).toDays() / 7
-//                            Row(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .border(
-//                                        1.dp,
-//                                        MaterialTheme.colorScheme.onBackground,
-//                                        RoundedCornerShape(8.dp)
-//                                    ),
-//                                horizontalArrangement = Arrangement.Center
-//                            ) {
-//                                Text(
-//                                    dateText ?: "",
-//                                    fontWeight = FontWeight.Medium,
-//                                    modifier = Modifier.padding(4.dp),
-//                                    color = MaterialTheme.colorScheme.onBackground
-//                                )
-//                            }
-//                            Text(
-//                                "$weeksLeft weeks left until deadline",
-//                                color = ExtendedTheme.colors.background50,
-//                                fontSize = 12.sp
-//                            )
-                        }
-                        OutlinedButton(
-                            onClick = { /*TODO*/ },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                        ) {
-                            Text("+ Add Deadline")
-                        }
-                    }
+                    DeadlinePicker(
+                        deadline = task.value?.deadline as LocalDateTime?,
+                        onDeadlineSelected = { viewModel.setTaskData(deadline = it.toString()) }
+                    )
 
                     //TIMERS
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
