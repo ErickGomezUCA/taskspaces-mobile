@@ -28,6 +28,7 @@ data class TaskModel (
     val deadline: String? = null, // TODO: See if it is needed to parse into Date object or DateTime instead of String
     val timer: Float? = null,
     val status: StatusVariations = StatusVariations.PENDING, // TODO: Set enum class for status
+    val tags: List<TagModel> = emptyList(),
     val projectId: Int,
     override val createdAt: String? = null,
     override val updatedAt: String? = null,

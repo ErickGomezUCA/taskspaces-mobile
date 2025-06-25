@@ -2,30 +2,6 @@ package com.ucapdm2025.taskspaces.data.dummy
 
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 
-val workspacesDummies = listOf<WorkspaceModel>(
-    WorkspaceModel(
-        id = 1,
-        title = "Workspace 1",
-        ownerId = 1,
-        createdAt = "2023-10-01T12:00:00Z",
-        updatedAt = "2023-10-01T12:00:00Z",
-    ),
-    WorkspaceModel(
-        id = 2,
-        title = "Workspace 2",
-        ownerId = 1,
-        createdAt = "2023-10-02T12:00:00Z",
-        updatedAt = "2023-10-02T12:00:00Z"
-    ),
-    WorkspaceModel(
-        id = 3,
-        title = "Workspace 3",
-        ownerId = 3,
-        createdAt = "2023-10-03T12:00:00Z",
-        updatedAt = "2023-10-03T12:00:00Z"
-    )
-)
-
 val workspacesSharedDummies = listOf<WorkspaceModel>(
     WorkspaceModel(
         id = 4,

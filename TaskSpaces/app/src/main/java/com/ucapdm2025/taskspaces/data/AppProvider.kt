@@ -11,6 +11,8 @@ import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
+import com.ucapdm2025.taskspaces.data.repository.tag.TagRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
@@ -73,6 +75,11 @@ class AppProvider(context: Context) {
         taskDao = taskDao
     )
 
+//    Tag
+    private val tagDao = appDatabase.tagDao()
+    private val tagService = RetrofitInstance.tagService
+    private val tagRepository: TagRepository = TagRepositoryImpl(tagDao, tagService)
+
     fun provideUserRepository(): UserRepository {
         return userRepository
     }
@@ -95,5 +102,9 @@ class AppProvider(context: Context) {
 
     fun provideBookmarkRepository(): BookmarkRepository {
         return bookmarkRepository
+    }
+
+    fun provideTagRepository(): TagRepository {
+        return tagRepository
     }
 }
