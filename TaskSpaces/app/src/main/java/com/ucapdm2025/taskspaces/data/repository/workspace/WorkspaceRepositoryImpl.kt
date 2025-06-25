@@ -7,9 +7,6 @@ import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.WorkspaceMemberDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
-import com.ucapdm2025.taskspaces.data.dummy.catalog.workspaceMembersDummy
-import com.ucapdm2025.taskspaces.data.dummy.workspacesDummies
-import com.ucapdm2025.taskspaces.data.dummy.workspacesSharedDummies
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
@@ -31,8 +28,6 @@ import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
@@ -56,8 +51,6 @@ class WorkspaceRepositoryImpl(
     private val workspaceService: WorkspaceService,
     private val userService: UserService
 ) : WorkspaceRepository {
-    private val workspacesSharedWithMe = MutableStateFlow(workspacesSharedDummies)
-
     override fun getWorkspacesByUserId(ownerId: Int): Flow<Resource<List<WorkspaceModel>>> = flow {
         emit(Resource.Loading)
 

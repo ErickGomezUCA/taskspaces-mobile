@@ -14,7 +14,8 @@ interface TagService {
     @GET("tags/p/{projectId}")
     suspend fun getTagsByProjectId(@Path("projectId") projectId: Int): BaseResponse<List<TagResponse>>
 
-//    TODO: Add get tags by task id
+    @GET("tags/t/{taskId}")
+    suspend fun getTagsByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<TagResponse>>
 
     @GET("tags/{id}")
     suspend fun getTagById(@Path("id") id: Int): BaseResponse<TagResponse>
@@ -28,6 +29,9 @@ interface TagService {
     @DELETE("tags/{id}")
     suspend fun deleteTag(@Path("id") id: Int): BaseResponse<TagResponse>
 
-//    TODO: Add assign tag to task
-//    TODO: Add unassign tag from task
+    @POST("tags/{id}/t/{taskId}")
+    suspend fun assignTagToTask(@Path("id") id: Int, @Path("taskId") taskId: Int): BaseResponse<TagResponse>
+
+    @DELETE("tags/{id}/t/{taskId}")
+    suspend fun unassignTagFromTask(@Path("id") id: Int, @Path("taskId") taskId: Int): BaseResponse<TagResponse>
 }

@@ -3,6 +3,8 @@ package com.ucapdm2025.taskspaces.data.repository.tag
 import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.TagDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
+import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
@@ -18,12 +20,12 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import okio.IOException
-import kotlin.collections.forEach
 
 class TagRepositoryImpl(
     private val tagDao: TagDao,
+    private val taskTagDao: TaskTagDao,
     private val tagService: TagService
-): TagRepository {
+) : TagRepository {
     override fun getTagsByProjectId(projectId: Int): Flow<Resource<List<TagModel>>> = flow {
         emit(Resource.Loading)
 
@@ -62,7 +64,46 @@ class TagRepositoryImpl(
         emitAll(localTags)
     }
 
-    override fun getTagById(id: Int): Flow<Resource<TagModel?>> = flow{
+    override fun getTagsByTaskId(taskId: Int): Flow<Resource<List<TagModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch tags from remote
+            val remoteTags: List<TagResponse> =
+                tagService.getTagsByTaskId(taskId = taskId).content
+
+            //            Save remote tags to the database
+            if (remoteTags.isNotEmpty()) {
+                remoteTags.forEach {
+                    tagDao.createTag(it.toEntity())
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(
+                "TagRepository: getTagsByTaskId",
+                "Error fetching tags: ${e.message}"
+            )
+        }
+
+        //        Use local tags
+        val localTags =
+            tagDao.getTagsByProjectId(projectId = taskId).map { entities ->
+                val tags = entities.map { it.toDomain() }
+
+                if (tags.isEmpty()) {
+                    //                Logs an error if no tags are found for the user
+                    Resource.Error("No tag found for project with ID: $taskId")
+                } else {
+                    //                Returns the tags as a success (to domain)
+                    Resource.Success(tags)
+                }
+            }.distinctUntilChanged()
+
+        emitAll(localTags)
+    }
+
+
+    override fun getTagById(id: Int): Flow<Resource<TagModel?>> = flow {
         emit(Resource.Loading)
 
         try {
@@ -187,5 +228,74 @@ class TagRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun assignTagToTask(tagId: Int, taskId: Int): Result<TagModel> {
+        return try {
+            val response =
+                tagService.assignTagToTask(id = tagId, taskId = taskId)
+
+            val assignedTag: TagModel = response.content.toDomain()
+
+//            Set retrieved tag from remote server into the local database
+            taskTagDao.createTaskTag(
+                TaskTagEntity(
+                    taskId = taskId,
+                    tagId = assignedTag.id,
+                    createdAt = assignedTag.createdAt
+                )
+            )
+
+            Log.d(
+                "TagRepository: assignTagToTask",
+                "Tag assigned to task successfully: $assignedTag"
+            )
+
+            Result.success(assignedTag)
+        } catch (e: HttpException) {
+            Log.e("TagRepository", "Error assigning tag: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("TagRepository", "Network error assigning tag: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("TagRepository", "Unexpected error assigning tag: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun unassignTagFromTask(tagId: Int, taskId: Int): Result<TagModel> {
+        return try {
+            val response =
+                tagService.unassignTagFromTask(id = tagId, taskId = taskId)
+
+            val unassignedTag: TagModel = response.content.toDomain()
+
+//            Set retrieved tag from remote server into the local database
+            taskTagDao.deleteTaskTag(
+                TaskTagEntity(
+                    taskId = taskId,
+                    tagId = unassignedTag.id,
+                    createdAt = unassignedTag.createdAt
+                )
+            )
+
+            Log.d(
+                "TagRepository: unassignTagFromTask",
+                "Tag unassigned to task successfully: $unassignedTag"
+            )
+
+            Result.success(unassignedTag)
+        } catch (e: HttpException) {
+            Log.e("TagRepository", "Error unassigning tag: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("TagRepository", "Network error unassigning tag: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("TagRepository", "Unexpected error unassigning tag: ${e.message}")
+            Result.failure(e)
+        }
+    }
 }
+
 

@@ -1,5 +1,7 @@
 package com.ucapdm2025.taskspaces.data.model.relational
 
+import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
+
 /**
  * TaskTagModel is a data class that represents a many-to-many relationship between tasks and tags.
  *
@@ -12,3 +14,16 @@ data class TaskTagModel (
     val tagId: Int,
     val createdAt: String? = null
 )
+
+/**
+ * Converts TaskTagModel to TaskTagEntity for database representation.
+ *
+ * @return TaskTagEntity representing the task-tag relationship in the database layer.
+ */
+fun TaskTagModel.toDatabase(): TaskTagEntity {
+    return TaskTagEntity(
+        taskId = taskId,
+        tagId = tagId,
+        createdAt = createdAt
+    )
+}
