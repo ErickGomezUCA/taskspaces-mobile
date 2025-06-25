@@ -11,6 +11,7 @@ import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.WorkspaceDao
 import com.ucapdm2025.taskspaces.data.database.dao.catalog.MemberRoleDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.WorkspaceMemberDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.BookmarkEntity
 import com.ucapdm2025.taskspaces.data.database.entities.ProjectEntity
@@ -19,14 +20,15 @@ import com.ucapdm2025.taskspaces.data.database.entities.TaskEntity
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 import com.ucapdm2025.taskspaces.data.database.entities.catalog.MemberRoleEntity
+import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.WorkspaceMemberEntity
 
 /**
  * AppDatabase is the main database class for the TaskSpaces application.
  */
 @Database(
-    entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class, TaskEntity::class, BookmarkEntity::class, MemberRoleEntity::class, WorkspaceMemberEntity::class, TagEntity::class],
-    version = 7,
+    entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class, TaskEntity::class, BookmarkEntity::class, MemberRoleEntity::class, WorkspaceMemberEntity::class, TagEntity::class, TaskTagEntity::class],
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -38,6 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun memberRoleDao(): MemberRoleDao
     abstract fun workspaceMemberDao(): WorkspaceMemberDao
     abstract fun tagDao(): TagDao
+    abstract fun taskTagDao(): TaskTagDao
 
     companion object {
         @Volatile
