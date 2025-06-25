@@ -29,6 +29,7 @@ data class TaskModel (
     val timer: Float? = null,
     val status: StatusVariations = StatusVariations.PENDING, // TODO: Set enum class for status
     val tags: List<TagModel> = emptyList(),
+    val assignedMembers: List<UserModel> = emptyList(),
     val projectId: Int,
     override val createdAt: String? = null,
     override val updatedAt: String? = null,

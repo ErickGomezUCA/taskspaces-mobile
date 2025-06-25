@@ -13,6 +13,9 @@ data class TaskTagEntity (
     val createdAt: String? = null
 )
 
+/**
+ * Extension function to convert a TaskTagEntity to a TaskTagModel.
+ */
 fun TaskTagEntity.toDomain(): TaskTagModel {
     return TaskTagModel(
         taskId = taskId,

@@ -4,14 +4,16 @@ import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.TagDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskAssignedDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
-import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.TagResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
@@ -21,7 +23,6 @@ import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -41,10 +42,9 @@ class TaskRepositoryImpl(
     private val taskDao: TaskDao,
     private val tagDao: TagDao,
     private val taskTagDao: TaskTagDao,
-    private val taskService: TaskService
+    private val taskAssignedDao: TaskAssignedDao,
+    private val taskService: TaskService,
 ) : TaskRepository {
-    private val assignedTasks = MutableStateFlow(assignedTasksDummies)
-
     override fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>> = flow {
         emit(Resource.Loading)
 
@@ -100,11 +100,47 @@ class TaskRepositoryImpl(
     }.flowOn(Dispatchers.IO)
 
     // TODO: Implement this method
-    override fun getAssignedTasks(userId: Int): Flow<List<TaskModel>> {
-        return assignedTasks.asStateFlow()
+//    TODO: Implement this in server backend
+    override fun getAssignedTasks(userId: Int): Flow<Resource<List<TaskModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch tasks from remote
+            val remoteAssignedTasks: List<TaskResponse> =
+                taskService.getAssignedTasksByUserId(userId = userId).content
+
+            //            Save remote tasks to the database
+            if (remoteAssignedTasks.isNotEmpty()) {
+                remoteAssignedTasks.forEach {
+                    tagDao.createTag(it.toEntity())
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(
+                "TagRepository: getTagsByTaskId",
+                "Error fetching tags: ${e.message}"
+            )
+        }
+
+        //        Use local tags
+        val localTags =
+            tagDao.getTagsByProjectId(projectId = taskId).map { entities ->
+                val tags = entities.map { it.toDomain() }
+
+                if (tags.isEmpty()) {
+                    //                Logs an error if no tags are found for the user
+                    Resource.Error("No tag found for project with ID: $taskId")
+                } else {
+                    //                Returns the tags as a success (to domain)
+                    Resource.Success(tags)
+                }
+            }.distinctUntilChanged()
+
+        emitAll(localTags)
+
     }
 
-//    TODO: Bug fix > Fetches twice when creating a new task
+    //    TODO: Bug fix > Fetches twice when creating a new task
 //    the first with the previous id and then with the new one.
     override fun getTaskById(id: Int): Flow<Resource<TaskModel?>> = flow {
         emit(Resource.Loading)
@@ -270,6 +306,19 @@ class TaskRepositoryImpl(
             Log.e("TaskRepository", "Unexpected error deleting task: ${e.message}")
             Result.failure(e)
         }
+    }
 
+    override suspend fun assignMemberToTask(
+        taskId: Int,
+        userId: Int
+    ): Result<TaskModel> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun unassignMemberFromTask(
+        taskId: Int,
+        userId: Int
+    ): Result<TaskModel> {
+        TODO("Not yet implemented")
     }
 }

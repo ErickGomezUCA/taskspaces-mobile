@@ -28,4 +28,25 @@ interface TaskService {
 
     @DELETE("tasks/{id}")
     suspend fun deleteTask(@Path("id") id: Int): BaseResponse<TaskResponse>
+
+//    Members
+//    TODO: Implement this in server backend
+    @GET("tasks/assigned/{userId}")
+    suspend fun getAssignedTasksByUserId(@Path("userId") userId: Int): BaseResponse<List<TaskResponse>>
+
+//    TODO: Implement this in server backend
+    @GET("tasks/{taskId}/members")
+    suspend fun getMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<TaskResponse>>
+
+    @POST("tasks/{taskId}/member/{memberId}")
+    suspend fun assignMemberToTask(
+        @Path("taskId") taskId: Int,
+        @Path("memberId") memberId: Int
+    ): BaseResponse<TaskResponse>
+
+    @DELETE("tasks/{taskId}/member/{memberId}")
+    suspend fun removeMemberFromTask(
+        @Path("taskId") taskId: Int,
+        @Path("memberId") memberId: Int
+    ): BaseResponse<TaskResponse>
 }
