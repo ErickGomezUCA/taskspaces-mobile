@@ -144,6 +144,19 @@ fun TaskDialog(
             }
         },
         text = {
+            if (true) {
+                AlertDialog(
+                    onDismissRequest = { hideDialog() },
+                    title = { Text("Task not found") },
+                    text = { Text("The task with ID $taskId could not be found.") },
+                    confirmButton = {
+                        Button(onClick = { hideDialog() }) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
+
 //            Show feedback icon if task is not found
 //            TODO: Add loading and error states
             if (task.value == null) {
@@ -308,7 +321,7 @@ fun TaskDialog(
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("+ Add tags")
+                            Text("Manage tags")
                         }
                     }
 

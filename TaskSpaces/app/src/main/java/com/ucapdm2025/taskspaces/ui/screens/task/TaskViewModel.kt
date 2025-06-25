@@ -42,6 +42,9 @@ class TaskViewModel(
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
+    private val _showTagsDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showTagsDialog: StateFlow<Boolean> = _showTagsDialog.asStateFlow()
+
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
 //        Load _task
@@ -179,6 +182,14 @@ class TaskViewModel(
                 }
             }
         }
+    }
+
+    fun showTagsDialog() {
+        _showTagsDialog.value = true
+    }
+
+    fun hideTagsDialog() {
+        _showTagsDialog.value = false
     }
 
     fun createComment(content: String) {
