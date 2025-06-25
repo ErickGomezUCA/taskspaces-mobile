@@ -48,6 +48,7 @@ import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
+import com.ucapdm2025.taskspaces.ui.components.general.Tag
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
@@ -98,6 +99,7 @@ fun TaskDialog(
 
     val task = viewModel.task.collectAsStateWithLifecycle()
     val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
+    val showTagsDialog = viewModel.showTagsDialog.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -144,15 +146,18 @@ fun TaskDialog(
             }
         },
         text = {
-            if (true) {
-                AlertDialog(
-                    onDismissRequest = { hideDialog() },
-                    title = { Text("Task not found") },
-                    text = { Text("The task with ID $taskId could not be found.") },
-                    confirmButton = {
-                        Button(onClick = { hideDialog() }) {
-                            Text("OK")
-                        }
+            if (showTagsDialog.value) {
+                ManageTagsDialog(
+                    tags = task.value?.tags ?: emptyList(),
+                    onDismissRequest = { viewModel.hideTagsDialog() },
+                    onAddTag = { title, color ->
+                        viewModel.addTag(title, color)
+                    },
+                    onUpdateTag = { id, title, color ->
+                        viewModel.updateTag(id, title, color)
+                    },
+                    onDeleteTag = { id ->
+                        viewModel.deleteTag(id)
                     }
                 )
             }
@@ -311,12 +316,12 @@ fun TaskDialog(
                             modifier = Modifier.fillMaxWidth()
                         ) {
 //                            TODO: Implement tags
-//                            task.value?.tags?.forEach { tag ->
-//                                Tag(tag = tag)
-//                            }
+                            task.value?.tags?.forEach { tag ->
+                                Tag(tag = tag)
+                            }
                         }
                         OutlinedButton(
-                            onClick = { /*TODO*/ },
+                            onClick = { viewModel.showTagsDialog() },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)

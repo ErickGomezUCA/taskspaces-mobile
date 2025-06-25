@@ -31,13 +31,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.data.model.TagModel
-import com.ucapdm2025.taskspaces.data.model.UserModel
-import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
-import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 //TODO: Improve UI, specially the dialog width and select role dropdown
+/**
+ * Displays a dialog for managing tags, allowing users to edit, add, or delete tags.
+ *
+ * @param tags List of existing tags to display and manage.
+ * @param onDismissRequest Callback invoked when the dialog is dismissed.
+ * @param onAddTag Callback invoked when a new tag is added.
+ * @param onUpdateTag Callback invoked when an existing tag is updated.
+ * @param onDeleteTag Callback invoked when a tag is deleted.
+ */
 @Composable
 fun ManageTagsDialog(
     tags: List<TagModel> = emptyList(),
@@ -157,6 +163,9 @@ fun ManageTagsDialog(
     )
 }
 
+/**
+ * Preview of ManageTagsDialog with sample tags in light theme.
+ */
 @Preview(showBackground = true)
 @Composable
 fun ManageMembersDialogLightPreview() {
@@ -188,6 +197,9 @@ fun ManageMembersDialogLightPreview() {
     }
 }
 
+/**
+ * Preview of ManageTagsDialog with no tags in light theme.
+ */
 @Preview(showBackground = true)
 @Composable
 fun ManageMembersDialogEmptyLightPreview() {
@@ -198,6 +210,9 @@ fun ManageMembersDialogEmptyLightPreview() {
     }
 }
 
+/**
+ * Preview of ManageTagsDialog with sample tags in dark theme.
+ */
 @Preview(showBackground = true)
 @Composable
 fun ManageMembersDialogDarkPreview() {
@@ -230,6 +245,9 @@ fun ManageMembersDialogDarkPreview() {
     }
 }
 
+/**
+ * Preview of ManageTagsDialog with no tags in dark theme.
+ */
 @Preview(showBackground = true)
 @Composable
 fun ManageMembersDialogEmptyDarkPreview() {

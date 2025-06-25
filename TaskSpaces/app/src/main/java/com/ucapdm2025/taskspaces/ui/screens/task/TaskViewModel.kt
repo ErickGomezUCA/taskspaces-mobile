@@ -1,6 +1,8 @@
 package com.ucapdm2025.taskspaces.ui.screens.task
 
 import android.util.Log
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,7 @@ import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
@@ -27,6 +30,7 @@ import kotlinx.coroutines.launch
 class TaskViewModel(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
+    private val tagRepository: TagRepository,
     private val bookmarkRepository: BookmarkRepository
 ) : ViewModel() {
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
@@ -184,12 +188,112 @@ class TaskViewModel(
         }
     }
 
+//    Tags
+
     fun showTagsDialog() {
         _showTagsDialog.value = true
     }
 
     fun hideTagsDialog() {
         _showTagsDialog.value = false
+    }
+
+    fun addTag(title: String, color: Color) {
+        var createdTag: Int = 0
+
+        viewModelScope.launch {
+            val response = tagRepository.createTag(
+                title = title,
+                color = color.toArgb().toString(), // Convert Color to Int
+                projectId = _task.value?.projectId ?: 0
+            )
+
+            if (response.isSuccess) {
+                createdTag = response.getOrNull()?.id ?: 0
+            } else {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error creating tag: ${exception.message}")
+                }
+            }
+        }
+
+//        After creating the tag, assign it to the task
+        viewModelScope.launch {
+            if (createdTag != 0 && _task.value != null) {
+                val response = tagRepository.assignTagToTask(
+                    tagId = createdTag,
+                    taskId = _task.value!!.id
+                )
+
+                if (!response.isSuccess) {
+                    // Handle error, e.g., show a message to the user
+                    val exception = response.exceptionOrNull()
+                    if (exception != null) {
+                        // Log or handle the exception as needed
+                        Log.e("TaskViewModel", "Error adding tag to task: ${exception.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateTag(
+        id: Int,
+        title: String,
+        color: Color
+    ) {
+        viewModelScope.launch {
+            val response = tagRepository.updateTag(
+                id = id,
+                title = title,
+                color = color.toArgb().toString() // Convert Color to Int
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating tag: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun deleteTag(
+        id: Int
+    ) {
+        viewModelScope.launch {
+//            Unassign the tag from the task first
+            val responseTaskTag = tagRepository.unassignTagFromTask(
+                tagId = id,
+                taskId = _task.value?.id ?: 0
+            )
+
+//            Then delete the tag
+            if (responseTaskTag.isSuccess) {
+                val response = tagRepository.deleteTag(id)
+
+                if (!response.isSuccess) {
+                    // Handle error, e.g., show a message to the user
+                    val exception = response.exceptionOrNull()
+                    if (exception != null) {
+                        // Log or handle the exception as needed
+                        Log.e("TaskViewModel", "Error deleting tag: ${exception.message}")
+                    }
+                }
+            } else {
+                // Handle error, e.g., show a message to the user
+                val exception = responseTaskTag.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error unassigning tag: ${exception.message}")
+                }
+            }
+        }
     }
 
     fun createComment(content: String) {
@@ -257,12 +361,13 @@ class TaskViewModel(
 class TaskViewModelFactory(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
+    private val tagRepository: TagRepository,
     private val bookmarkRepository: BookmarkRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskId, taskRepository, bookmarkRepository) as T
+            return TaskViewModel(taskId, taskRepository, tagRepository, bookmarkRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

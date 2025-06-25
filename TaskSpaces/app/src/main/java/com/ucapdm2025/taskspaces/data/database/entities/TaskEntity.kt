@@ -43,7 +43,7 @@ data class TaskEntity (
  *
  * @return A TaskModel instance with the same properties as the TaskEntity.
  */
-fun TaskEntity.toDomain(tags: List<TagModel>): TaskModel {
+fun TaskEntity.toDomain(tags: List<TagModel> = emptyList< TagModel>()): TaskModel {
     return TaskModel(
         id = id,
         breadcrumb = breadcrumb,

@@ -60,10 +60,16 @@ class AppProvider(context: Context) {
     private val projectRepository: ProjectRepository =
         ProjectRepositoryImpl(projectDao, projectService)
 
+    //    Tag
+    private val tagDao = appDatabase.tagDao()
+    private val taskTagDao = appDatabase.taskTagDao()
+    private val tagService = RetrofitInstance.tagService
+    private val tagRepository: TagRepository = TagRepositoryImpl(tagDao, taskTagDao, tagService)
+
     //    Task
     private val taskDao = appDatabase.taskDao()
     private val taskService = RetrofitInstance.taskService
-    private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, taskService)
+    private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, tagDao, taskTagDao, taskService)
 
     //    Bookmark
     private val bookmarkDao = appDatabase.bookmarkDao()
@@ -75,11 +81,7 @@ class AppProvider(context: Context) {
         taskDao = taskDao
     )
 
-//    Tag
-    private val tagDao = appDatabase.tagDao()
-    private val taskTagDao = appDatabase.taskTagDao()
-    private val tagService = RetrofitInstance.tagService
-    private val tagRepository: TagRepository = TagRepositoryImpl(tagDao, taskTagDao, tagService)
+
 
     fun provideUserRepository(): UserRepository {
         return userRepository
