@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.BookmarkRemove
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Flag
@@ -102,6 +101,7 @@ fun TaskDialog(
     val task = viewModel.task.collectAsStateWithLifecycle()
     val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
     val showTagsDialog = viewModel.showTagsDialog.collectAsStateWithLifecycle()
+    val showTaskMembersDialog = viewModel.showTaskMembersDialog.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -162,6 +162,10 @@ fun TaskDialog(
                         viewModel.deleteTag(id)
                     }
                 )
+            }
+
+            if (showTaskMembersDialog.value) {
+                ManageTaskMembersDialog()
             }
 
 //            Show feedback icon if task is not found
