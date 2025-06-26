@@ -13,6 +13,7 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,13 +31,11 @@ class HomeViewModel(
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    private val _workspaces: MutableStateFlow<List<WorkspaceModel>> = MutableStateFlow(emptyList())
-    val workspaces: StateFlow<List<WorkspaceModel>> = _workspaces.asStateFlow()
+    private val _workspaces = MutableStateFlow<UiState<List<WorkspaceModel>>>(UiState.Loading)
+    val workspaces: StateFlow<UiState<List<WorkspaceModel>>> = _workspaces.asStateFlow()
 
-    private val _workspacesSharedWithMe: MutableStateFlow<List<WorkspaceModel>> =
-        MutableStateFlow(emptyList())
-    val workspacesSharedWithMe: StateFlow<List<WorkspaceModel>> =
-        _workspacesSharedWithMe.asStateFlow()
+    private val _workspacesSharedWithMe = MutableStateFlow<UiState<List<WorkspaceModel>>>(UiState.Loading)
+    val workspacesSharedWithMe: StateFlow<UiState<List<WorkspaceModel>>> = _workspacesSharedWithMe.asStateFlow()
 
     private val _assignedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val assignedTasks: StateFlow<List<TaskModel>> = _assignedTasks.asStateFlow()
@@ -54,57 +53,61 @@ class HomeViewModel(
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
     //    Fetch user id from auth
+    //    Fetch user id from auth
     init {
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
                 _authUserId.value = userId
-            }
-        }
 
-        viewModelScope.launch {
-            workspaceRepository.getWorkspacesByUserId(_authUserId.value).collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        // TODO: Handle loading state
-                    }
+                launch {
+                    workspaceRepository.getWorkspacesByUserId(_authUserId.value)
+                        .collect { resource ->
+                            when (resource) {
+                                is Resource.Loading -> {
+                                    _workspaces.value = UiState.Loading
+                                }
 
-                    is Resource.Success -> {
-                        val workspaces = resource.data
-                        _workspaces.value = workspaces
-                    }
+                                is Resource.Success -> {
+                                    _workspaces.value = UiState.Success(resource.data)
+                                }
 
-                    is Resource.Error -> {
-                        // TODO: Handle error state
+                                is Resource.Error -> {
+                                    _workspaces.value = UiState.Error(resource.message)
+                                }
+                            }
+                        }
+                }
+
+                launch {
+                    workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> {
+                                _workspacesSharedWithMe.value = UiState.Loading
+                            }
+
+                            is Resource.Success -> {
+                                _workspacesSharedWithMe.value = UiState.Success(resource.data)
+                            }
+
+                            is Resource.Error -> {
+                                _workspacesSharedWithMe.value = UiState.Error(resource.message)
+                            }
+                        }
                     }
                 }
-            }
-        }
-
-        viewModelScope.launch {
-            workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        // TODO: Handle loading state
-                    }
-
-                    is Resource.Success -> {
-                        val workspacesShared = resource.data
-                        _workspacesSharedWithMe.value = workspacesShared
-                    }
-
-                    is Resource.Error -> {
-                        // TODO: Handle error state
-                    }
-                }
-            }
-        }
 
 //        viewModelScope.launch {
 //            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
 //                _assignedTasks.value = assignedTasksList
 //            }
 //        }
+            }
+        }
     }
+
+
+
+
 
     fun createWorkspace(title: String) {
         viewModelScope.launch {
