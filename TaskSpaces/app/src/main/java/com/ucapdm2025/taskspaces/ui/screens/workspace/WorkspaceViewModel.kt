@@ -11,6 +11,7 @@ import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,11 +29,15 @@ class WorkspaceViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val projectRepository: ProjectRepository
 ) : ViewModel() {
-    private val _workspace: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
-    val workspace: StateFlow<WorkspaceModel?> = _workspace.asStateFlow()
+    private val _workspaceState = MutableStateFlow<UiState<WorkspaceModel?>>(
+        UiState.Loading
+    )
+    val workspaceState: StateFlow<UiState<WorkspaceModel?>> = _workspaceState.asStateFlow()
 
-    private val _projects: MutableStateFlow<List<ProjectModel>> = MutableStateFlow(emptyList())
-    val projects: StateFlow<List<ProjectModel>> = _projects.asStateFlow()
+
+
+    private val _projectsState = MutableStateFlow<UiState<List<ProjectModel>>>(UiState.Loading)
+    val projectsState: StateFlow<UiState<List<ProjectModel>>> = _projectsState.asStateFlow()
 
     private val _showProjectDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showProjectDialog: StateFlow<Boolean> = _showProjectDialog.asStateFlow()
@@ -47,8 +52,8 @@ class WorkspaceViewModel(
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
 
-    private val _members: MutableStateFlow<List<WorkspaceMemberModel>> = MutableStateFlow(emptyList())
-    val members: StateFlow<List<WorkspaceMemberModel>> = _members.asStateFlow()
+    private val _membersState = MutableStateFlow<UiState<List<WorkspaceMemberModel>>>(UiState.Loading)
+    val membersState: StateFlow<UiState<List<WorkspaceMemberModel>>> = _membersState.asStateFlow()
 
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
@@ -59,16 +64,15 @@ class WorkspaceViewModel(
             workspaceRepository.getWorkspaceById(workspaceId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // Handle loading state if necessary
+                        _workspaceState.value = UiState.Loading
                     }
 
                     is Resource.Success -> {
-                        val workspace = resource.data
-                        _workspace.value = workspace
+                        _workspaceState.value = UiState.Success(resource.data)
                     }
 
                     is Resource.Error -> {
-                        // Handle error state if necessary
+                        _workspaceState.value = UiState.Error(resource.message)
                     }
                 }
             }
@@ -79,16 +83,16 @@ class WorkspaceViewModel(
             projectRepository.getProjectsByWorkspaceId(workspaceId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // TODO: Handle loading state
+                        _projectsState.value = UiState.Loading
                     }
 
                     is Resource.Success -> {
                         val projects = resource.data
-                        _projects.value = projects
+                        _projectsState.value = UiState.Success(resource.data)
                     }
 
                     is Resource.Error -> {
-                        // TODO: Handle error state
+                        _projectsState.value = UiState.Error(resource.message)
                     }
                 }
             }
@@ -99,16 +103,15 @@ class WorkspaceViewModel(
             workspaceRepository.getMembersByWorkspaceId(workspaceId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // TODO: Handle loading state
+                        _membersState.value = UiState.Loading
                     }
 
                     is Resource.Success -> {
-                        val workspaceMembers = resource.data
-                        _members.value = workspaceMembers
+                        _membersState.value = UiState.Success(resource.data)
                     }
 
                     is Resource.Error -> {
-                        // TODO: Handle error state
+                        _membersState.value = UiState.Error(resource.message)
                     }
                 }
             }
