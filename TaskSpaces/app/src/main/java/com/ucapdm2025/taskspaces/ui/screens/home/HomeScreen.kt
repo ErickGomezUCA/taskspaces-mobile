@@ -41,7 +41,7 @@ fun HomeScreen(
 ) {
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
     val workspacesSharedWithMe = viewModel.workspacesSharedWithMe.collectAsStateWithLifecycle()
-//    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
+    val assignedTasks = viewModel.assignedTasks.collectAsStateWithLifecycle()
     val showWorkspaceDialog = viewModel.showWorkspaceDialog.collectAsStateWithLifecycle()
     val workspaceDialogData = viewModel.workspaceDialogData.collectAsStateWithLifecycle()
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
@@ -243,10 +243,33 @@ fun HomeScreen(
 
             item {
                 Container(title = "Assigned tasks") {
-                    AssignedTasksSection()
+                    when (val state = assignedTasks.value) {
+                        is UiState.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(80.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        is UiState.Error -> {
+                            FeedbackIcon(
+                                icon = Icons.Outlined.Close,
+                                title = state.message ?: "Sorry, we couldn't load assigned tasks."
+                            )
+                        }
+
+                        is UiState.Success -> {
+                            AssignedTasksSection(assignedTasks = state.data)
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.height(80.dp))
             }
+
         }
 
     }
