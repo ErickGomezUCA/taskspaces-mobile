@@ -80,7 +80,6 @@ fun ProjectScreen(
         }
 
         is UiState.Success -> {
-            // seguimos debajo con la UI normal usando tasks
         }
     }
     val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
