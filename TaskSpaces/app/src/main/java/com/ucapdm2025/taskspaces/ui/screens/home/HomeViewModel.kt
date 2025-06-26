@@ -11,6 +11,7 @@ import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
+import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
@@ -26,7 +27,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val authRepository: AuthRepository,
-//    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -37,8 +38,9 @@ class HomeViewModel(
     private val _workspacesSharedWithMe = MutableStateFlow<UiState<List<WorkspaceModel>>>(UiState.Loading)
     val workspacesSharedWithMe: StateFlow<UiState<List<WorkspaceModel>>> = _workspacesSharedWithMe.asStateFlow()
 
-    private val _assignedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
-    val assignedTasks: StateFlow<List<TaskModel>> = _assignedTasks.asStateFlow()
+    private val _assignedTasks = MutableStateFlow<UiState<List<TaskModel>>>(UiState.Loading)
+    val assignedTasks: StateFlow<UiState<List<TaskModel>>> = _assignedTasks.asStateFlow()
+
 
     private val _showWorkspaceDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showWorkspaceDialog: StateFlow<Boolean> = _showWorkspaceDialog.asStateFlow()
@@ -96,18 +98,17 @@ class HomeViewModel(
                     }
                 }
 
-//        viewModelScope.launch {
-//            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
-//                _assignedTasks.value = assignedTasksList
-//            }
-//        }
+// NOTE: The loading state for assigned tasks is working correctly,
+// but the data loads so quickly that the CircularProgressIndicator
+// is barely visible. You may want to add a slight delay
+        viewModelScope.launch {
+            taskRepository.getAssignedTasks(_authUserId.value).collect { tasks ->
+                _assignedTasks.value = UiState.Success(tasks)
+            }
+        }
             }
         }
     }
-
-
-
-
 
     fun createWorkspace(title: String) {
         viewModelScope.launch {
@@ -183,7 +184,8 @@ class HomeViewModel(
                 val application = this[APPLICATION_KEY] as TaskSpacesApplication
                 HomeViewModel(
                     application.appProvider.provideWorkspaceRepository(),
-                    application.appProvider.provideAuthRepository()
+                    application.appProvider.provideAuthRepository(),
+                    application.appProvider.provideTaskRepository()
                 )
             }
         }
