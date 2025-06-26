@@ -6,6 +6,7 @@ import com.ucapdm2025.taskspaces.data.database.dao.TagDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskAssignedDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
+import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskAssignedEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.model.TaskModel
@@ -307,13 +308,74 @@ class TaskRepositoryImpl(
         taskId: Int,
         userId: Int
     ): Result<TaskModel> {
-        TODO("Not yet implemented")
+        return try {
+            val response =
+                taskService.assignMemberToTask(memberId = userId, taskId = taskId)
+
+            val assignedTask: TaskModel = response.content.toDomain()
+
+//            Set retrieved task from remote server into the local database
+            taskAssignedDao.createTaskAssigned(
+                TaskAssignedEntity(
+                    taskId = taskId,
+                    userId = userId,
+                    createdAt = assignedTask.createdAt
+                )
+            )
+
+            Log.d(
+                "TaskRepository: assignMemberToTask",
+                "Member assigned to task successfully: $assignedTask"
+            )
+
+            Result.success(assignedTask)
+        } catch (e: HttpException) {
+            Log.e("TagRepository", "Error assigning member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("TagRepository", "Network error assigning member: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("TagRepository", "Unexpected error assigning member: ${e.message}")
+            Result.failure(e)
+        }
+
     }
 
     override suspend fun unassignMemberFromTask(
         taskId: Int,
         userId: Int
     ): Result<TaskModel> {
-        TODO("Not yet implemented")
+        return try {
+            val response =
+                taskService.removeMemberFromTask(memberId = userId, taskId = taskId)
+
+            val unassignedTask: TaskModel = response.content.toDomain()
+
+//            Set retrieved task from remote server into the local database
+            taskAssignedDao.deleteTaskAssigned(
+                TaskAssignedEntity(
+                    taskId = taskId,
+                    userId = userId,
+                    createdAt = unassignedTask.createdAt
+                )
+            )
+
+            Log.d(
+                "TagRepository: unassignMemberFromTask",
+                "Member unassigned to task successfully: $unassignedTask"
+            )
+
+            Result.success(unassignedTask)
+        } catch (e: HttpException) {
+            Log.e("TagRepository", "Error unassigning member: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("TagRepository", "Network error unassigning member: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("TagRepository", "Unexpected error unassigning member: ${e.message}")
+            Result.failure(e)
+        }
     }
 }
