@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
+import com.ucapdm2025.taskspaces.data.database.entities.TaskEntity
 import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskAssignedEntity
 
@@ -13,6 +13,9 @@ import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskAssignedE
 interface TaskAssignedDao {
     @Query("SELECT * FROM user INNER JOIN task_assigned ON user.id = task_assigned.userId WHERE task_assigned.taskId = :taskId")
     fun getUsersByTaskId(taskId: Int): kotlinx.coroutines.flow.Flow<List<UserEntity>>
+
+    @Query("SELECT * FROM task INNER JOIN task_assigned ON task.id = task_assigned.taskId WHERE task_assigned.userId = :userId")
+    fun getTasksByUserId(userId: Int): kotlinx.coroutines.flow.Flow<List<TaskEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createTaskAssigned(taskAssigned: TaskAssignedEntity)

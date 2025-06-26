@@ -8,12 +8,9 @@ import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskAssignedDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
-import com.ucapdm2025.taskspaces.data.dummy.assignedTasksDummies
 import com.ucapdm2025.taskspaces.data.model.TaskModel
-import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
-import com.ucapdm2025.taskspaces.data.remote.responses.TagResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
@@ -22,7 +19,6 @@ import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -112,32 +108,31 @@ class TaskRepositoryImpl(
             //            Save remote tasks to the database
             if (remoteAssignedTasks.isNotEmpty()) {
                 remoteAssignedTasks.forEach {
-                    tagDao.createTag(it.toEntity())
+                    taskDao.createTask(it.toEntity())
                 }
             }
         } catch (e: Exception) {
             Log.d(
-                "TagRepository: getTagsByTaskId",
-                "Error fetching tags: ${e.message}"
+                "TagRepository: getAssignedTasks",
+                "Error fetching assigned tasks: ${e.message}"
             )
         }
 
-        //        Use local tags
-        val localTags =
-            tagDao.getTagsByProjectId(projectId = taskId).map { entities ->
-                val tags = entities.map { it.toDomain() }
+        //        Use local tasks
+        val localAssignedTasks =
+            taskAssignedDao.getTasksByUserId(userId = userId).map { entities ->
+                val tasks = entities.map { it.toDomain() }
 
-                if (tags.isEmpty()) {
-                    //                Logs an error if no tags are found for the user
-                    Resource.Error("No tag found for project with ID: $taskId")
+                if (tasks.isEmpty()) {
+                    //                Logs an error if no tasks are found for the user
+                    Resource.Error("No task found for user with ID: $userId")
                 } else {
-                    //                Returns the tags as a success (to domain)
-                    Resource.Success(tags)
+                    //                Returns the tasks as a success (to domain)
+                    Resource.Success(tasks)
                 }
             }.distinctUntilChanged()
 
-        emitAll(localTags)
-
+        emitAll(localAssignedTasks)
     }
 
     //    TODO: Bug fix > Fetches twice when creating a new task
