@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.CommentModel
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
@@ -49,6 +50,9 @@ class TaskViewModel(
 
     private val _showTagsDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTagsDialog: StateFlow<Boolean> = _showTagsDialog.asStateFlow()
+
+    private val _tags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
+    val tags: StateFlow<List<TagModel>> = _tags.asStateFlow()
 
     private val _showTaskMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTaskMembersDialog: StateFlow<Boolean> = _showTaskMembersDialog.asStateFlow()
@@ -126,6 +130,35 @@ class TaskViewModel(
                 }
             }
         }
+
+//        Load _tags
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    tagRepository.getTagsByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val tags = resource.data
+                        _tags.value = tags
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _tags.value = emptyList()
+                }
+            }
+        }
+
 
 //        Load _members
         viewModelScope.launch {
@@ -225,7 +258,6 @@ class TaskViewModel(
     }
 
 //    Tags
-
     fun showTagsDialog() {
         _showTagsDialog.value = true
     }

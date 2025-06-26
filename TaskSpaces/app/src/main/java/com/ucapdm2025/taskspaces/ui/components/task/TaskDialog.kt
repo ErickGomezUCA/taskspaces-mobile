@@ -101,8 +101,9 @@ fun TaskDialog(
     val task = viewModel.task.collectAsStateWithLifecycle()
     val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
     val showTagsDialog = viewModel.showTagsDialog.collectAsStateWithLifecycle()
-    val members = viewModel.members.collectAsStateWithLifecycle()
+    val tags = viewModel.tags.collectAsStateWithLifecycle()
     val showTaskMembersDialog = viewModel.showTaskMembersDialog.collectAsStateWithLifecycle()
+    val members = viewModel.members.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
