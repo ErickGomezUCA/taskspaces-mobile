@@ -341,6 +341,46 @@ class TaskViewModel(
         _showTaskMembersDialog.value = false
     }
 
+    fun assignMemberToTask(
+        username: String
+    ) {
+        viewModelScope.launch {
+            val response = taskRepository.assignMemberToTask(
+                username = username,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error assigning member to task: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun unassignMemberFromTask(
+        userId: Int
+    ) {
+        viewModelScope.launch {
+            val response = taskRepository.unassignMemberFromTask(
+                userId = userId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error unassigning member from task: ${exception.message}")
+                }
+            }
+        }
+    }
+
     fun createComment(content: String) {
         viewModelScope.launch {
             commentRepository.createComment(

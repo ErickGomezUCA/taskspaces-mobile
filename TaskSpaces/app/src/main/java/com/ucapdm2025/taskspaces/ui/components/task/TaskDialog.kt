@@ -101,6 +101,7 @@ fun TaskDialog(
     val task = viewModel.task.collectAsStateWithLifecycle()
     val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
     val showTagsDialog = viewModel.showTagsDialog.collectAsStateWithLifecycle()
+    val members = viewModel.members.collectAsStateWithLifecycle()
     val showTaskMembersDialog = viewModel.showTaskMembersDialog.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
@@ -165,7 +166,12 @@ fun TaskDialog(
             }
 
             if (showTaskMembersDialog.value) {
-                ManageTaskMembersDialog()
+                ManageTaskMembersDialog(
+                    members = members.value,
+                    onDismissRequest = { viewModel.hideTaskMembersDialog() },
+                    onAddMember = { username -> viewModel.assignMemberToTask(username) },
+                    onDeleteMember = {userId -> viewModel.unassignMemberFromTask(userId)}
+                )
             }
 
 //            Show feedback icon if task is not found

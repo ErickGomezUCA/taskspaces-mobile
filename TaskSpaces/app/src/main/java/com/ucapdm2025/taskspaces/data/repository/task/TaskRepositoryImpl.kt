@@ -348,9 +348,12 @@ class TaskRepositoryImpl(
 
     override suspend fun assignMemberToTask(
         taskId: Int,
-        userId: Int
+        username: String
     ): Result<TaskModel> {
         return try {
+//          TODO: Implement this by searching by username instead of user Id
+            val userId = 1
+
             val response =
                 taskService.assignMemberToTask(memberId = userId, taskId = taskId)
 

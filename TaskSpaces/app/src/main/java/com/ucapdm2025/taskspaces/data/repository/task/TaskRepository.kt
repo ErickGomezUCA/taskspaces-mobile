@@ -38,7 +38,7 @@ interface TaskRepository {
 // Members
     suspend fun assignMemberToTask(
         taskId: Int,
-        userId: Int
+        username: String,
     ): Result<TaskModel>
     suspend fun unassignMemberFromTask(
         taskId: Int,
