@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.data.remote.services
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -36,7 +37,7 @@ interface TaskService {
 
 //    TODO: Implement this in server backend
     @GET("tasks/{taskId}/members")
-    suspend fun getMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<TaskResponse>>
+    suspend fun getMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<UserResponse>>
 
     @POST("tasks/{taskId}/member/{memberId}")
     suspend fun assignMemberToTask(

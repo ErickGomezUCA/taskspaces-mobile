@@ -16,6 +16,7 @@ import java.time.LocalDateTime
 interface TaskRepository {
     fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>>
     fun getAssignedTasks(userId: Int): Flow<Resource<List<TaskModel>>>
+    fun getAssignedUsersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>>
     fun getTaskById(id: Int): Flow<Resource<TaskModel?>>
     suspend fun createTask(
         title: String,

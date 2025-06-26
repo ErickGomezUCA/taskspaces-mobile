@@ -4,15 +4,18 @@ import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.TagDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
+import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskAssignedDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskAssignedEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
@@ -38,6 +41,7 @@ import kotlin.collections.map
 class TaskRepositoryImpl(
     private val taskDao: TaskDao,
     private val tagDao: TagDao,
+    private val userDao: UserDao,
     private val taskTagDao: TaskTagDao,
     private val taskAssignedDao: TaskAssignedDao,
     private val taskService: TaskService,
@@ -134,6 +138,44 @@ class TaskRepositoryImpl(
             }.distinctUntilChanged()
 
         emitAll(localAssignedTasks)
+    }
+
+    override fun getAssignedUsersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch assigned users from remote
+            val remoteAssignedMembers: List<UserResponse> =
+                taskService.getMembersByTaskId(taskId = taskId).content
+
+            //            Save remote users to the database
+            if (remoteAssignedMembers.isNotEmpty()) {
+                remoteAssignedMembers.forEach {
+                    userDao.createUser(it.toEntity())
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(
+                "TagRepository: getAssignedUsersByTaskId",
+                "Error fetching assigned users: ${e.message}"
+            )
+        }
+
+        //        Use local users
+        val localAssignedUsers =
+            taskAssignedDao.getUsersByTaskId(taskId = taskId).map { entities ->
+                val users = entities.map { it.toDomain() }
+
+                if (users.isEmpty()) {
+                    //                Logs an error if no users are found for the user
+                    Resource.Error("No task found for user with ID: $taskId")
+                } else {
+                    //                Returns the users as a success (to domain)
+                    Resource.Success(users)
+                }
+            }.distinctUntilChanged()
+
+        emitAll(localAssignedUsers)
     }
 
     //    TODO: Bug fix > Fetches twice when creating a new task

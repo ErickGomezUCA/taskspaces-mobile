@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.CommentModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
@@ -51,6 +52,9 @@ class TaskViewModel(
 
     private val _showTaskMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTaskMembersDialog: StateFlow<Boolean> = _showTaskMembersDialog.asStateFlow()
+
+    private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
+    val members: StateFlow<List<UserModel>> = _members.asStateFlow()
 
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
@@ -122,6 +126,35 @@ class TaskViewModel(
                 }
             }
         }
+
+//        Load _members
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    taskRepository.getAssignedUsersByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val members = resource.data
+                        _members.value = members
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _members.value = emptyList()
+                }
+            }
+        }
+
     }
 
     /**
