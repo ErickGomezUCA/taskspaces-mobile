@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -56,8 +57,8 @@ fun ManageTagsDialog(
     onAddTag: (title: String, color: Color) -> Unit = { title, color -> },
     onUpdateTag: (id: Int, title: String, color: Color) -> Unit = { id, title, color -> },
     onDeleteTag: (id: Int) -> Unit = { id -> },
-    onAssignTag: (tag: TagModel) -> Unit = { tag -> },
-    onUnassignTag: (tag: TagModel) -> Unit = { tag -> }
+    onAssignTag: (tagId: Int) -> Unit = { tagId -> },
+    onUnassignTag: (tagId: Int) -> Unit = { tagId -> }
 ) {
     var newTitle by remember { mutableStateOf("") }
     var newColor by remember { mutableStateOf(Color(0xFF81C784)) }
@@ -82,9 +83,9 @@ fun ManageTagsDialog(
                             checked = checked,
                             onCheckedChange = { isChecked ->
                                 if (isChecked) {
-                                    onAssignTag(tag)
+                                    onAssignTag(tag.id)
                                 } else {
-                                    onUnassignTag(tag)
+                                    onUnassignTag(tag.id)
                                 }
                             }
                         )
@@ -174,7 +175,7 @@ fun ManageTagsDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onDismissRequest, modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = onDismissRequest, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp)) {
                 Text("Close")
             }
         }

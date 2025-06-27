@@ -78,6 +78,15 @@ class TagRepositoryImpl(
             if (remoteTags.isNotEmpty()) {
                 remoteTags.forEach {
                     tagDao.createTag(it.toEntity())
+
+//                    Assign tags from remote
+                    taskTagDao.createTaskTag(
+                        TaskTagEntity(
+                            taskId = taskId,
+                            tagId = it.id,
+                            createdAt = it.createdAt
+                        )
+                    )
                 }
             }
         } catch (e: Exception) {
@@ -89,12 +98,12 @@ class TagRepositoryImpl(
 
         //        Use local tags
         val localTags =
-            tagDao.getTagsByProjectId(projectId = taskId).map { entities ->
+            taskTagDao.getTagsByTaskId(taskId = taskId).map { entities ->
                 val tags = entities.map { it.toDomain() }
 
                 if (tags.isEmpty()) {
                     //                Logs an error if no tags are found for the user
-                    Resource.Error("No tag found for project with ID: $taskId")
+                    Resource.Error("No tag found for task with ID: $taskId")
                 } else {
                     //                Returns the tags as a success (to domain)
                     Resource.Success(tags)

@@ -51,6 +51,9 @@ class TaskViewModel(
     private val _showTagsDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTagsDialog: StateFlow<Boolean> = _showTagsDialog.asStateFlow()
 
+    private val _tags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
+    val tags: StateFlow<List<TagModel>> = _tags.asStateFlow()
+
     private val _projectTags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
     val projectTags: StateFlow<List<TagModel>> = _projectTags.asStateFlow()
 
@@ -120,6 +123,33 @@ class TaskViewModel(
                     is Resource.Success -> {
                         val bookmark = resource.data
                         _isBookmarked.value = bookmark
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _isBookmarked.value = false
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    tagRepository.getTagsByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val tags = resource.data
+                        _tags.value = tags
                     }
 
                     is Resource.Error -> {
@@ -364,7 +394,47 @@ class TaskViewModel(
         }
     }
 
-//    Task members
+    fun assignTagToTask(
+        tagId: Int
+    ) {
+        viewModelScope.launch {
+            val response = tagRepository.assignTagToTask(
+                tagId = tagId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error assigning tag to task: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun unassignTagFromTask(
+        tagId: Int
+    ) {
+        viewModelScope.launch {
+            val response = tagRepository.unassignTagFromTask(
+                tagId = tagId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error assigning tag to task: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    //    Task members
     fun showTaskMembersDialog() {
         _showTaskMembersDialog.value = true
     }
