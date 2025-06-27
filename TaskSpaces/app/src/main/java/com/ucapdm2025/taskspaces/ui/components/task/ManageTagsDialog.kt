@@ -72,7 +72,7 @@ fun ManageTagsDialog(
                 tags.forEach { tag ->
                     var title by remember { mutableStateOf(tag.title) }
                     var color by remember { mutableStateOf(tag.color) }
-                    val checked = assignedTags.any { it.id == tag.id }
+                    var checked by remember { mutableStateOf<Boolean>(assignedTags.any { it.id == tag.id }) }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -82,6 +82,8 @@ fun ManageTagsDialog(
                         Checkbox(
                             checked = checked,
                             onCheckedChange = { isChecked ->
+                                checked = isChecked
+
                                 if (isChecked) {
                                     onAssignTag(tag.id)
                                 } else {

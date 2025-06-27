@@ -134,9 +134,11 @@ class TaskViewModel(
             }
         }
 
+//        Load _tags
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
+                    Log.d("TaskViewModel", "Fetching tags for task ID: $taskId")
                     tagRepository.getTagsByTaskId(taskId)
                 } else {
                     flowOf(null) // Emit null if no task ID is set
@@ -148,15 +150,16 @@ class TaskViewModel(
                     }
 
                     is Resource.Success -> {
-                        val tags = resource.data
-                        _tags.value = tags
+                        val fetchedTags = resource.data
+                        Log.d("TaskViewModel", "With id $taskId Fetched tags: $fetchedTags")
+                        _tags.value = fetchedTags
                     }
 
                     is Resource.Error -> {
                         // Handle error state if necessary
                     }
 
-                    null -> _isBookmarked.value = false
+                    null -> _tags.value = emptyList()
                 }
             }
         }
