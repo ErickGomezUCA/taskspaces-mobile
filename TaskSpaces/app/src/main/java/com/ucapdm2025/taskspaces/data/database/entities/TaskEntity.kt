@@ -6,6 +6,7 @@ import com.ucapdm2025.taskspaces.data.model.BaseModel
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.utils.toLocalDateTime
 import java.time.LocalDateTime
 
 // Tags, assignedMembers and comments should be handled in separate entities\
@@ -49,7 +50,7 @@ fun TaskEntity.toDomain(tags: List<TagModel> = emptyList< TagModel>()): TaskMode
         breadcrumb = breadcrumb,
         title = title,
         description = description,
-        deadline = deadline, // TODO: Parse correctly into LocalDateTime
+        deadline = deadline?.toLocalDateTime(),
         timer = timer,
         status = when (status.uppercase()) {
             "PENDING" -> StatusVariations.PENDING

@@ -21,7 +21,7 @@ interface TaskRepository {
     suspend fun createTask(
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
         projectId: Int
@@ -30,7 +30,7 @@ interface TaskRepository {
         id: Int,
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
     ): Result<TaskModel>

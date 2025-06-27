@@ -4,6 +4,7 @@ import com.ucapdm2025.taskspaces.data.database.entities.TaskEntity
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.utils.toLocalDateTime
 import java.time.LocalDateTime
 
 /**
@@ -30,7 +31,7 @@ data class TaskResponse(
     val title: String,
     val description: String? = null,
     val status: String,
-    val deadline: String? = null, // TODO: Use LocalDateTime instead of String
+    val deadline: String? = null,
     val timer: Float? = null,
     val projectId: Int,
     val tags: List<TagResponse> = emptyList(), // TODO: Handle tags in a separate entity
@@ -57,7 +58,7 @@ fun TaskResponse.toDomain(): TaskModel {
             "DONE" -> StatusVariations.DONE
             else -> StatusVariations.PENDING // Default case
         },
-        deadline = deadline, // TODO: Parse correctly into LocalDateTime
+        deadline = deadline?.toLocalDateTime(),
         timer = timer,
         projectId = projectId,
         tags = tags.map { it.toDomain() },
@@ -79,7 +80,7 @@ fun TaskResponse.toEntity(): TaskEntity {
         title = title,
         description = description,
         status = status.uppercase(),
-        deadline = deadline, // TODO: Parse correctly into LocalDateTime
+        deadline = deadline,
         timer = timer,
         projectId = projectId,
         createdAt = createdAt,

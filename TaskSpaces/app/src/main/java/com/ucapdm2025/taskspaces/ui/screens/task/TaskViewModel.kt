@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 /**
  * ViewModel for managing a single task's data, including its comments.
@@ -244,9 +245,8 @@ class TaskViewModel(
         title: String? = null,
         status: StatusVariations? = null,
         description: String? = null,
-        tags: List<String>? = null, // TODO: Change to tag model
         media: List<String>? = null, // TODO: Change to media model
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         members: List<Int>? = null, // TODO: Change to member model
     ) {
@@ -265,7 +265,7 @@ class TaskViewModel(
         id: Int,
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
     ) {

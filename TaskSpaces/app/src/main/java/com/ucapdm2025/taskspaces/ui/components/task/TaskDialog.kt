@@ -55,6 +55,7 @@ import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import com.ucapdm2025.taskspaces.utils.toIsoString
 import java.time.LocalDateTime
 
 
@@ -145,7 +146,7 @@ fun TaskDialog(
                             id = task.value?.id ?: 0,
                             title = task.value?.title ?: "",
                             description = task.value?.description ?: "",
-                            deadline = task.value?.deadline ?: "",
+                            deadline = task.value?.deadline,
                             timer = task.value?.timer ?: 0f,
                             status = task.value?.status ?: StatusVariations.PENDING
                         )
@@ -394,8 +395,8 @@ fun TaskDialog(
 
                     //DEADLINE
                     DeadlinePicker(
-                        deadline = task.value?.deadline as LocalDateTime?,
-                        onDeadlineSelected = { viewModel.setTaskData(deadline = it.toString()) }
+                        deadline = task.value?.deadline,
+                        onDeadlineSelected = { viewModel.setTaskData(deadline = it) }
                     )
 
                     //TIMERS

@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.data.model
 
 import com.ucapdm2025.taskspaces.data.database.entities.TaskEntity
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.utils.toIsoString
 import java.time.LocalDateTime
 
 /**
@@ -25,9 +26,9 @@ data class TaskModel (
     val breadcrumb: String = "/",
     val title: String = "New Task",
     val description: String? = null,
-    val deadline: String? = null, // TODO: See if it is needed to parse into Date object or DateTime instead of String
+    val deadline: LocalDateTime? = null,
     val timer: Float? = null,
-    val status: StatusVariations = StatusVariations.PENDING, // TODO: Set enum class for status
+    val status: StatusVariations = StatusVariations.PENDING,
     val tags: List<TagModel> = emptyList(),
     val assignedMembers: List<UserModel> = emptyList(),
     val projectId: Int,
@@ -46,7 +47,7 @@ fun TaskModel.toDatabase(): TaskEntity {
         breadcrumb = breadcrumb,
         title = title,
         description = description,
-        deadline = deadline, // Convert LocalDateTime to String
+        deadline = deadline?.toIsoString(),
         timer = timer,
         status = status.name.uppercase(),
         projectId = projectId,

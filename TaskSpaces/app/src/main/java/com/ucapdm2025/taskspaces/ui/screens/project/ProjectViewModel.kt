@@ -85,7 +85,7 @@ class ProjectViewModel(
     fun createTask(
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
     ) {

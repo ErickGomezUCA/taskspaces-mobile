@@ -21,6 +21,7 @@ import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.utils.toIsoString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import okio.IOException
+import java.time.LocalDateTime
 import kotlin.collections.forEach
 import kotlin.collections.map
 
@@ -194,7 +196,10 @@ class TaskRepositoryImpl(
             if (remoteTask != null) {
                 taskDao.createTask(remoteTask.toEntity())
 
+                Log.d("TaskRepository", remoteTask.deadline.toString())
+
                 remoteTask.tags.forEach { tag ->
+
                     tagDao.createTag(tag.toEntity())
 
 //                    Assign tag to task
@@ -236,7 +241,7 @@ class TaskRepositoryImpl(
     override suspend fun createTask(
         title: String,
         description: String?,
-        deadline: String?,
+        deadline: LocalDateTime?,
         timer: Float?,
         status: StatusVariations,
         projectId: Int,
@@ -244,7 +249,7 @@ class TaskRepositoryImpl(
         val request = TaskRequest(
             title,
             description,
-            deadline,
+            deadline?.toIsoString(),
             timer,
             status.toString()
         )
@@ -280,14 +285,14 @@ class TaskRepositoryImpl(
         id: Int,
         title: String,
         description: String?,
-        deadline: String?,
+        deadline: LocalDateTime?,
         timer: Float?,
         status: StatusVariations,
     ): Result<TaskModel> {
         val request = TaskRequest(
             title,
             description,
-            deadline,
+            deadline?.toIsoString(),
             timer,
             status.toString()
         )
@@ -296,6 +301,8 @@ class TaskRepositoryImpl(
             val response =
                 taskService.updateTask(id = id, request = request)
 
+            Log.d("TaskRepository: updateTask", deadline?.toIsoString() ?: "")
+
             val updatedTask: TaskModel = response.content.toDomain()
 
 //            Create retrieved project from remote server into the local database
@@ -303,7 +310,7 @@ class TaskRepositoryImpl(
 
             Log.d(
                 "TaskRepository: updateTask",
-                "Task created successfully: $updatedTask"
+                "Task updated successfully: $updatedTask"
             )
 
             Result.success(updatedTask)
