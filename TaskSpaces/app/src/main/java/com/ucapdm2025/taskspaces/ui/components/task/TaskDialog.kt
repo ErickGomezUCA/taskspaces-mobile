@@ -93,9 +93,10 @@ fun TaskDialog(
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val taskRepository = application.appProvider.provideTaskRepository()
+    val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
     val viewModel: TaskViewModel =
-        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, bookmarkRepository))
+        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, memberRoleRepository, bookmarkRepository))
 
     val task = viewModel.task.collectAsStateWithLifecycle()
     val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()

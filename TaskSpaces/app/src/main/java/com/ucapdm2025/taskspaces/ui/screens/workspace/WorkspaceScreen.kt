@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +46,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
 import com.ucapdm2025.taskspaces.ui.components.workspace.ManageMembersDialog
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
@@ -70,11 +73,13 @@ fun WorkspaceScreen(
 //    Retrieve dependencies and ViewModel here because i cannot pass them as parameters with companion objects (like the traditional way)
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val workspaceRepository = application.appProvider.provideWorkspaceRepository()
+    val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val projectRepository = application.appProvider.provideProjectRepository()
     val viewModel: WorkspaceViewModel = viewModel(
         factory = WorkspaceViewModelFactory(
             workspaceId,
             workspaceRepository,
+            memberRoleRepository,
             projectRepository
         )
     )

@@ -6,14 +6,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -27,6 +30,7 @@ import java.time.LocalDateTime
 class ProjectViewModel(
     private val projectId: Int,
     private val projectRepository: ProjectRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
     private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
@@ -141,6 +145,21 @@ class ProjectViewModel(
     fun setSelectedTaskId(id: Int) {
         _selectedTaskId.value = id
     }
+
+    suspend fun hasSufficientPermissions(
+        minimumRole: MemberRoles
+    ): Boolean {
+        return memberRoleRepository.hasSufficientPermissions(
+            projectId = projectId,
+            minimumRole = minimumRole
+        ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+            when (resource) {
+                is Resource.Success -> resource.data == true
+                else -> false
+            }
+        } == true
+    }
+
 }
 
 /**
@@ -152,12 +171,13 @@ class ProjectViewModel(
 class ProjectViewModelFactory(
     private val projectId: Int,
     private val projectRepository: ProjectRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val taskRepository: TaskRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProjectViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ProjectViewModel(projectId, projectRepository, taskRepository) as T
+            return ProjectViewModel(projectId, projectRepository, memberRoleRepository, taskRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
-import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
@@ -16,6 +16,7 @@ import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 /**
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 class WorkspaceViewModel(
     private val workspaceId: Int,
     private val workspaceRepository: WorkspaceRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val projectRepository: ProjectRepository
 ) : ViewModel() {
     private val _workspace: MutableStateFlow<WorkspaceModel?> = MutableStateFlow(null)
@@ -47,7 +49,8 @@ class WorkspaceViewModel(
     private val _selectedProjectId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedProjectId: StateFlow<Int?> = _selectedProjectId.asStateFlow()
 
-    private val _members: MutableStateFlow<List<WorkspaceMemberModel>> = MutableStateFlow(emptyList())
+    private val _members: MutableStateFlow<List<WorkspaceMemberModel>> =
+        MutableStateFlow(emptyList())
     val members: StateFlow<List<WorkspaceMemberModel>> = _members.asStateFlow()
 
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -182,7 +185,7 @@ class WorkspaceViewModel(
         _selectedProjectId.value = projectId
     }
 
-//    Manage members dialog functions
+    //    Manage members dialog functions
     fun showManageMembersDialog() {
         _showManageMembersDialog.value = true
     }
@@ -251,6 +254,20 @@ class WorkspaceViewModel(
             }
         }
     }
+
+    suspend fun hasSufficientPermissions(
+        minimumRole: MemberRoles
+    ): Boolean {
+        return memberRoleRepository.hasSufficientPermissions(
+            workspaceId = workspaceId,
+            minimumRole = minimumRole
+        ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+            when (resource) {
+                is Resource.Success -> resource.data == true
+                else -> false
+            }
+        } == true
+    }
 }
 
 // Create a separate ViewModel factory for WorkspaceViewModel
@@ -266,12 +283,18 @@ class WorkspaceViewModel(
 class WorkspaceViewModelFactory(
     private val workspaceId: Int,
     private val workspaceRepository: WorkspaceRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val projectRepository: ProjectRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WorkspaceViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return WorkspaceViewModel(workspaceId, workspaceRepository, projectRepository) as T
+            return WorkspaceViewModel(
+                workspaceId,
+                workspaceRepository,
+                memberRoleRepository,
+                projectRepository
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

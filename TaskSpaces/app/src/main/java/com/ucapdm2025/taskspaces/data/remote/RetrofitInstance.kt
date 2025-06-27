@@ -4,6 +4,7 @@ import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
+import com.ucapdm2025.taskspaces.data.remote.services.MemberRoleService
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.data.remote.services.UserService
@@ -22,6 +23,7 @@ object RetrofitInstance {
 //    Production backend URL
     private const val BASE_URL = "https://taskspaces-backend-ox3g.onrender.com/api/"
 
+
     val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -37,6 +39,10 @@ object RetrofitInstance {
 
     val userService: UserService by lazy {
         retrofit.create(UserService::class.java)
+    }
+
+    val memberRoleService: MemberRoleService by lazy {
+        retrofit.create(MemberRoleService::class.java)
     }
 
     val authService: AuthService by lazy {
