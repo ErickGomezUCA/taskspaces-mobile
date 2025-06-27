@@ -11,6 +11,7 @@ import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
+import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
@@ -19,17 +20,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+
 /**
  * ViewModel for the Home screen, responsible for managing the state and business logic.
  */
 class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val authRepository: AuthRepository,
-//    private val taskRepository: TaskRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val _userName = MutableStateFlow("")
+
+    private val _userName: MutableStateFlow<String> = MutableStateFlow("")
     val userName: StateFlow<String> = _userName.asStateFlow()
 
     private val _workspaces: MutableStateFlow<List<WorkspaceModel>> = MutableStateFlow(emptyList())
@@ -55,111 +58,41 @@ class HomeViewModel(
     private val _selectedWorkspaceId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
-    //    Fetch user id from auth
     init {
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
                 _authUserId.value = userId
+
+                userRepository.getUserById(userId).collect { resource ->
+                    if (resource is Resource.Success) {
+                        _userName.value = resource.data?.fullname ?: ""
+                    }
+                }
             }
         }
 
         viewModelScope.launch {
             workspaceRepository.getWorkspacesByUserId(_authUserId.value).collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        // TODO: Handle loading state
-                    }
-
-                    is Resource.Success -> {
-                        val workspaces = resource.data
-                        _workspaces.value = workspaces
-                    }
-
-                    is Resource.Error -> {
-                        // TODO: Handle error state
-                    }
+                if (resource is Resource.Success) {
+                    _workspaces.value = resource.data
                 }
             }
         }
 
         viewModelScope.launch {
             workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        // TODO: Handle loading state
-                    }
-
-                    is Resource.Success -> {
-                        val workspacesShared = resource.data
-                        _workspacesSharedWithMe.value = workspacesShared
-                    }
-
-                    is Resource.Error -> {
-                        // TODO: Handle error state
-                    }
-                }
-            }
-        }
-
-//        viewModelScope.launch {
-//            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
-//                _assignedTasks.value = assignedTasksList
-//            }
-//        }
-    }
-
-    fun createWorkspace(title: String) {
-        viewModelScope.launch {
-            val response = workspaceRepository.createWorkspace(title)
-
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
+                if (resource is Resource.Success) {
+                    _workspacesSharedWithMe.value = resource.data
                 }
             }
         }
     }
 
-    fun updateWorkspace(id: Int, title: String) {
-        viewModelScope.launch {
-            val response = workspaceRepository.updateWorkspace(id, title)
-
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("HomeViewModel", "Error updating workspace: ${exception.message}")
-                }
-            }
-        }
-    }
-
-    fun deleteWorkspace(id: Int) {
-        viewModelScope.launch {
-            val response = workspaceRepository.deleteWorkspace(id)
-
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("HomeViewModel", "Error deleting workspace: ${exception.message}")
-                }
-            }
-        }
-    }
-
-    //    Dialog functions
     fun showDialog() {
         _showWorkspaceDialog.value = true
     }
 
     fun hideDialog() {
-//        Reset dialog data when hiding the dialog
         _workspaceDialogData.value = ""
         _showWorkspaceDialog.value = false
     }
@@ -176,15 +109,54 @@ class HomeViewModel(
         _selectedWorkspaceId.value = id
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = this[APPLICATION_KEY] as TaskSpacesApplication
-                HomeViewModel(
-                    application.appProvider.provideWorkspaceRepository(),
-                    application.appProvider.provideAuthRepository()
-                )
+    fun createWorkspace(title: String) {
+        val trimmedTitle = title.trim()
+        if (trimmedTitle.isEmpty()) {
+            Log.e("HomeViewModel", "Invalid workspace title: empty")
+            return
+        }
+
+        viewModelScope.launch {
+            val response = workspaceRepository.createWorkspace(trimmedTitle)
+
+            if (!response.isSuccess) {
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
+                }
             }
         }
     }
+
+
+fun updateWorkspace(id: Int, title: String) {
+    viewModelScope.launch {
+        val response = workspaceRepository.updateWorkspace(id, title)
+        if (!response.isSuccess) {
+            Log.e("HomeViewModel", "Error updating workspace: ${response.exceptionOrNull()?.message}")
+        }
+    }
+}
+
+fun deleteWorkspace(id: Int) {
+    viewModelScope.launch {
+        val response = workspaceRepository.deleteWorkspace(id)
+        if (!response.isSuccess) {
+            Log.e("HomeViewModel", "Error deleting workspace: ${response.exceptionOrNull()?.message}")
+        }
+    }
+}
+
+companion object {
+    val Factory: ViewModelProvider.Factory = viewModelFactory {
+        initializer {
+            val application = this[APPLICATION_KEY] as TaskSpacesApplication
+            HomeViewModel(
+                application.appProvider.provideWorkspaceRepository(),
+                application.appProvider.provideAuthRepository(),
+                application.appProvider.provideUserRepository()
+            )
+        }
+    }
+}
 }
