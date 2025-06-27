@@ -8,11 +8,12 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
-fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
+fun SelectAppTopBar(currentRoute: String, navController: NavHostController, firstName: String = "User")
+ {
     when (currentRoute) {
         "HomeRoute" -> {
             AppTopBar(
-                title = "Welcome, USER",
+                title = "Welcome, $firstName",
                 navController = navController,
                 variant = AppTopBarVariant.HOME
             )
