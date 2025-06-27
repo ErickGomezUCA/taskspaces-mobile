@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.components.task
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,14 +45,19 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * @param onAddTag Callback invoked when a new tag is added.
  * @param onUpdateTag Callback invoked when an existing tag is updated.
  * @param onDeleteTag Callback invoked when a tag is deleted.
+ * @param onAssignTag Callback invoked when a tag is assigned.
+ * @param onUnassignTag Callback invoked when a tag is unassigned.
  */
 @Composable
 fun ManageTagsDialog(
     tags: List<TagModel> = emptyList(),
+    assignedTags: List<TagModel> = emptyList(),
     onDismissRequest: () -> Unit = {},
     onAddTag: (title: String, color: Color) -> Unit = { title, color -> },
     onUpdateTag: (id: Int, title: String, color: Color) -> Unit = { id, title, color -> },
-    onDeleteTag: (id: Int) -> Unit = { id -> }
+    onDeleteTag: (id: Int) -> Unit = { id -> },
+    onAssignTag: (tag: TagModel) -> Unit = { tag -> },
+    onUnassignTag: (tag: TagModel) -> Unit = { tag -> }
 ) {
     var newTitle by remember { mutableStateOf("") }
     var newColor by remember { mutableStateOf(Color(0xFF81C784)) }
@@ -64,12 +71,23 @@ fun ManageTagsDialog(
                 tags.forEach { tag ->
                     var title by remember { mutableStateOf(tag.title) }
                     var color by remember { mutableStateOf(tag.color) }
+                    val checked = assignedTags.any { it.id == tag.id }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
+                        Checkbox(
+                            checked = checked,
+                            onCheckedChange = { isChecked ->
+                                if (isChecked) {
+                                    onAssignTag(tag)
+                                } else {
+                                    onUnassignTag(tag)
+                                }
+                            }
+                        )
                         OutlinedTextField(
                             value = title,
                             onValueChange = {
@@ -190,9 +208,24 @@ fun ManageMembersDialogLightPreview() {
         )
     )
 
+    val assignedTags = listOf(
+        TagModel(
+            id = 1,
+            title = "Assigned Tag 1",
+            color = Color(0xFF81C784),
+            projectId = 1
+        ),
+        TagModel(
+            id = 2,
+            title = "Assigned Tag 2",
+            color = Color(0xFF64B5F6),
+            projectId = 1
+        )
+    )
+
     TaskSpacesTheme {
         ExtendedColors {
-            ManageTagsDialog(tags = tags)
+            ManageTagsDialog(tags = tags, assignedTags = assignedTags)
         }
     }
 }
@@ -236,11 +269,26 @@ fun ManageMembersDialogDarkPreview() {
             projectId = 1
         )
     )
+    
+    val assignedTags = listOf(
+        TagModel(
+            id = 1,
+            title = "Assigned Tag 1",
+            color = Color(0xFF81C784),
+            projectId = 1
+        ),
+        TagModel(
+            id = 2,
+            title = "Assigned Tag 2",
+            color = Color(0xFF64B5F6),
+            projectId = 1
+        )
+    )
 
 
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            ManageTagsDialog(tags = tags)
+            ManageTagsDialog(tags = tags, assignedTags = assignedTags)
         }
     }
 }

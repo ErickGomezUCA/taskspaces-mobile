@@ -34,6 +34,8 @@ class TagRepositoryImpl(
             val remoteTags: List<TagResponse> =
                 tagService.getTagsByProjectId(projectId = projectId).content
 
+            Log.d("test1", remoteTags.toString())
+
             //            Save remote tags to the database
             if (remoteTags.isNotEmpty()) {
                 remoteTags.forEach {
@@ -56,7 +58,7 @@ class TagRepositoryImpl(
                     //                Logs an error if no tags are found for the user
                     Resource.Error("No tag found for project with ID: $projectId")
                 } else {
-                    //                Returns the tagas as a success (to domain)
+                    //                Returns the tags as a success (to domain)
                     Resource.Success(tags)
                 }
             }.distinctUntilChanged()

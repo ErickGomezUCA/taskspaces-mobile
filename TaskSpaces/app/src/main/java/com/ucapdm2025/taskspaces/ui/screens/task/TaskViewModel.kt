@@ -51,8 +51,8 @@ class TaskViewModel(
     private val _showTagsDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTagsDialog: StateFlow<Boolean> = _showTagsDialog.asStateFlow()
 
-    private val _tags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
-    val tags: StateFlow<List<TagModel>> = _tags.asStateFlow()
+    private val _projectTags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
+    val projectTags: StateFlow<List<TagModel>> = _projectTags.asStateFlow()
 
     private val _showTaskMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTaskMembersDialog: StateFlow<Boolean> = _showTaskMembersDialog.asStateFlow()
@@ -131,11 +131,11 @@ class TaskViewModel(
             }
         }
 
-//        Load _tags
+//        Load _projectTags
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    tagRepository.getTagsByTaskId(taskId)
+            _task.flatMapLatest { task ->
+                if (task != null) {
+                    tagRepository.getTagsByProjectId(task.projectId)
                 } else {
                     flowOf(null) // Emit null if no task ID is set
                 }
@@ -147,14 +147,14 @@ class TaskViewModel(
 
                     is Resource.Success -> {
                         val tags = resource.data
-                        _tags.value = tags
+                        _projectTags.value = tags
                     }
 
                     is Resource.Error -> {
                         // Handle error state if necessary
                     }
 
-                    null -> _tags.value = emptyList()
+                    null -> _projectTags.value = emptyList()
                 }
             }
         }

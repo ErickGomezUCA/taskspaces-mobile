@@ -99,9 +99,9 @@ fun TaskDialog(
         viewModel(factory = TaskViewModelFactory(taskId, taskRepository, tagRepository, bookmarkRepository))
 
     val task = viewModel.task.collectAsStateWithLifecycle()
+    val projectTags = viewModel.projectTags.collectAsStateWithLifecycle()
     val isBookmarked = viewModel.isBookmarked.collectAsStateWithLifecycle()
     val showTagsDialog = viewModel.showTagsDialog.collectAsStateWithLifecycle()
-    val tags = viewModel.tags.collectAsStateWithLifecycle()
     val showTaskMembersDialog = viewModel.showTaskMembersDialog.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
 
@@ -150,9 +150,11 @@ fun TaskDialog(
             }
         },
         text = {
+//            Tags dialog
             if (showTagsDialog.value) {
                 ManageTagsDialog(
-                    tags = task.value?.tags ?: emptyList(),
+                    tags = projectTags.value,
+                    assignedTags = task.value?.tags ?: emptyList(),
                     onDismissRequest = { viewModel.hideTagsDialog() },
                     onAddTag = { title, color ->
                         viewModel.addTag(title, color)
@@ -162,7 +164,9 @@ fun TaskDialog(
                     },
                     onDeleteTag = { id ->
                         viewModel.deleteTag(id)
-                    }
+                    },
+                    onAssignTag = {},
+                    onUnassignTag = {}
                 )
             }
 
