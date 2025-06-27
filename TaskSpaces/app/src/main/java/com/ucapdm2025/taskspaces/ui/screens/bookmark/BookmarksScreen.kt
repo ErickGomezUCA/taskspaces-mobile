@@ -20,7 +20,15 @@ import com.ucapdm2025.taskspaces.ui.components.general.*
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-
+/**
+ * Displays the bookmarks screen with one of three states:
+ * - Empty if no bookmarks exist
+ * - No results if the search query returns nothing
+ * - A list of bookmarked tasks otherwise
+ *
+ * @param searchQuery The current search filter applied to task titles
+ * @param onBookmarkedTaskClick Callback invoked when a bookmarked task is clicked
+ */
 @Composable
 fun BookmarksScreen(
     searchQuery: String = "",
@@ -61,9 +69,13 @@ fun BookmarksScreen(
                 else -> BookmarkList(filtered, onBookmarkedTaskClick)
             }
         }
+        // TODO: Replace sampleTasks() with actual ViewModel-backed state
+        // TODO: Hook into navigation when a task is clicked (from TaskCard)
     }
 }
-
+/**
+ * Displays a centered icon and message indicating that no bookmarks have been saved.
+ */
 @Composable
 fun EmptyBookmarks() {
     Column(
@@ -79,7 +91,9 @@ fun EmptyBookmarks() {
         )
     }
 }
-
+/**
+ * Displays a centered icon and message indicating that no bookmarks have been saved.
+ */
 @Composable
 fun NoResults() {
     Column(
@@ -95,7 +109,11 @@ fun NoResults() {
         )
     }
 }
-
+/**
+ * Displays a list of bookmarked tasks inside a styled container.
+ *
+ * @param bookmarks List of tasks to display as cards
+ */
 @Composable
 fun BookmarkList(
     bookmarks: List<TaskModel>,
@@ -114,7 +132,9 @@ fun BookmarkList(
         )
 
         val groupedTasks: Map<String, List<TaskModel>> = bookmarks.groupBy { it.breadcrumb }
+        // TODO: Apply real sorting logic later based on sortOption
 
+        //        Show bookmarked tasks grouped by breadcrumb
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -128,6 +148,7 @@ fun BookmarkList(
                         tasksInGroup.forEach { task ->
                             TaskCard(
                                 title = task.title,
+                                //                                TODO: Add tags
                                 tags = emptyList(), // Replace with task.tags if available
                                 onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
                             )
