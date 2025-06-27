@@ -134,9 +134,9 @@ class WorkspaceRepositoryImpl(
         }
 
         if (ownerIds.isEmpty()) {
-            // No hay workspaces compartidos ⇒ devolvemos lista vacía
+            // There are no shared workspaces ⇒ we return empty list
             emit(Resource.Success(emptyList()))
-            return@flow              // <— importante para no llegar al combine
+            return@flow              // <— important to not reach the combine
         }
 
 //        Use local workspaces
