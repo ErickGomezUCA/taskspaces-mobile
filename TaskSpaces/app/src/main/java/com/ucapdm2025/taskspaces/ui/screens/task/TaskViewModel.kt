@@ -9,16 +9,20 @@ import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import java.lang.reflect.Member
 
 /**
  * ViewModel for managing a single task's data, including its comments.
@@ -27,6 +31,7 @@ import kotlinx.coroutines.launch
 class TaskViewModel(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val bookmarkRepository: BookmarkRepository
 ) : ViewModel() {
     private val commentRepository: CommentRepository = CommentRepositoryImpl()
@@ -215,6 +220,21 @@ class TaskViewModel(
             }
         }
     }
+
+    suspend fun hasSufficientPermissions(
+        minimumRole: MemberRoles
+    ): Boolean {
+        return memberRoleRepository.hasSufficientPermissions(
+            taskId = taskId,
+            minimumRole = minimumRole
+        ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+            when (resource) {
+                is Resource.Success -> resource.data == true
+                else -> false
+            }
+        } == true
+    }
+
 }
 
 /**
@@ -223,12 +243,13 @@ class TaskViewModel(
 class TaskViewModelFactory(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val bookmarkRepository: BookmarkRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskId, taskRepository, bookmarkRepository) as T
+            return TaskViewModel(taskId, taskRepository, memberRoleRepository, bookmarkRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

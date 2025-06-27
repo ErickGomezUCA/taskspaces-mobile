@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +48,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
 import com.ucapdm2025.taskspaces.ui.components.workspace.ManageMembersDialog
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
@@ -72,11 +75,13 @@ fun WorkspaceScreen(
 //    Retrieve dependencies and ViewModel here because i cannot pass them as parameters with companion objects (like the traditional way)
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val workspaceRepository = application.appProvider.provideWorkspaceRepository()
+    val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val projectRepository = application.appProvider.provideProjectRepository()
     val viewModel: WorkspaceViewModel = viewModel(
         factory = WorkspaceViewModelFactory(
             workspaceId,
             workspaceRepository,
+            memberRoleRepository,
             projectRepository
         )
     )
@@ -90,11 +95,25 @@ fun WorkspaceScreen(
     val membersState = viewModel.membersState.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
 
+//    Para manejar los roles de un workspace, ahora puedes hacerlo con:
+//
+//    viewModel.hasSufficientPermissions(MemberRoles.ADMIN)
+//
+//    donde: MemberRoles determina el rol necesario para mostrar o realizar una accion
+//    puedes hacer algo como
+//
+//    if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+//      ... mostrar algo solo para colaboradores y admin
+//    }
+//
+//    para poder mostrar u ocultar elementos de la UI según el rol del usuario en el workspace
+    
     when (val state = workspaceState.value) {
         is UiState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
+//    Show feedback icon if the workspace is not found
             return
         }
 

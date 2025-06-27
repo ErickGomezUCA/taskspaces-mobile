@@ -6,9 +6,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.ucapdm2025.taskspaces.data.database.AppDatabase
 import com.ucapdm2025.taskspaces.data.remote.RetrofitInstance
+import com.ucapdm2025.taskspaces.data.remote.services.MemberRoleService
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
@@ -34,6 +37,10 @@ class AppProvider(context: Context) {
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
     private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService)
+
+    //    Member roles
+    private val memberRoleService = RetrofitInstance.memberRoleService
+    private val memberRoleRepository: MemberRoleRepository = MemberRoleRepositoryImpl(memberRoleService)
 
     //    Auth
     private val authService = RetrofitInstance.authService
@@ -75,6 +82,10 @@ class AppProvider(context: Context) {
 
     fun provideUserRepository(): UserRepository {
         return userRepository
+    }
+
+    fun provideMemberRoleRepository(): MemberRoleRepository {
+        return memberRoleRepository
     }
 
     fun provideAuthRepository(): AuthRepository {
