@@ -57,6 +57,7 @@ fun HomeScreen(
             },
             text = {
                 Column {
+                    // Title text field
                     TextField(
                         value = workspaceDialogData.value,
                         onValueChange = { viewModel.setWorkspaceDialogData(it) },
@@ -64,6 +65,8 @@ fun HomeScreen(
                         placeholder = { Text(text = "Enter workspace title") },
                         isError = !isTitleValid
                     )
+
+                    // Workspace dialog (for create and update workspace)
                     if (!isTitleValid) {
                         Text(
                             text = "Title cannot be empty",
@@ -73,6 +76,8 @@ fun HomeScreen(
                     }
                 }
             },
+
+            // Group both actions buttons in the same space (do not confuse with confirmButton)
             confirmButton = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -86,7 +91,9 @@ fun HomeScreen(
                     ) { Text(text = "Cancel") }
                     Button(
                         onClick = {
+                            // Update selected workspace if in update mode, otherwise create a new one
                             if (editMode.value == HomeEditMode.UPDATE) {
+                                // selectedWorkspaceId comes when the user selects a workspace to update on update mode
                                 viewModel.updateWorkspace(
                                     selectedWorkspaceId.value ?: 0,
                                     workspaceDialogData.value
@@ -109,6 +116,8 @@ fun HomeScreen(
         )
     }
 
+//    Using a box to place this floating status dialog on top of the LazyColumn
+//    This floating status dialog shows the current edit mode for Home Screen
     Box(modifier = Modifier.fillMaxSize()) {
         if (editMode.value != HomeEditMode.NONE) {
             FloatingStatusDialog(
@@ -155,12 +164,16 @@ fun HomeScreen(
                     YourWorkspacesSection(
                         workspaces = workspaces.value,
                         onClickWorkspaceCard = { workspace ->
+                            // Set the selected workspace ID when in update mode and show the dialog
                             when (editMode.value) {
                                 HomeEditMode.UPDATE -> {
                                     viewModel.setSelectedWorkspaceId(workspace.id)
                                     viewModel.setWorkspaceDialogData(workspace.title)
                                     viewModel.showDialog()
                                 }
+
+                                //                                Delete the workspace clicked when in delete mode
+//                                TODO: Add a confirmation dialog before deleting
                                 HomeEditMode.DELETE -> {
                                     viewModel.deleteWorkspace(workspace.id)
                                     viewModel.setEditMode(HomeEditMode.NONE)
@@ -174,6 +187,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
+            // TODO: Add action to leave a workspace
             item {
                 Container(title = "Workspaces shared with me") {
                     SharedWorkspacesSection(
