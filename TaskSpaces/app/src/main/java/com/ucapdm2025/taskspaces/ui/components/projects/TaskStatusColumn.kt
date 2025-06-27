@@ -59,9 +59,7 @@ fun TaskStatusColumn(
         tasks.forEach { task ->
             TaskCard(
                 title = task.title,
-//                tags = task.tags,
-                //TODO: Revert this
-                tags = emptyList<TagModel>(),
+                tags = task.tags,
                 onClick = { onTaskCardClick(task.id) }
             )
         }
