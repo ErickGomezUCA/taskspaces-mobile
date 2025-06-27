@@ -440,8 +440,7 @@ class TaskViewModel(
         }
     }
 
-    // Add this helper function
-    private fun reloadTags(taskId: Int) {
+    fun reloadTags(taskId: Int = _currentTaskId.value ?: 0) {
         viewModelScope.launch {
             tagRepository.getTagsByTaskId(taskId).collect { resource ->
                 when (resource) {
