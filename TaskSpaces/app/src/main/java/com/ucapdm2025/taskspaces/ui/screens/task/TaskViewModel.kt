@@ -261,6 +261,10 @@ class TaskViewModel(
         )
     }
 
+    fun clearDeadline() {
+        _task.value = _task.value?.copy(deadline = null)
+    }
+
     fun updateTask(
         id: Int,
         title: String,

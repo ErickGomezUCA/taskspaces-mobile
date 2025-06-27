@@ -396,7 +396,8 @@ fun TaskDialog(
                     //DEADLINE
                     DeadlinePicker(
                         deadline = task.value?.deadline,
-                        onDeadlineSelected = { viewModel.setTaskData(deadline = it) }
+                        onDeadlineSelected = { viewModel.setTaskData(deadline = it) },
+                        onDeadlineClear = { viewModel.clearDeadline() }
                     )
 
                     //TIMERS

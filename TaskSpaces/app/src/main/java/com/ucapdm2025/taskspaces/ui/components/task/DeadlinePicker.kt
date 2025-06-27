@@ -50,7 +50,8 @@ import java.time.ZoneId
 @Composable
 fun DeadlinePicker(
     deadline: LocalDateTime?,
-    onDeadlineSelected: (LocalDateTime) -> Unit,
+    onDeadlineSelected: (LocalDateTime?) -> Unit,
+    onDeadlineClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val formatter = DateTimeFormatter.ofPattern("d / MMM / yyyy - h:mm a")
@@ -90,13 +91,27 @@ fun DeadlinePicker(
             )
         }
 
-        OutlinedButton(
-            onClick = { setShowDialog(true) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-        ) {
-            Text(if (deadline != null) "Manage time" else "+ Add Deadline")
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            if (deadline != null) {
+                OutlinedButton(
+                    onClick = { onDeadlineClear() },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Clear")
+                }
+            }
+
+            OutlinedButton(
+                onClick = { setShowDialog(true) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                Text(if (deadline != null) "Set new deadline" else "Add Deadline +")
+            }
+
         }
 
         if (showDialog) {
@@ -152,6 +167,7 @@ fun DeadlinePickerPreview() {
     val sampleDeadline = LocalDateTime.now().plusDays(10)
     DeadlinePicker(
         deadline = sampleDeadline,
-        onDeadlineSelected = {}
+        onDeadlineSelected = {},
+        onDeadlineClear = {}
     )
 }
