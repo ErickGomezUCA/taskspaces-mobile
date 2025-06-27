@@ -17,6 +17,11 @@ import com.ucapdm2025.taskspaces.ui.screens.home.HomeViewModel
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.utils.getCurrentRoute
 
+/**
+ * A composable function that provides the main scaffold layout for the app.
+ * Includes a bottom navigation bar and a content area for navigation.
+ */
+
 @Composable
 fun AppScaffold() {
     val navController = rememberNavController()
@@ -44,6 +49,11 @@ fun AppScaffold() {
     }
 }
 
+
+/**
+ * A preview of the [AppScaffold] composable.
+ * Demonstrates the scaffold with a default theme.
+ */
 @Preview(showBackground = true)
 @Composable
 fun AppScaffoldLightPreview() {
