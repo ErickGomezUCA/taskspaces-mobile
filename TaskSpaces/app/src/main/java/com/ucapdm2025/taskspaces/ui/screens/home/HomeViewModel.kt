@@ -29,6 +29,8 @@ class HomeViewModel(
 ) : ViewModel() {
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _userName = MutableStateFlow("")
+    val userName: StateFlow<String> = _userName.asStateFlow()
 
     private val _workspaces: MutableStateFlow<List<WorkspaceModel>> = MutableStateFlow(emptyList())
     val workspaces: StateFlow<List<WorkspaceModel>> = _workspaces.asStateFlow()
