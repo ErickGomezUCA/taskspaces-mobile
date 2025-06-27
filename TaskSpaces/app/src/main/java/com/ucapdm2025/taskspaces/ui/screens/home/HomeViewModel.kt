@@ -55,7 +55,6 @@ class HomeViewModel(
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
     //    Fetch user id from auth
-    //    Fetch user id from auth
     init {
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
