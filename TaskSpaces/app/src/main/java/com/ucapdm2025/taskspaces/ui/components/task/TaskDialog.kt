@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.components.task
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -109,6 +110,11 @@ fun TaskDialog(
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
         viewModel.loadTask(taskId)
+    }
+
+//    Log when tags value changes
+    LaunchedEffect(tags.value) {
+        Log.d("TaskDialog", "Tags changed: ${tags.value}")
     }
 
     //    Remove saved task id and then hide the dialog

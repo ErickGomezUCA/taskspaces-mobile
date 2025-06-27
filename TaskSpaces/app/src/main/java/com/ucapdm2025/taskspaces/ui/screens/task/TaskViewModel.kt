@@ -433,6 +433,22 @@ class TaskViewModel(
                     // Log or handle the exception as needed
                     Log.e("TaskViewModel", "Error assigning tag to task: ${exception.message}")
                 }
+            } else {
+                // Force reload tags after unassign
+                _currentTaskId.value?.let { reloadTags(it) }
+            }
+        }
+    }
+
+    // Add this helper function
+    private fun reloadTags(taskId: Int) {
+        viewModelScope.launch {
+            tagRepository.getTagsByTaskId(taskId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _tags.value = resource.data
+                    is Resource.Error, null -> _tags.value = emptyList()
+                    else -> {}
+                }
             }
         }
     }
