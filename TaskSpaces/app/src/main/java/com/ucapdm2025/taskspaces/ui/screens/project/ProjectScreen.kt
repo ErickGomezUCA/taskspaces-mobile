@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.screens.project
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,15 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
-import com.ucapdm2025.taskspaces.data.model.TagModel
-import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
