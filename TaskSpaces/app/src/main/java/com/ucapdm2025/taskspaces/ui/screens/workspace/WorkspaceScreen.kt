@@ -93,6 +93,22 @@ fun WorkspaceScreen(
     val members = viewModel.members.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
 
+//    Para manejar los roles de un workspace, ahora puedes hacerlo con:
+//
+//    viewModel.hasSufficientPermissions(MemberRoles.ADMIN)
+//
+//    donde: MemberRoles determina el rol necesario para mostrar o realizar una accion
+//    puedes hacer algo como
+//
+//    if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+//      ... mostrar algo solo para colaboradores y admin
+//    }
+//
+//    para poder mostrar u ocultar elementos de la UI según el rol del usuario en el workspace
+
+
+
+
 //    TODO: Show error and loading states
 //    Show feedback icon if the workspace is not found
     if (workspace.value == null) {

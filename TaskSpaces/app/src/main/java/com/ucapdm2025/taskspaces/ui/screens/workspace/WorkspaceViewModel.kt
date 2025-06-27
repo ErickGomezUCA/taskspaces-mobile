@@ -255,18 +255,20 @@ class WorkspaceViewModel(
         }
     }
 
-    suspend fun hasSufficientPermissions(
+    fun hasSufficientPermissions(
         minimumRole: MemberRoles
     ): Boolean {
-        return memberRoleRepository.hasSufficientPermissions(
-            workspaceId = workspaceId,
-            minimumRole = minimumRole
-        ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
-            when (resource) {
-                is Resource.Success -> resource.data == true
-                else -> false
-            }
-        } == true
+        return kotlinx.coroutines.runBlocking {
+            memberRoleRepository.hasSufficientPermissions(
+                workspaceId = workspaceId,
+                minimumRole = minimumRole
+            ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+                when (resource) {
+                    is Resource.Success -> resource.data == true
+                    else -> false
+                }
+            } == true
+        }
     }
 }
 
@@ -299,3 +301,4 @@ class WorkspaceViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
