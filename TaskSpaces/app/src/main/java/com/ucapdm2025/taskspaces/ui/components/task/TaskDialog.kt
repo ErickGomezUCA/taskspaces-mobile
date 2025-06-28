@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
@@ -182,6 +183,7 @@ fun TaskDialog(
                 )
             }
 
+//            Members dialog
             if (showTaskMembersDialog.value) {
                 ManageTaskMembersDialog(
                     members = members.value,
@@ -354,7 +356,7 @@ fun TaskDialog(
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("Manage tags")
+                            Text(if (tags.value != emptyList<TagModel>()) "Manage Tags" else "Add Tags +")
                         }
                     }
 
@@ -389,7 +391,7 @@ fun TaskDialog(
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("+ Add Media")
+                            Text("Add Media +")
                         }
                     }
 
@@ -489,7 +491,7 @@ fun TaskDialog(
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("+ Add member")
+                            Text("Add Members +")
                         }
                     }
 
