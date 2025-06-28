@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.ui.components.task
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,13 +40,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
@@ -474,24 +480,35 @@ fun TaskDialog(
                             )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//                            TODO: Implement members
-//                            task.value?.assignedMembers?.forEach { user ->
-//                                Image(
-//                                    painter = painterResource(id = android.R.drawable.ic_menu_camera),
-//                                    contentDescription = user.fullname,
-//                                    modifier = Modifier
-//                                        .size(36.dp)
-//                                        .background(ExtendedTheme.colors.primary50, CircleShape)
-//                                )
-//                            }
+//                            Display avatar if user has one, otherwise show a placeholder
+                            members.value.forEach { user ->
+                                if (!user.avatar.isNullOrEmpty()) {
+                                    AsyncImage(
+                                        model = user.avatar,
+                                        contentDescription = user.fullname,
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .clip(CircleShape)
+                                            .background(ExtendedTheme.colors.primary50, CircleShape)
+                                    )
+                                } else {
+                                    Image(
+                                        painter = painterResource(id = android.R.drawable.ic_menu_camera),
+                                        contentDescription = user.fullname,
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(ExtendedTheme.colors.primary50, CircleShape)
+                                    )
+                                }
+                            }
                         }
                         OutlinedButton(
-                            onClick = { /*TODO*/ },
+                            onClick = { viewModel.showTaskMembersDialog() },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("Add Members +")
+                            Text(if (members.value.isNotEmpty()) "Manage Members" else "Add Members +")
                         }
                     }
 

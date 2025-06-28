@@ -5,7 +5,6 @@ import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import kotlinx.coroutines.flow.Flow
-import okhttp3.internal.concurrent.Task
 import java.time.LocalDateTime
 
 /**
@@ -16,7 +15,6 @@ import java.time.LocalDateTime
 interface TaskRepository {
     fun getTasksByProjectId(projectId: Int): Flow<Resource<List<TaskModel>>>
     fun getAssignedTasks(userId: Int): Flow<Resource<List<TaskModel>>>
-    fun getAssignedUsersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>>
     fun getTaskById(id: Int): Flow<Resource<TaskModel?>>
     suspend fun createTask(
         title: String,
@@ -36,6 +34,7 @@ interface TaskRepository {
     ): Result<TaskModel>
     suspend fun deleteTask(id: Int): Result<TaskModel>
 // Members
+    fun getAssignedMembersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>>
     suspend fun assignMemberToTask(
         taskId: Int,
         username: String,

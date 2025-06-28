@@ -67,9 +67,9 @@ class AppProvider(context: Context) {
     private val tagRepository: TagRepository = TagRepositoryImpl(tagDao, taskTagDao, tagService)
 
     //    Task
-    private val taskAssignedDao = appDatabase.taskAssignedDao()
     private val taskDao = appDatabase.taskDao()
     private val taskService = RetrofitInstance.taskService
+    private val taskAssignedDao = appDatabase.taskAssignedDao()
     private val taskRepository: TaskRepository = TaskRepositoryImpl(
         taskDao = taskDao, tagDao = tagDao, taskTagDao = taskTagDao, taskService = taskService,
         userDao = userDao,

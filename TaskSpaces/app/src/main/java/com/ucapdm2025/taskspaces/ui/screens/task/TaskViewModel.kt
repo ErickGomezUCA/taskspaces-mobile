@@ -139,7 +139,6 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
-                    Log.d("TaskViewModel", "Fetching tags for task ID: $taskId")
                     tagRepository.getTagsByTaskId(taskId)
                 } else {
                     flowOf(null) // Emit null if no task ID is set
@@ -152,7 +151,6 @@ class TaskViewModel(
 
                     is Resource.Success -> {
                         val fetchedTags = resource.data
-                        Log.d("TaskViewModel", "With id $taskId Fetched tags: $fetchedTags")
                         _tags.value = fetchedTags
                     }
 
@@ -198,7 +196,7 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
-                    taskRepository.getAssignedUsersByTaskId(taskId)
+                    taskRepository.getAssignedMembersByTaskId(taskId)
                 } else {
                     flowOf(null) // Emit null if no task ID is set
                 }

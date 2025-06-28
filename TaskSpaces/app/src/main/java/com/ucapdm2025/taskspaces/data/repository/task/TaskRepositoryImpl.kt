@@ -142,44 +142,6 @@ class TaskRepositoryImpl(
         emitAll(localAssignedTasks)
     }
 
-    override fun getAssignedUsersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>> = flow {
-        emit(Resource.Loading)
-
-        try {
-            //            Fetch assigned users from remote
-            val remoteAssignedMembers: List<UserResponse> =
-                taskService.getMembersByTaskId(taskId = taskId).content
-
-            //            Save remote users to the database
-            if (remoteAssignedMembers.isNotEmpty()) {
-                remoteAssignedMembers.forEach {
-                    userDao.createUser(it.toEntity())
-                }
-            }
-        } catch (e: Exception) {
-            Log.d(
-                "TagRepository: getAssignedUsersByTaskId",
-                "Error fetching assigned users: ${e.message}"
-            )
-        }
-
-        //        Use local users
-        val localAssignedUsers =
-            taskAssignedDao.getUsersByTaskId(taskId = taskId).map { entities ->
-                val users = entities.map { it.toDomain() }
-
-                if (users.isEmpty()) {
-                    //                Logs an error if no users are found for the user
-                    Resource.Error("No task found for user with ID: $taskId")
-                } else {
-                    //                Returns the users as a success (to domain)
-                    Resource.Success(users)
-                }
-            }.distinctUntilChanged()
-
-        emitAll(localAssignedUsers)
-    }
-
     //    TODO: Bug fix > Fetches twice when creating a new task
 //    the first with the previous id and then with the new one.
     override fun getTaskById(id: Int): Flow<Resource<TaskModel?>> = flow {
@@ -196,10 +158,7 @@ class TaskRepositoryImpl(
             if (remoteTask != null) {
                 taskDao.createTask(remoteTask.toEntity())
 
-                Log.d("TaskRepository", remoteTask.deadline.toString())
-
                 remoteTask.tags.forEach { tag ->
-
                     tagDao.createTag(tag.toEntity())
 
 //                    Assign tag to task
@@ -232,6 +191,7 @@ class TaskRepositoryImpl(
                 } else {
                     //                Returns the projects as a success (to domain)
                     Resource.Success(task)
+
                 }
             }.distinctUntilChanged()
 
@@ -352,6 +312,57 @@ class TaskRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override fun getAssignedMembersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch assigned users from remote
+            val remoteAssignedMembers: List<UserResponse> =
+                taskService.getMembersByTaskId(taskId = taskId).content
+
+            //            Save remote users to the database
+            if (remoteAssignedMembers.isNotEmpty()) {
+                remoteAssignedMembers.forEach {
+                    userDao.createUser(it.toEntity())
+
+//                    Assign user to task
+                    taskAssignedDao.createTaskAssigned(
+                        TaskAssignedEntity(
+                            taskId = taskId,
+                            userId = it.id
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(
+                "TaskRepository: getAssignedMembersByTaskId",
+                "Error fetching assigned users: ${e.message}"
+            )
+        }
+
+        //        Use local members
+        val localAssignedMembers =
+            taskAssignedDao.getUsersByTaskId(taskId = taskId).map { entities ->
+                val users = entities.map { it.toDomain() }
+
+                if (users.isEmpty()) {
+                    //                Logs an error if no users are found for the user
+                    Resource.Error("No task found for user with ID: $taskId")
+                } else {
+                    //                Returns the users as a success (to domain)
+                    Log.d(
+                        "TaskRepository: getAssignedMembersByTaskId",
+                        "Assigned members fetched successfully: $users"
+                    )
+                    Resource.Success(users)
+                }
+            }.distinctUntilChanged()
+
+        emitAll(localAssignedMembers)
+    }
+
 
     override suspend fun assignMemberToTask(
         taskId: Int,

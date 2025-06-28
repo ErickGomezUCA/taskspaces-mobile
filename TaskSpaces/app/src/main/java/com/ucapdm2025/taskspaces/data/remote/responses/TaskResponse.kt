@@ -34,7 +34,7 @@ data class TaskResponse(
     val deadline: String? = null,
     val timer: Float? = null,
     val projectId: Int,
-    val tags: List<TagResponse> = emptyList(), // TODO: Handle tags in a separate entity
+    val tags: List<TagResponse> = emptyList(),
     val assignedMembers: List<UserResponse> = emptyList(), // TODO: Handle assigned members in a separate entity
     val comments: List<Any> = emptyList(), // TODO: Handle comments in a separate entity
     val createdAt: String? = null,
