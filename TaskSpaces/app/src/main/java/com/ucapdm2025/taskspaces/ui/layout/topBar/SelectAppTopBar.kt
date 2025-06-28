@@ -154,8 +154,8 @@ fun SelectAppTopBarWorkspaceDarkPreview() {
         ExtendedColors(darkTheme = true) {
             SelectAppTopBar(
                 currentRoute = "WorkspaceRoute",
-                navController = rememberNavController()
-            )
+                navController = rememberNavController(),
+                        firstName = "Danie")
         }
     }
 }
@@ -165,7 +165,9 @@ fun SelectAppTopBarWorkspaceDarkPreview() {
 fun SelectAppTopBarDefaultDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            SelectAppTopBar(currentRoute = "", navController = rememberNavController())
+            SelectAppTopBar(currentRoute = "", navController = rememberNavController(),
+                firstName = "Danie")
+
         }
     }
 }
