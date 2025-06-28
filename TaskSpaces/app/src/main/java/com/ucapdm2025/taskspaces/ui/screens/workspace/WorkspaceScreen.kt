@@ -1,6 +1,10 @@
 package com.ucapdm2025.taskspaces.ui.screens.workspace
 
-import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import kotlinx.coroutines.delay
+import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost   // ← Host creado antes
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
@@ -94,6 +99,7 @@ fun WorkspaceScreen(
     val selectedProjectId = viewModel.selectedProjectId.collectAsStateWithLifecycle()
     val membersState = viewModel.membersState.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
+    val notificationState = remember { mutableStateOf<UiEvent?>(null) }
 
 //    Para manejar los roles de un workspace, ahora puedes hacerlo con:
 //
@@ -107,6 +113,15 @@ fun WorkspaceScreen(
 //    }
 //
 //    para poder mostrar u ocultar elementos de la UI según el rol del usuario en el workspace
+
+    // Escuchar los eventos del ViewModel
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { evt ->
+            notificationState.value = evt       // mostrar
+            delay(3000)                         // 3 s
+            notificationState.value = null      // ocultar
+        }
+    }
     
     when (val state = workspaceState.value) {
         is UiState.Loading -> {
@@ -224,6 +239,15 @@ fun WorkspaceScreen(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
+                if (editMode.value == WorkspaceEditMode.NONE) {
+                    NotificationHost(
+                        event = notificationState.value,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 250.dp)
+                            .zIndex(1f)
+                    )
+                }
                 if (editMode.value != WorkspaceEditMode.NONE) {
                     FloatingStatusDialog(
                         onClose = { viewModel.setEditMode(WorkspaceEditMode.NONE) },
