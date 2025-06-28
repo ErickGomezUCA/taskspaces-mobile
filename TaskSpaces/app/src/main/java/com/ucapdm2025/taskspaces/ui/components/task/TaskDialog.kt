@@ -96,16 +96,18 @@ fun TaskDialog(
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val taskRepository = application.appProvider.provideTaskRepository()
     val tagRepository = application.appProvider.provideTagRepository()
+    val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
     val commentRepository = application.appProvider.provideCommentRepository()
     val viewModel: TaskViewModel =
         viewModel(
             factory = TaskViewModelFactory(
-                taskId,
-                taskRepository,
-                tagRepository,
-                bookmarkRepository,
-                commentRepository
+                taskId = taskId,
+                taskRepository = taskRepository,
+                tagRepository = tagRepository,
+                memberRoleRepository = memberRoleRepository,
+                bookmarkRepository = bookmarkRepository,
+                commentRepository = commentRepository
             )
         )
 

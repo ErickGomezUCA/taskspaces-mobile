@@ -45,8 +45,9 @@ fun ProjectScreen(
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val projectRepository = application.appProvider.provideProjectRepository()
+    val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val taskRepository = application.appProvider.provideTaskRepository()
-    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, taskRepository))
+    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, memberRoleRepository, taskRepository))
 
     val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
