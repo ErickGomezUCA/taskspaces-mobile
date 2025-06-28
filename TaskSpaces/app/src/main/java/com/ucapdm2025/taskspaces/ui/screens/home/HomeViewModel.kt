@@ -27,7 +27,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    // private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -58,6 +59,14 @@ class HomeViewModel(
     private val _selectedWorkspaceId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
+    private val _wasCreateAttempted = MutableStateFlow(false)
+    val wasCreateAttempted: StateFlow<Boolean> = _wasCreateAttempted.asStateFlow()
+
+    fun setCreateAttempted(value: Boolean) {
+        _wasCreateAttempted.value = value
+    }
+
+
     init {
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
@@ -73,20 +82,87 @@ class HomeViewModel(
 
         viewModelScope.launch {
             workspaceRepository.getWorkspacesByUserId(_authUserId.value).collect { resource ->
-                if (resource is Resource.Success) {
-                    _workspaces.value = resource.data
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val workspaces = resource.data
+                        _workspaces.value = workspaces
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
                 }
             }
         }
 
         viewModelScope.launch {
             workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
-                if (resource is Resource.Success) {
-                    _workspacesSharedWithMe.value = resource.data
+                when (resource) {
+                    is Resource.Loading -> {
+                        // TODO: Handle loading state
+                    }
+
+                    is Resource.Success -> {
+                        val workspacesShared = resource.data
+                        _workspacesSharedWithMe.value = workspacesShared
+                    }
+
+                    is Resource.Error -> {
+                        // TODO: Handle error state
+                    }
+                }
+            }
+        }
+
+//        viewModelScope.launch {
+//            taskRepository.getAssignedTasks(_authUserId.value).collect { assignedTasksList ->
+//                _assignedTasks.value = assignedTasksList
+//            }
+//        }
+    }
+
+    fun createWorkspace(title: String) {
+        _wasCreateAttempted.value = true
+
+        val trimmedTitle = title.trim()
+        if (trimmedTitle.isEmpty()) {
+            Log.e("HomeViewModel", "Invalid workspace title: empty")
+            return
+        }
+
+        viewModelScope.launch {
+            val response = workspaceRepository.createWorkspace(trimmedTitle)
+
+            if (!response.isSuccess) {
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
                 }
             }
         }
     }
+
+
+    fun updateWorkspace(id: Int, title: String) {
+        viewModelScope.launch {
+            val response = workspaceRepository.updateWorkspace(id, title)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("HomeViewModel", "Error updating workspace: ${exception.message}")
+                }
+            }
+        }
+    }
+
+
 
     fun showDialog() {
         _showWorkspaceDialog.value = true
@@ -109,43 +185,21 @@ class HomeViewModel(
         _selectedWorkspaceId.value = id
     }
 
-    fun createWorkspace(title: String) {
-        val trimmedTitle = title.trim()
-        if (trimmedTitle.isEmpty()) {
-            Log.e("HomeViewModel", "Invalid workspace title: empty")
-            return
-        }
 
+    fun deleteWorkspace(id: Int) {
         viewModelScope.launch {
-            val response = workspaceRepository.createWorkspace(trimmedTitle)
+            val response = workspaceRepository.deleteWorkspace(id)
 
             if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
-                    Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
+                    // Log or handle the exception as needed
+                    Log.e("HomeViewModel", "Error deleting workspace: ${exception.message}")
                 }
             }
         }
     }
-
-
-fun updateWorkspace(id: Int, title: String) {
-    viewModelScope.launch {
-        val response = workspaceRepository.updateWorkspace(id, title)
-        if (!response.isSuccess) {
-            Log.e("HomeViewModel", "Error updating workspace: ${response.exceptionOrNull()?.message}")
-        }
-    }
-}
-
-fun deleteWorkspace(id: Int) {
-    viewModelScope.launch {
-        val response = workspaceRepository.deleteWorkspace(id)
-        if (!response.isSuccess) {
-            Log.e("HomeViewModel", "Error deleting workspace: ${response.exceptionOrNull()?.message}")
-        }
-    }
-}
 
 companion object {
     val Factory: ViewModelProvider.Factory = viewModelFactory {
