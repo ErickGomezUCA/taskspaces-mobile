@@ -89,7 +89,7 @@ class ProjectViewModel(
     fun createTask(
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
     ) {
@@ -130,6 +130,18 @@ class ProjectViewModel(
                 }
             }
 
+        }
+    }
+
+    fun reloadTasks() {
+        viewModelScope.launch {
+            taskRepository.getTasksByProjectId(projectId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _tasks.value = resource.data
+                    is Resource.Error, null -> _tasks.value = emptyList()
+                    else -> {}
+                }
+            }
         }
     }
 
