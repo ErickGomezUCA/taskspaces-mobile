@@ -551,7 +551,7 @@ fun TaskDialog(
                                 modifier = Modifier.weight(1f)
                             )
                             Surface(
-                                shape = RoundedCornerShape(12.dp), // Set your desired corner radius
+                                shape = RoundedCornerShape(8.dp), // Set your desired corner radius
                                 color = MaterialTheme.colorScheme.primary
                             ) {
                                 IconButton(
