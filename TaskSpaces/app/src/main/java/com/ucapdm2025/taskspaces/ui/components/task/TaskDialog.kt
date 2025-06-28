@@ -62,8 +62,6 @@ import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.utils.toIsoString
-import java.time.LocalDateTime
 
 
 /**
@@ -114,6 +112,7 @@ fun TaskDialog(
     val showTagsDialog = viewModel.showTagsDialog.collectAsStateWithLifecycle()
     val showTaskMembersDialog = viewModel.showTaskMembersDialog.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
+    val workspaceMembers = viewModel.workspaceMembers.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -192,10 +191,15 @@ fun TaskDialog(
 //            Members dialog
             if (showTaskMembersDialog.value) {
                 ManageTaskMembersDialog(
-                    members = members.value,
+                    assignedMembers = members.value,
+                    workspaceMembers = workspaceMembers.value,
                     onDismissRequest = { viewModel.hideTaskMembersDialog() },
-                    onAddMember = { username -> viewModel.assignMemberToTask(username) },
-                    onDeleteMember = {userId -> viewModel.unassignMemberFromTask(userId)}
+                    onAssignMember = { userId ->
+                        viewModel.assignMemberToTask(userId)
+                    },
+                    onUnassignMember = { userId ->
+                        viewModel.unassignMemberFromTask(userId)
+                    }
                 )
             }
 

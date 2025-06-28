@@ -11,18 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,124 +26,66 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.data.model.UserModel
-import com.ucapdm2025.taskspaces.data.model.relational.WorkspaceMemberModel
-import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
-import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
-//TODO: Improve UI, specially the dialog width and select role dropdown
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageTaskMembersDialog(
     onDismissRequest: () -> Unit = {},
-    onAddMember: (username: String) -> Unit = { username -> },
-    onDeleteMember: (userId: Int) -> Unit = { userId -> },
-    members: List<UserModel> = emptyList<UserModel>()
+    workspaceMembers: List<UserModel> = emptyList(),
+    assignedMembers: List<UserModel> = emptyList(),
+    onAssignMember: (userId: Int) -> Unit = {userId ->},
+    onUnassignMember: (userId: Int) -> Unit = {userId ->},
 ) {
-    var addUsername by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(text = "Manage members") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                ) {
-                    if (members.isEmpty()) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = "No members in this workspace")
-                        }
-                    } else {
+                if (workspaceMembers.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "No members in this workspace")
+                    }
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                        workspaceMembers.forEach { member ->
+                            var checked by remember { mutableStateOf<Boolean>(assignedMembers.any { member.id == it.id }) }
 
-                        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                            members.forEach { member ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-//                                        Avatar and username
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(24.dp)
-                                                    .background(Color(0xFFFFA726), CircleShape)
-                                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                androidx.compose.material3.Checkbox(
+                                    checked = checked,
+                                    onCheckedChange = { isChecked ->
+                                        checked = isChecked
 
-                                            Text(
-                                                text = member.username,
-                                            )
-                                        }
-
-//                                        Role dropdown and delete button
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-//                                            TODO: Add confirm dialog
-                                            IconButton(onClick = {
-                                                onDeleteMember(member.id)
-                                            }) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Delete,
-                                                    contentDescription = "Remove member"
-                                                )
-                                            }
+                                        if (isChecked) {
+                                            onAssignMember(member.id)
+                                        } else {
+                                            onUnassignMember(member.id)
                                         }
                                     }
-                                }
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .background(Color(0xFFFFA726), CircleShape)
+                                )
+                                Text(
+                                    text = member.username,
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .weight(1f)
+                                )
                             }
                         }
                     }
-                }
-
-                Divider(modifier = Modifier.padding(vertical = 16.dp))
-
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "OR",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = ExtendedTheme.colors.background75
-                        )
-                        Text(text = "Invite a new member:")
-                    }
-
-
-//                    TODO: Validate username and avoid sending empty data
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = addUsername,
-                            onValueChange = { addUsername = it },
-                            label = { Text(text = "Username") }
-                        )
-                    }
-                }
-
-                TextButton(
-                    onClick = { onAddMember(addUsername.trim()) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text(text = "Invite +")
                 }
             }
         },
@@ -168,7 +102,7 @@ fun ManageTaskMembersDialog(
 @Preview(showBackground = true)
 @Composable
 fun ManageTaskMembersDialogLightPreview() {
-    val members = listOf(
+    val workspaceMembers = listOf(
         UserModel(
             id = 1,
             fullname = "Test 1",
@@ -189,9 +123,18 @@ fun ManageTaskMembersDialogLightPreview() {
         ),
     )
 
+    val assignedMembers = listOf(
+        UserModel(
+            id = 1,
+            fullname = "Test 1",
+            username = "test 1",
+            email = "test@email.com"
+        ),
+    )
+
     TaskSpacesTheme {
         ExtendedColors {
-            ManageTaskMembersDialog(members = members)
+            ManageTaskMembersDialog(workspaceMembers = workspaceMembers, assignedMembers = assignedMembers)
         }
     }
 }
@@ -209,7 +152,7 @@ fun ManageTaskMembersDialogEmptyLightPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ManageTaskMembersDialogDarkPreview() {
-    val members = listOf(
+    val workspaceMembers = listOf(
         UserModel(
             id = 1,
             fullname = "Test 1",
@@ -230,10 +173,18 @@ fun ManageTaskMembersDialogDarkPreview() {
         ),
     )
 
+    val assignedMembers = listOf(
+        UserModel(
+            id = 1,
+            fullname = "Test 1",
+            username = "test 1",
+            email = "test@email.com"
+        ),
+    )
 
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            ManageTaskMembersDialog(members = members)
+            ManageTaskMembersDialog(workspaceMembers = workspaceMembers, assignedMembers = assignedMembers)
         }
     }
 }

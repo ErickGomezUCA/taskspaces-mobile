@@ -64,6 +64,9 @@ class TaskViewModel(
     private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
     val members: StateFlow<List<UserModel>> = _members.asStateFlow()
 
+    private val _workspaceMembers: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
+    val workspaceMembers: StateFlow<List<UserModel>> = _workspaceMembers.asStateFlow()
+
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
 //        Load _task
@@ -216,6 +219,34 @@ class TaskViewModel(
                     }
 
                     null -> _members.value = emptyList()
+                }
+            }
+        }
+
+//        Load _workspaceMembers
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    taskRepository.getWorkspaceMembersByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val members = resource.data
+                        _workspaceMembers.value = members
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _workspaceMembers.value = emptyList()
                 }
             }
         }
@@ -464,11 +495,11 @@ class TaskViewModel(
     }
 
     fun assignMemberToTask(
-        username: String
+        userId: Int
     ) {
         viewModelScope.launch {
             val response = taskRepository.assignMemberToTask(
-                username = username,
+                userId = userId,
                 taskId = _task.value?.id ?: 0
             )
 
@@ -498,6 +529,20 @@ class TaskViewModel(
                 if (exception != null) {
                     // Log or handle the exception as needed
                     Log.e("TaskViewModel", "Error unassigning member from task: ${exception.message}")
+                }
+            } else {
+                _currentTaskId.value?.let { reloadMembers(it) }
+            }
+        }
+    }
+
+    fun reloadMembers (taskId: Int = _currentTaskId.value ?: 0) {
+        viewModelScope.launch {
+            taskRepository.getAssignedMembersByTaskId(taskId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _members.value = resource.data
+                    is Resource.Error, null -> _members.value = emptyList()
+                    else -> {}
                 }
             }
         }

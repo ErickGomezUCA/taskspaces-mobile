@@ -35,9 +35,10 @@ interface TaskRepository {
     suspend fun deleteTask(id: Int): Result<TaskModel>
 // Members
     fun getAssignedMembersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>>
+    fun getWorkspaceMembersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>>
     suspend fun assignMemberToTask(
         taskId: Int,
-        username: String,
+        userId: Int,
     ): Result<TaskModel>
     suspend fun unassignMemberFromTask(
         taskId: Int,

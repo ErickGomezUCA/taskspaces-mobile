@@ -38,11 +38,15 @@ interface TaskService {
     @GET("tasks/{taskId}/members")
     suspend fun getMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<UserResponse>>
 
+    @GET("tasks/{taskId}/members/w")
+    suspend fun getWorkspaceMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<UserResponse>>
+
     @POST("tasks/{taskId}/members/{memberId}")
     suspend fun assignMemberToTask(
         @Path("taskId") taskId: Int,
         @Path("memberId") memberId: Int
     ): BaseResponse<TaskResponse>
+
 
     @DELETE("tasks/{taskId}/members/{memberId}")
     suspend fun removeMemberFromTask(

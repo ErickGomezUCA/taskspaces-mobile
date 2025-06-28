@@ -363,15 +363,35 @@ class TaskRepositoryImpl(
         emitAll(localAssignedMembers)
     }
 
+    override fun getWorkspaceMembersByTaskId(taskId: Int): Flow<Resource<List<UserModel>>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            //            Fetch assigned users from remote
+            val remoteMembers: List<UserResponse> =
+                taskService.getWorkspaceMembersByTaskId(taskId = taskId).content
+
+            //            Save remote users to the database
+            if (remoteMembers.isNotEmpty()) {
+                remoteMembers.forEach {
+                    userDao.createUser(it.toEntity())
+                }
+            }
+
+            emit(Resource.Success(remoteMembers.map { it.toDomain() }))
+        } catch (e: Exception) {
+            Log.d(
+                "TaskRepository: getWorkspaceMembersByTaskId",
+                "Error fetching members: ${e.message}"
+            )
+        }
+    }
 
     override suspend fun assignMemberToTask(
         taskId: Int,
-        username: String
+        userId: Int
     ): Result<TaskModel> {
         return try {
-//          TODO: Implement this by searching by username instead of user Id
-            val userId = 1
-
             val response =
                 taskService.assignMemberToTask(memberId = userId, taskId = taskId)
 
