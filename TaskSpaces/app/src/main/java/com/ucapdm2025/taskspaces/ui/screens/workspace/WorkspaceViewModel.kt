@@ -14,12 +14,19 @@ import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
+sealed interface UiEvent {
+    data class Success(val message: String) : UiEvent
+    data class Error(val message: String)   : UiEvent
+}
 /**
  * ViewModel for managing a single workspace's data, including its projects and members.
  *
@@ -60,6 +67,9 @@ class WorkspaceViewModel(
 
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()   // replay = 0 por defecto
+    val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 
     init {
 //        Get current workspace info
@@ -124,14 +134,12 @@ class WorkspaceViewModel(
     fun createProject(title: String, icon: String) {
         viewModelScope.launch {
             val response = projectRepository.createProject(title, icon, workspaceId)
-
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("WorkspaceViewModel", "Error creating project: ${exception.message}")
-                }
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Project created successfully"))
+            } else {
+                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to create project"
+                _uiEvent.emit(UiEvent.Error(msg))
+                Log.e("WorkspaceViewModel", "Error creating project: $msg")
             }
         }
     }
@@ -139,30 +147,25 @@ class WorkspaceViewModel(
     fun updateProject(id: Int, title: String, icon: String) {
         viewModelScope.launch {
             val response = projectRepository.updateProject(id, title, icon)
-
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("WorkspaceViewModel", "Error updating project: ${exception.message}")
-                }
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Project updated successfully"))
+            } else {
+                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to update project"
+                _uiEvent.emit(UiEvent.Error(msg))
+                Log.e("WorkspaceViewModel", "Error updating project: $msg")
             }
-
         }
     }
 
     fun deleteProject(id: Int) {
         viewModelScope.launch {
             val response = projectRepository.deleteProject(id)
-
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("WorkspaceViewModel", "Error deleting project: ${exception.message}")
-                }
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Project deleted successfully"))
+            } else {
+                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to delete project"
+                _uiEvent.emit(UiEvent.Error(msg))
+                Log.e("WorkspaceViewModel", "Error deleting project: $msg")
             }
         }
     }
@@ -182,6 +185,14 @@ class WorkspaceViewModel(
 
     fun setEditMode(editMode: WorkspaceEditMode) {
         _editMode.value = editMode
+
+        viewModelScope.launch {
+            when (editMode) {
+                WorkspaceEditMode.UPDATE -> _uiEvent.emit(UiEvent.Success("Update mode enabled"))
+                WorkspaceEditMode.DELETE -> _uiEvent.emit(UiEvent.Success("Delete mode enabled"))
+                WorkspaceEditMode.NONE   -> {} // not notification
+            }
+        }
     }
 
     fun setSelectedProjectId(projectId: Int?) {
@@ -203,13 +214,12 @@ class WorkspaceViewModel(
 
             Log.d("WorkspaceViewModel", "Invite member response: $response")
 
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
-                }
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Invitation sent to @$username"))
+            } else {
+                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to invite member"
+                _uiEvent.emit(UiEvent.Error(msg))
+                Log.e("WorkspaceViewModel", "Error inviting member: $msg")
             }
         }
     }
@@ -227,13 +237,12 @@ class WorkspaceViewModel(
 
             Log.d("WorkspaceViewModel", "Update member role response: $response")
 
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
-                }
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Member role updated"))
+            } else {
+                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to update role"
+                _uiEvent.emit(UiEvent.Error(msg))
+                Log.e("WorkspaceViewModel", "Error updating member role: $msg")
             }
         }
     }
@@ -247,17 +256,15 @@ class WorkspaceViewModel(
 
             Log.d("WorkspaceViewModel", "Remove member response: $response")
 
-            if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("WorkspaceViewModel", "Error removing member: ${exception.message}")
-                }
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Member removed"))
+            } else {
+                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to remove member"
+                _uiEvent.emit(UiEvent.Error(msg))
+                Log.e("WorkspaceViewModel", "Error removing member: $msg")
             }
         }
     }
-
     fun hasSufficientPermissions(
         minimumRole: MemberRoles
     ): Boolean {
