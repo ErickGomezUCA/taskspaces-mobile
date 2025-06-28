@@ -653,7 +653,8 @@ fun TaskDialog(
                                                                 tint = MaterialTheme.colorScheme.onBackground
                                                             )
                                                         },
-                                                        onClick = {}
+//                                                        TODO: Add delete confirmation dialog
+                                                        onClick = {viewModel.deleteComment(comment.id)}
                                                     )
                                                 )
                                             )
