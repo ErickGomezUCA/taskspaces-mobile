@@ -9,6 +9,8 @@ import com.ucapdm2025.taskspaces.data.remote.RetrofitInstance
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
+import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
@@ -86,7 +88,11 @@ class AppProvider(context: Context) {
         taskDao = taskDao
     )
 
-
+    //    Comment
+    private val commentDao = appDatabase.commentDao()
+    private val commentService = RetrofitInstance.commentService
+    private val commentRepository: CommentRepository =
+        CommentRepositoryImpl(commentDao, commentService)
 
     fun provideUserRepository(): UserRepository {
         return userRepository
@@ -114,5 +120,9 @@ class AppProvider(context: Context) {
 
     fun provideTagRepository(): TagRepository {
         return tagRepository
+    }
+
+    fun provideCommentRepository(): CommentRepository {
+        return commentRepository
     }
 }

@@ -14,7 +14,7 @@ import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 data class TaskRequest (
     val title: String,
     val description: String? = null,
-    val deadline: String? = null, // TODO: UseLocalDateTime instead of String
+    val deadline: String? = null,
     val timer: Float? = null,
     val status: String = "PENDING",
 )

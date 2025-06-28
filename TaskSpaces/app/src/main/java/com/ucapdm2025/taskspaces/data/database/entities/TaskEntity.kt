@@ -37,7 +37,7 @@ data class TaskEntity (
     val projectId: Int,
     override val createdAt: String? = null,
     override val updatedAt: String? = null
-): BaseModel(id, createdAt, updatedAt)
+): BaseEntity(id, createdAt, updatedAt)
 
 /**
  * Extension function to convert a TaskEntity to a TaskModel.

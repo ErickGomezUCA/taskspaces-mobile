@@ -4,6 +4,7 @@ import com.ucapdm2025.taskspaces.helpers.TokenHolder
 import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
+import com.ucapdm2025.taskspaces.data.remote.services.CommentService
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
 import com.ucapdm2025.taskspaces.data.remote.services.TagService
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
@@ -62,5 +63,9 @@ object RetrofitInstance {
 
     val tagService: TagService by lazy {
         retrofit.create(TagService::class.java)
+    }
+
+    val commentService: CommentService by lazy {
+        retrofit.create(CommentService::class.java)
     }
 }

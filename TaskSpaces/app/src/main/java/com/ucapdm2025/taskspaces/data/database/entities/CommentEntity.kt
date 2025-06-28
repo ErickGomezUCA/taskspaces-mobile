@@ -1,20 +1,21 @@
-package com.ucapdm2025.taskspaces.data.model
+package com.ucapdm2025.taskspaces.data.database.entities
 
-import com.ucapdm2025.taskspaces.data.database.entities.CommentEntity
+import androidx.room.Entity
+import com.ucapdm2025.taskspaces.data.model.CommentModel
 
 /**
- * CommentModel represents a comment in the system.
- * It extends BaseModel to include common properties
- * like id, createdAt, and updatedAt.
+ * CommentEntity is a data class that represents a comment in the database.
  *
  * @property id The unique identifier for the comment.
  * @property content The content of the comment.
  * @property authorId The ID of the user who authored the comment.
  * @property taskId The ID of the task to which the comment belongs.
+ * @property edited Indicates whether the comment has been edited.
  * @property createdAt The timestamp when the comment was created.
  * @property updatedAt The timestamp when the comment was last updated.
  */
-data class CommentModel(
+@Entity(tableName = "comment")
+data class CommentEntity(
     override val id: Int,
     val content: String,
     val authorId: Int,
@@ -22,15 +23,15 @@ data class CommentModel(
     val edited: Boolean = false,
     override val createdAt: String? = null,
     override val updatedAt: String? = null,
-): BaseModel(id, createdAt, updatedAt)
+): BaseEntity(id, createdAt, updatedAt)
 
 /**
- * Converts CommentModel to CommentEntity for database storage.
+ * Extension function to convert a CommentEntity to a CommentModel.
  *
- * @return CommentEntity representing the comment in the database.
+ * @return A CommentModel instance with the same properties as the CommentEntity.
  */
-fun CommentModel.toDatabase(): CommentEntity {
-    return CommentEntity(
+fun CommentEntity.toDomain(): CommentModel {
+    return CommentModel(
         id = id,
         content = content,
         authorId = authorId,
