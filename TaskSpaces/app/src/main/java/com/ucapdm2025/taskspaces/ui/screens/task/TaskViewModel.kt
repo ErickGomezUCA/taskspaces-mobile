@@ -66,6 +66,9 @@ class TaskViewModel(
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
+    private val _newComment: MutableStateFlow<String> = MutableStateFlow("")
+    val newComment: StateFlow<String> = _newComment.asStateFlow()
+
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
 //        Load _task
@@ -620,6 +623,10 @@ class TaskViewModel(
                 }
             }
         }
+    }
+
+    fun setNewCommentValue(content: String) {
+        _newComment.value = content
     }
 
     //    TODO: Define how this function should work in the viewmodel

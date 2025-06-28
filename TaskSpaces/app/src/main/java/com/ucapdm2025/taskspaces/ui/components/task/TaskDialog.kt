@@ -2,13 +2,13 @@ package com.ucapdm2025.taskspaces.ui.components.task
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -29,6 +28,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.Textsms
@@ -36,24 +36,23 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
@@ -112,7 +111,15 @@ fun TaskDialog(
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
     val commentRepository = application.appProvider.provideCommentRepository()
     val viewModel: TaskViewModel =
-        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, tagRepository, bookmarkRepository, commentRepository))
+        viewModel(
+            factory = TaskViewModelFactory(
+                taskId,
+                taskRepository,
+                tagRepository,
+                bookmarkRepository,
+                commentRepository
+            )
+        )
 
     val task = viewModel.task.collectAsStateWithLifecycle()
     val tags = viewModel.tags.collectAsStateWithLifecycle()
@@ -123,6 +130,7 @@ fun TaskDialog(
     val members = viewModel.members.collectAsStateWithLifecycle()
     val workspaceMembers = viewModel.workspaceMembers.collectAsStateWithLifecycle()
     val comments = viewModel.comments.collectAsStateWithLifecycle()
+    val newComment = viewModel.newComment.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -495,7 +503,12 @@ fun TaskDialog(
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 //                            Display avatar if user has one, otherwise show a placeholder
-                            members.value.forEach { user -> UserAvatar(avatar = user.avatar, size = 36) }
+                            members.value.forEach { user ->
+                                UserAvatar(
+                                    avatar = user.avatar,
+                                    size = 36
+                                )
+                            }
                         }
                         OutlinedButton(
                             onClick = { viewModel.showTaskMembersDialog() },
@@ -524,7 +537,49 @@ fun TaskDialog(
                             )
                         }
 
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(vertical = 8.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = newComment.value,
+                                onValueChange = { viewModel.setNewCommentValue(it) },
+                                placeholder = { Text("Add a comment...") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            Surface(
+                                shape = RoundedCornerShape(12.dp), // Set your desired corner radius
+                                color = MaterialTheme.colorScheme.primary
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        if (newComment.value.isNotBlank()) {
+                                            viewModel.createComment(newComment.value)
+                                            viewModel.setNewCommentValue("")
+                                        }
+                                    },
+                                    enabled = newComment.value.isNotBlank(),
+                                    modifier = Modifier
+                                        .height(56.dp)
+                                        .aspectRatio(1f)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Send,
+                                        contentDescription = "Send",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+                        }
+
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
                             comments.value.forEach { comment ->
                                 Row(
                                     verticalAlignment = Alignment.Top,
@@ -553,7 +608,8 @@ fun TaskDialog(
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                                     Text(
                                                         text = formatRelativeDate(
-                                                            comment.createdAt?.toLocalDateTime() ?: LocalDateTime.now()
+                                                            comment.createdAt?.toLocalDateTime()
+                                                                ?: LocalDateTime.now()
                                                         ),
                                                         color = ExtendedTheme.colors.background50,
                                                         fontSize = 12.sp
@@ -607,10 +663,11 @@ fun TaskDialog(
                                             text = comment.content,
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
-                                    }                                }
+                                    }
+                                }
                             }
                         }
-                    //                        Row(
+                        //                        Row(
 //                            modifier = Modifier.fillMaxWidth(),
 //                            horizontalArrangement = Arrangement.spacedBy(16.dp)
 //                        ) {
