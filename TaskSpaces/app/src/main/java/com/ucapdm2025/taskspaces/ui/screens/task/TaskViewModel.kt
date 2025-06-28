@@ -66,6 +66,12 @@ class TaskViewModel(
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
+    private val _showUpdateCommentDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUpdateCommentDialog: StateFlow<Boolean> = _showUpdateCommentDialog.asStateFlow()
+
+    private val _selectedCommentToUpdate: MutableStateFlow<CommentModel?> = MutableStateFlow(null)
+    val selectedCommentToUpdate: StateFlow<CommentModel?> = _selectedCommentToUpdate.asStateFlow()
+
     private val _newComment: MutableStateFlow<String> = MutableStateFlow("")
     val newComment: StateFlow<String> = _newComment.asStateFlow()
 
@@ -339,7 +345,7 @@ class TaskViewModel(
         }
     }
 
-//    Tags
+    //    Tags
     fun showTagsDialog() {
         _showTagsDialog.value = true
     }
@@ -544,7 +550,10 @@ class TaskViewModel(
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    Log.e("TaskViewModel", "Error unassigning member from task: ${exception.message}")
+                    Log.e(
+                        "TaskViewModel",
+                        "Error unassigning member from task: ${exception.message}"
+                    )
                 }
             } else {
                 _currentTaskId.value?.let { reloadMembers(it) }
@@ -552,7 +561,7 @@ class TaskViewModel(
         }
     }
 
-    fun reloadMembers (taskId: Int = _currentTaskId.value ?: 0) {
+    fun reloadMembers(taskId: Int = _currentTaskId.value ?: 0) {
         viewModelScope.launch {
             taskRepository.getAssignedMembersByTaskId(taskId).collect { resource ->
                 when (resource) {
@@ -564,7 +573,15 @@ class TaskViewModel(
         }
     }
 
-//  Comments
+    //  Comments
+    fun showUpdateCommentDialog() {
+        _showUpdateCommentDialog.value = true
+    }
+
+    fun hideUpdateCommentDialog() {
+        _showUpdateCommentDialog.value = false
+    }
+
     fun createComment(content: String) {
         viewModelScope.launch {
             val response = commentRepository.createComment(content, _currentTaskId.value ?: 0)
@@ -593,6 +610,10 @@ class TaskViewModel(
                 }
             }
         }
+    }
+
+    fun setSelectedCommentToUpdate(comment: CommentModel?) {
+        _selectedCommentToUpdate.value = comment
     }
 
     fun deleteComment(id: Int) {
@@ -674,7 +695,13 @@ class TaskViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskId, taskRepository, tagRepository, bookmarkRepository, commentRepository) as T
+            return TaskViewModel(
+                taskId,
+                taskRepository,
+                tagRepository,
+                bookmarkRepository,
+                commentRepository
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

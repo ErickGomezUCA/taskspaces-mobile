@@ -131,6 +131,8 @@ fun TaskDialog(
     val workspaceMembers = viewModel.workspaceMembers.collectAsStateWithLifecycle()
     val comments = viewModel.comments.collectAsStateWithLifecycle()
     val newComment = viewModel.newComment.collectAsStateWithLifecycle()
+    val showUpdateCommentDialog = viewModel.showUpdateCommentDialog.collectAsStateWithLifecycle()
+    val selectedCommentToUpdate = viewModel.selectedCommentToUpdate.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -218,6 +220,20 @@ fun TaskDialog(
                     onUnassignMember = { userId ->
                         viewModel.unassignMemberFromTask(userId)
                     }
+                )
+            }
+
+//            Update comment dialog
+            if (showUpdateCommentDialog.value) {
+                UpdateCommentDialog(
+                    comment = selectedCommentToUpdate.value!!,
+                    onDismissRequest = { viewModel.hideUpdateCommentDialog() },
+                    onUpdateComment = { newContent ->
+                        viewModel.updateComment(
+                            id = selectedCommentToUpdate.value!!.id,
+                            content = newContent
+                        )
+                    },
                 )
             }
 
@@ -642,7 +658,10 @@ fun TaskDialog(
                                                                 tint = MaterialTheme.colorScheme.onBackground
                                                             )
                                                         },
-                                                        onClick = {}
+                                                        onClick = {
+                                                            viewModel.setSelectedCommentToUpdate(comment)
+                                                            viewModel.showUpdateCommentDialog()
+                                                        }
                                                     ),
                                                     DropdownMenuOption(
                                                         label = "Delete",
