@@ -70,18 +70,6 @@ import com.ucapdm2025.taskspaces.utils.formatRelativeDate
 import com.ucapdm2025.taskspaces.utils.toLocalDateTime
 import java.time.LocalDateTime
 
-
-/**
- * Data class representing a timer associated with a user.
- *
- * @property time The current time value of the timer, formatted as a string (e.g., "12:34").
- * @property isRunning Indicates whether the timer is currently active.
- */
-data class UserTimer(
-    val time: String,
-    val isRunning: Boolean
-)
-
 /**
  * Composable that displays a detailed dialog for a given [Task].
  *
@@ -405,6 +393,7 @@ fun TaskDialog(
                     }
 
                     //MEDIA
+//                    TODO: Implement media upload and display
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -430,7 +419,7 @@ fun TaskDialog(
 //                }
 //            }
                         OutlinedButton(
-                            onClick = { /*TODO*/ },
+                            onClick = { },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
@@ -447,6 +436,7 @@ fun TaskDialog(
                     )
 
                     //TIMERS
+//                    TODO: Implement timer
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -464,7 +454,7 @@ fun TaskDialog(
                         }
 //            if (task.value?.userTimer == null) {
 //                OutlinedButton(
-//                    onClick = { /*TODO*/ },
+//                    onClick = { },
 //                    modifier = Modifier.fillMaxWidth(),
 //                    shape = RoundedCornerShape(8.dp),
 //                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
@@ -491,7 +481,7 @@ fun TaskDialog(
 //                }
 //                Spacer(modifier = Modifier.width(8.dp))
 //                OutlinedButton(
-//                    onClick = { /* TODO: Pause, resume */ },
+//                    onClick = { },
 //                    modifier = Modifier.fillMaxWidth(),
 //                    shape = RoundedCornerShape(8.dp),
 //                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
@@ -647,6 +637,7 @@ fun TaskDialog(
                                                     }
                                                 }
                                             }
+//                                            TODO: Hide this dropdown when current user is not the author of the comment
                                             DropdownMenu(
                                                 options = listOf(
                                                     DropdownMenuOption(
@@ -687,29 +678,8 @@ fun TaskDialog(
                                 }
                             }
                         }
-                        //                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-//                        ) {
-//                            OutlinedButton(
-//                                onClick = { /*TODO*/ },
-//                                modifier = Modifier.weight(1f),
-//                                shape = RoundedCornerShape(8.dp),
-//                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-//                            ) {
-//                                Text("Cancel")
-//                            }
-//                            Button(
-//                                onClick = { },
-//                                modifier = Modifier.weight(1f),
-//                                shape = RoundedCornerShape(8.dp),
-//                            ) {
-//                                Text("Save")
-//                            }
-//                        }
                     }
                 }
-
             }
         }
     )
