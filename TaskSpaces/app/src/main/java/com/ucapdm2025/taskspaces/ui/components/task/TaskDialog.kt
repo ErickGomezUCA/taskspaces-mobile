@@ -5,12 +5,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
@@ -521,54 +524,90 @@ fun TaskDialog(
                             )
                         }
 
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(vertical = 8.dp)) {
                             comments.value.forEach { comment ->
                                 Row(
                                     verticalAlignment = Alignment.Top,
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    UserAvatar(
-                                        avatar = comment.author.avatar,
-                                        size = 36
-                                    )
-                                    Column {
-                                        Text(
-                                            text = comment.author.username,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onBackground
+                                    Box(modifier = Modifier.padding(top = 4.dp)) {
+                                        UserAvatar(
+                                            avatar = comment.author.avatar,
+                                            size = 36
                                         )
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text(
-                                                text = formatRelativeDate(
-                                                    comment.createdAt?.toLocalDateTime()
-                                                        ?: LocalDateTime.now()),
-                                                color = ExtendedTheme.colors.background50,
-                                                fontSize = 12.sp
-                                            )
-                                            if (comment.edited) {
-                                                Spacer(modifier = Modifier.width(4.dp))
-                                                Icon(
-                                                    imageVector = Icons.Default.Edit,
-                                                    contentDescription = "Edited",
-                                                    tint = ExtendedTheme.colors.background50,
-                                                    modifier = Modifier.size(14.dp)
-                                                )
-                                                Spacer(modifier = Modifier.width(2.dp))
+                                    }
+
+                                    Column {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Column {
                                                 Text(
-                                                    text = "(edited)",
-                                                    color = ExtendedTheme.colors.background50,
-                                                    fontSize = 12.sp
+                                                    text = comment.author.username,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onBackground
                                                 )
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Text(
+                                                        text = formatRelativeDate(
+                                                            comment.createdAt?.toLocalDateTime() ?: LocalDateTime.now()
+                                                        ),
+                                                        color = ExtendedTheme.colors.background50,
+                                                        fontSize = 12.sp
+                                                    )
+                                                    if (comment.edited) {
+                                                        Spacer(modifier = Modifier.width(4.dp))
+                                                        Icon(
+                                                            imageVector = Icons.Default.Edit,
+                                                            contentDescription = "Edited",
+                                                            tint = ExtendedTheme.colors.background50,
+                                                            modifier = Modifier.size(14.dp)
+                                                        )
+                                                        Spacer(modifier = Modifier.width(2.dp))
+                                                        Text(
+                                                            text = "(edited)",
+                                                            color = ExtendedTheme.colors.background50,
+                                                            fontSize = 12.sp
+                                                        )
+                                                    }
+                                                }
                                             }
+                                            DropdownMenu(
+                                                options = listOf(
+                                                    DropdownMenuOption(
+                                                        label = "Edit",
+                                                        icon = {
+                                                            Icon(
+                                                                Icons.Default.Edit,
+                                                                contentDescription = "Edit Comment",
+                                                                tint = MaterialTheme.colorScheme.onBackground
+                                                            )
+                                                        },
+                                                        onClick = {}
+                                                    ),
+                                                    DropdownMenuOption(
+                                                        label = "Delete",
+                                                        icon = {
+                                                            Icon(
+                                                                Icons.Default.Delete,
+                                                                contentDescription = "Delete Comment",
+                                                                tint = MaterialTheme.colorScheme.onBackground
+                                                            )
+                                                        },
+                                                        onClick = {}
+                                                    )
+                                                )
+                                            )
                                         }
                                         Spacer(modifier = Modifier.height(2.dp))
                                         Text(
                                             text = comment.content,
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
-                                    }
-                                }
+                                    }                                }
                             }
                         }
                     //                        Row(
