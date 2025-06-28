@@ -45,10 +45,14 @@ fun HomeScreen(
     val selectedWorkspaceId = viewModel.selectedWorkspaceId.collectAsStateWithLifecycle()
 
     val isTitleValid = workspaceDialogData.value.trim().isNotEmpty()
+    val wasCreateAttempted = viewModel.wasCreateAttempted.collectAsStateWithLifecycle()
 
     if (showWorkspaceDialog.value) {
         AlertDialog(
-            onDismissRequest = { viewModel.hideDialog() },
+            onDismissRequest = {
+                viewModel.hideDialog()
+                viewModel.setCreateAttempted(false) // reset
+            },
             title = {
                 Text(
                     text = if (editMode.value == HomeEditMode.UPDATE)
@@ -63,17 +67,16 @@ fun HomeScreen(
                         onValueChange = { viewModel.setWorkspaceDialogData(it) },
                         label = { Text(text = "Workspace Title") },
                         placeholder = { Text(text = "Enter workspace title") },
-                        isError = !isTitleValid
+                        isError = wasCreateAttempted.value && workspaceDialogData.value.isBlank(),
+                        supportingText = {
+                            if (wasCreateAttempted.value && workspaceDialogData.value.isBlank()) {
+                                Text(
+                                    "Workspace title cannot be empty",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
-
-                    // Workspace dialog (for create and update workspace)
-                    if (!isTitleValid) {
-                        Text(
-                            text = "Title cannot be empty",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
                 }
             },
 
@@ -84,14 +87,22 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     OutlinedButton(
-                        onClick = { viewModel.hideDialog() },
+                        onClick = {
+                            viewModel.hideDialog()
+                            viewModel.setCreateAttempted(false) // reset
+                        },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                     ) { Text(text = "Cancel") }
+
                     Button(
                         onClick = {
-                            // Update selected workspace if in update mode, otherwise create a new one
+                            viewModel.setCreateAttempted(true)
+
+                            // Validate before continuing
+                            if (workspaceDialogData.value.isBlank()) return@Button
+
                             if (editMode.value == HomeEditMode.UPDATE) {
                                 // selectedWorkspaceId comes when the user selects a workspace to update on update mode
                                 viewModel.updateWorkspace(
@@ -102,12 +113,13 @@ fun HomeScreen(
                             } else {
                                 viewModel.createWorkspace(workspaceDialogData.value)
                             }
+
                             viewModel.setEditMode(HomeEditMode.NONE)
                             viewModel.hideDialog()
+                            viewModel.setCreateAttempted(false) // reset after success
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                        enabled = isTitleValid
+                        shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(text = if (editMode.value == HomeEditMode.UPDATE) "Update" else "Create")
                     }
