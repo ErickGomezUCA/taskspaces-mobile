@@ -9,8 +9,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
+import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
@@ -26,6 +28,7 @@ class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val authRepository: AuthRepository,
 //    private val taskRepository: TaskRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -57,11 +60,20 @@ class HomeViewModel(
 
     //    Fetch user id from auth
     init {
+        _userName.value = "Danie Reina"
+
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
-                _authUserId.value = userId
+                userRepository.getUserById(userId).collect { resource ->
+                    if (resource is Resource.Success<*>) {
+                        val user = resource.data as? UserModel
+                        _userName.value = user?.fullname ?: ""
+                        Log.d("HomeViewModel", "Auth user ID: $userId")
+                    }
+                }
             }
         }
+
 
         viewModelScope.launch {
             workspaceRepository.getWorkspacesByUserId(_authUserId.value).collect { resource ->
@@ -182,7 +194,8 @@ class HomeViewModel(
                 val application = this[APPLICATION_KEY] as TaskSpacesApplication
                 HomeViewModel(
                     application.appProvider.provideWorkspaceRepository(),
-                    application.appProvider.provideAuthRepository()
+                    application.appProvider.provideAuthRepository(),
+                    application.appProvider.provideUserRepository()
                 )
             }
         }
