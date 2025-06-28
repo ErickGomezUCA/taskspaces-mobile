@@ -60,7 +60,7 @@ class HomeViewModel(
 
     //    Fetch user id from auth
     init {
-        _userName.value = "Danie Reina"
+        _userName.value = "Danie Reina" // Testing to check if the first name shows on the Home Screen
 
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
