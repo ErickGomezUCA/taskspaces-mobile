@@ -18,6 +18,7 @@ data class CommentModel(
     override val id: Int,
     val content: String,
     val authorId: Int,
+    val author: UserModel,
     val taskId: Int,
     val edited: Boolean = false,
     override val createdAt: String? = null,

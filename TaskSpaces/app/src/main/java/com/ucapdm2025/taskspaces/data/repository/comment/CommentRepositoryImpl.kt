@@ -3,8 +3,10 @@ package com.ucapdm2025.taskspaces.data.repository.comment
 import android.util.Log
 import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.CommentDao
+import com.ucapdm2025.taskspaces.data.database.dao.UserDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.model.CommentModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.CommentRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.CommentResponse
@@ -15,6 +17,7 @@ import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import okio.IOException
@@ -28,6 +31,7 @@ import kotlin.collections.map
  */
 class CommentRepositoryImpl(
     private val commentDao: CommentDao,
+    private val userDao: UserDao,
     private val commentService: CommentService
 ): CommentRepository {
     override fun getCommentsByTaskId(taskId: Int): Flow<Resource<List<CommentModel>>> = flow {
@@ -52,7 +56,15 @@ class CommentRepositoryImpl(
         //        Use local comments
         val localComments =
             commentDao.getCommentsByTaskId(taskId = taskId).map { entities ->
-                val comments = entities.map { it.toDomain() }
+                val comments = entities.map { entity ->
+                    val author: UserModel? = userDao.getUserById(entity.authorId).first()?.toDomain()
+                    entity.toDomain(author ?: UserModel(
+                        id = 0,
+                        username = "Unknown",
+                        fullname = "Unknown",
+                        email = "Unknown",
+                    ))
+                }
 
                 if (comments.isEmpty()) {
                     //                Logs an error if no comments are found for the user
@@ -96,12 +108,12 @@ class CommentRepositoryImpl(
         }
     }
 
-    override suspend fun updateComment(id: Int, content: String, taskId: Int): Result<CommentModel> {
+    override suspend fun updateComment(id: Int, content: String): Result<CommentModel> {
         val request = CommentRequest(content)
 
         return try {
             val response =
-                commentService.updateComment(commentId = id, taskId = taskId, request = request)
+                commentService.updateComment(commentId = id, request = request)
 
             val updatedComment: CommentModel = response.content.toDomain()
 

@@ -92,7 +92,7 @@ class AppProvider(context: Context) {
     private val commentDao = appDatabase.commentDao()
     private val commentService = RetrofitInstance.commentService
     private val commentRepository: CommentRepository =
-        CommentRepositoryImpl(commentDao, commentService)
+        CommentRepositoryImpl(commentDao, userDao, commentService)
 
     fun provideUserRepository(): UserRepository {
         return userRepository

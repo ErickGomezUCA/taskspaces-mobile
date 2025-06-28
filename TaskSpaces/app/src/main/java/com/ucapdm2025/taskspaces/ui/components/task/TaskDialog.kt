@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.BookmarkRemove
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Person
@@ -56,12 +57,16 @@ import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenu
 import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
+import com.ucapdm2025.taskspaces.ui.components.general.UserAvatar
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModel
 import com.ucapdm2025.taskspaces.ui.screens.task.TaskViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import com.ucapdm2025.taskspaces.utils.formatRelativeDate
+import com.ucapdm2025.taskspaces.utils.toLocalDateTime
+import java.time.LocalDateTime
 
 
 /**
@@ -102,8 +107,9 @@ fun TaskDialog(
     val taskRepository = application.appProvider.provideTaskRepository()
     val tagRepository = application.appProvider.provideTagRepository()
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
+    val commentRepository = application.appProvider.provideCommentRepository()
     val viewModel: TaskViewModel =
-        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, tagRepository, bookmarkRepository))
+        viewModel(factory = TaskViewModelFactory(taskId, taskRepository, tagRepository, bookmarkRepository, commentRepository))
 
     val task = viewModel.task.collectAsStateWithLifecycle()
     val tags = viewModel.tags.collectAsStateWithLifecycle()
@@ -113,6 +119,7 @@ fun TaskDialog(
     val showTaskMembersDialog = viewModel.showTaskMembersDialog.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
     val workspaceMembers = viewModel.workspaceMembers.collectAsStateWithLifecycle()
+    val comments = viewModel.comments.collectAsStateWithLifecycle()
 
 //    Change task id on dialog load
     LaunchedEffect(taskId) {
@@ -485,26 +492,7 @@ fun TaskDialog(
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 //                            Display avatar if user has one, otherwise show a placeholder
-                            members.value.forEach { user ->
-                                if (!user.avatar.isNullOrEmpty()) {
-                                    AsyncImage(
-                                        model = user.avatar,
-                                        contentDescription = user.fullname,
-                                        modifier = Modifier
-                                            .size(36.dp)
-                                            .clip(CircleShape)
-                                            .background(ExtendedTheme.colors.primary50, CircleShape)
-                                    )
-                                } else {
-                                    Image(
-                                        painter = painterResource(id = android.R.drawable.ic_menu_camera),
-                                        contentDescription = user.fullname,
-                                        modifier = Modifier
-                                            .size(36.dp)
-                                            .background(ExtendedTheme.colors.primary50, CircleShape)
-                                    )
-                                }
-                            }
+                            members.value.forEach { user -> UserAvatar(avatar = user.avatar, size = 36) }
                         }
                         OutlinedButton(
                             onClick = { viewModel.showTaskMembersDialog() },
@@ -532,46 +520,58 @@ fun TaskDialog(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         }
+
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-//                            TODO: Implement comments
-//                            task.value?.comments?.forEach { comment ->
-//                                val user = usersDummies.find { it.id == comment.authorId }
-//                                Row(
-//                                    verticalAlignment = Alignment.Top,
-//                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                                    modifier = Modifier.fillMaxWidth()
-//                                ) {
-//                                    Image(
-//                                        painter = painterResource(id = android.R.drawable.ic_menu_camera),
-//                                        contentDescription = user?.username ?: "User",
-//                                        modifier = Modifier
-//                                            .size(36.dp)
-//                                            .background(ExtendedTheme.colors.primary50, CircleShape)
-//                                    )
-//                                    Column {
-//                                        Row {
-//                                            Text(
-//                                                text = user?.username ?: "Unknown",
-//                                                fontWeight = FontWeight.Bold,
-//                                                color = MaterialTheme.colorScheme.onBackground
-//                                            )
-//                                            Spacer(modifier = Modifier.width(8.dp))
-//                                            Text(
-//                                                text = comment.createdAt,
-//                                                color = MaterialTheme.colorScheme.onBackground,
-//                                                fontSize = 12.sp
-//                                            )
-//                                        }
-//                                        Spacer(modifier = Modifier.height(2.dp))
-//                                        Text(
-//                                            text = comment.content,
-//                                            color = MaterialTheme.colorScheme.onBackground
-//                                        )
-//                                    }
-//                                }
-//                            }
+                            comments.value.forEach { comment ->
+                                Row(
+                                    verticalAlignment = Alignment.Top,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    UserAvatar(
+                                        avatar = comment.author.avatar,
+                                        size = 36
+                                    )
+                                    Column {
+                                        Text(
+                                            text = comment.author.username,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = formatRelativeDate(
+                                                    comment.createdAt?.toLocalDateTime()
+                                                        ?: LocalDateTime.now()),
+                                                color = ExtendedTheme.colors.background50,
+                                                fontSize = 12.sp
+                                            )
+                                            if (comment.edited) {
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Icon(
+                                                    imageVector = Icons.Default.Edit,
+                                                    contentDescription = "Edited",
+                                                    tint = ExtendedTheme.colors.background50,
+                                                    modifier = Modifier.size(14.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(2.dp))
+                                                Text(
+                                                    text = "(edited)",
+                                                    color = ExtendedTheme.colors.background50,
+                                                    fontSize = 12.sp
+                                                )
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = comment.content,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                            }
                         }
-//                        Row(
+                    //                        Row(
 //                            modifier = Modifier.fillMaxWidth(),
 //                            horizontalArrangement = Arrangement.spacedBy(16.dp)
 //                        ) {

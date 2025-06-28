@@ -12,6 +12,6 @@ import kotlinx.coroutines.flow.Flow
 interface CommentRepository {
     fun getCommentsByTaskId(taskId: Int): Flow<Resource<List<CommentModel>>>
     suspend fun createComment(content: String, taskId: Int): Result<CommentModel>
-    suspend fun updateComment(id: Int, content: String, taskId: Int): Result<CommentModel>
+    suspend fun updateComment(id: Int, content: String): Result<CommentModel>
     suspend fun deleteComment(id: Int): Result<CommentModel>
 }

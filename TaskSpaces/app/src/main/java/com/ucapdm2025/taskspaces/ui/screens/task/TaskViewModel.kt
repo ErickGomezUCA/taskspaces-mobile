@@ -12,7 +12,6 @@ import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
-import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
@@ -34,9 +33,9 @@ class TaskViewModel(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
     private val tagRepository: TagRepository,
-    private val bookmarkRepository: BookmarkRepository
+    private val bookmarkRepository: BookmarkRepository,
+    private val commentRepository: CommentRepository
 ) : ViewModel() {
-    private val commentRepository: CommentRepository = CommentRepositoryImpl()
 
     private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
 
@@ -45,9 +44,6 @@ class TaskViewModel(
 
     private val _isBookmarked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> = _isBookmarked.asStateFlow()
-
-    private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
-    val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
     private val _showTagsDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showTagsDialog: StateFlow<Boolean> = _showTagsDialog.asStateFlow()
@@ -66,6 +62,9 @@ class TaskViewModel(
 
     private val _workspaceMembers: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
     val workspaceMembers: StateFlow<List<UserModel>> = _workspaceMembers.asStateFlow()
+
+    private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
+    val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
@@ -94,19 +93,6 @@ class TaskViewModel(
 
                     null -> _task.value = null
                 }
-            }
-        }
-
-//        Load _comments
-        viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    commentRepository.getCommentsByTaskId(taskId)
-                } else {
-                    flowOf(emptyList()) // Emit empty list if no task ID is set
-                }
-            }.collect { comments ->
-                _comments.value = comments
             }
         }
 
@@ -251,6 +237,33 @@ class TaskViewModel(
             }
         }
 
+//        Load _comments
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    commentRepository.getCommentsByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val comments = resource.data
+                        _comments.value = comments
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _comments.value = emptyList()
+                }
+            }
+        }
     }
 
     /**
@@ -548,30 +561,64 @@ class TaskViewModel(
         }
     }
 
+//  Comments
     fun createComment(content: String) {
         viewModelScope.launch {
-            commentRepository.createComment(
-                content = content,
-                authorId = 1,
-                taskId = _task.value?.id ?: 0
-            )
+            val response = commentRepository.createComment(content, _currentTaskId.value ?: 0)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error creating comment: ${exception.message}")
+                }
+            }
         }
     }
 
     fun updateComment(id: Int, content: String) {
         viewModelScope.launch {
-            commentRepository.updateComment(
-                id = id,
-                content = content,
-                authorId = 1,
-                taskId = _task.value?.id ?: 0
-            )
+            val response = commentRepository.updateComment(id, content)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating comment: ${exception.message}")
+                }
+            }
         }
     }
 
     fun deleteComment(id: Int) {
         viewModelScope.launch {
-            commentRepository.deleteComment(id)
+            val response = commentRepository.deleteComment(id)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating comment: ${exception.message}")
+                }
+            } else {
+//                reload comments
+                _currentTaskId.value?.let { reloadComments(it) }
+            }
+        }
+    }
+
+    fun reloadComments(taskId: Int = _currentTaskId.value ?: 0) {
+        viewModelScope.launch {
+            commentRepository.getCommentsByTaskId(taskId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _comments.value = resource.data
+                    is Resource.Error, null -> _comments.value = emptyList()
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -614,12 +661,13 @@ class TaskViewModelFactory(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
     private val tagRepository: TagRepository,
-    private val bookmarkRepository: BookmarkRepository
+    private val bookmarkRepository: BookmarkRepository,
+    private val commentRepository: CommentRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskId, taskRepository, tagRepository, bookmarkRepository) as T
+            return TaskViewModel(taskId, taskRepository, tagRepository, bookmarkRepository, commentRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

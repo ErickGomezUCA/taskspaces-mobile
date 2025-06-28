@@ -36,6 +36,7 @@ fun CommentResponse.toDomain(): CommentModel {
         id = id,
         content = content,
         authorId = authorId,
+        author = author.toDomain(),
         taskId = taskId,
         edited = edited,
         createdAt = createdAt,

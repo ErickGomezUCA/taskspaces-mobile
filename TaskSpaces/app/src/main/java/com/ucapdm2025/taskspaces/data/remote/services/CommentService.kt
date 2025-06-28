@@ -20,10 +20,9 @@ interface CommentService {
     @POST("comments/t/{taskId}")
     suspend fun createComment(@Path("taskId") taskId: Int, @Body request: CommentRequest): BaseResponse<CommentResponse>
 
-    @PUT("comments/{commentId}/t/{taskId}")
+    @PUT("comments/{commentId}")
     suspend fun updateComment(
         @Path("commentId") commentId: Int,
-        @Path("taskId") taskId: Int,
         @Body request: CommentRequest
     ): BaseResponse<CommentResponse>
 

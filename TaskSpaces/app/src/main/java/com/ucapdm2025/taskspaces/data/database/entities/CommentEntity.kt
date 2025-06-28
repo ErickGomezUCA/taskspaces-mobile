@@ -1,7 +1,9 @@
 package com.ucapdm2025.taskspaces.data.database.entities
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.ucapdm2025.taskspaces.data.model.CommentModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 
 /**
  * CommentEntity is a data class that represents a comment in the database.
@@ -16,6 +18,7 @@ import com.ucapdm2025.taskspaces.data.model.CommentModel
  */
 @Entity(tableName = "comment")
 data class CommentEntity(
+    @PrimaryKey(autoGenerate = true)
     override val id: Int,
     val content: String,
     val authorId: Int,
@@ -30,11 +33,12 @@ data class CommentEntity(
  *
  * @return A CommentModel instance with the same properties as the CommentEntity.
  */
-fun CommentEntity.toDomain(): CommentModel {
+fun CommentEntity.toDomain(author: UserModel): CommentModel {
     return CommentModel(
         id = id,
         content = content,
         authorId = authorId,
+        author = author,
         taskId = taskId,
         edited = edited,
         createdAt = createdAt,
