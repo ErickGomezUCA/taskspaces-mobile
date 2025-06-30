@@ -3,6 +3,7 @@ package com.ucapdm2025.taskspaces.data.remote.services
 import com.ucapdm2025.taskspaces.data.remote.requests.TaskRequest
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.TaskResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -28,4 +29,28 @@ interface TaskService {
 
     @DELETE("tasks/{id}")
     suspend fun deleteTask(@Path("id") id: Int): BaseResponse<TaskResponse>
+
+//    Members
+//    TODO: Implement this in server backend
+    @GET("tasks/assigned/{userId}")
+    suspend fun getAssignedTasksByUserId(@Path("userId") userId: Int): BaseResponse<List<TaskResponse>>
+
+    @GET("tasks/{taskId}/members")
+    suspend fun getMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<UserResponse>>
+
+    @GET("tasks/{taskId}/members/w")
+    suspend fun getWorkspaceMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<UserResponse>>
+
+    @POST("tasks/{taskId}/members/{memberId}")
+    suspend fun assignMemberToTask(
+        @Path("taskId") taskId: Int,
+        @Path("memberId") memberId: Int
+    ): BaseResponse<TaskResponse>
+
+
+    @DELETE("tasks/{taskId}/members/{memberId}")
+    suspend fun removeMemberFromTask(
+        @Path("taskId") taskId: Int,
+        @Path("memberId") memberId: Int
+    ): BaseResponse<TaskResponse>
 }

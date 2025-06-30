@@ -2,7 +2,9 @@ package com.ucapdm2025.taskspaces.data.remote.responses
 
 import com.ucapdm2025.taskspaces.data.database.entities.TaskEntity
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.utils.toLocalDateTime
 import java.time.LocalDateTime
 
 /**
@@ -14,12 +16,12 @@ import java.time.LocalDateTime
  * @property title The title of the task.
  * @property description An optional description of the task.
  * @property status The status of the task, represented as a string (e.g., "PENDING", "DOING", "DONE").
- * @property deadline An optional deadline for the task, represented as a String (TODO: should be LocalDateTime).
+ * @property deadline An optional deadline for the task, represented as a String.
  * @property timer An optional timer for the task, represented as a Float.
  * @property projectId The ID of the project to which the task belongs.
- * @property tags A list of tags associated with the task (TODO: handle in a separate entity).
- * @property assignedMembers A list of members assigned to the task (TODO: handle in a separate entity).
- * @property comments A list of comments on the task (TODO: handle in a separate entity).
+ * @property tags A list of tags associated with the task.
+ * @property assignedMembers A list of members assigned to the task.
+ * @property comments A list of comments on the task.
  * @property createdAt The timestamp when the task was created.
  * @property updatedAt The timestamp when the task was last updated.
  */
@@ -28,12 +30,12 @@ data class TaskResponse(
     val breadcrumb: String = "/",
     val title: String,
     val description: String? = null,
-    val status: String, // Assuming status is a string, could be an enum or similar
-    val deadline: String? = null, // TODO: Use LocalDateTime instead of String
+    val status: String,
+    val deadline: String? = null,
     val timer: Float? = null,
     val projectId: Int,
-    val tags: List<Any> = emptyList(), // TODO: Handle tags in a separate entity
-    val assignedMembers: List<Any> = emptyList(), // TODO: Handle assigned members in a separate entity
+    val tags: List<TagResponse> = emptyList(),
+    val assignedMembers: List<UserResponse> = emptyList(), // TODO: Handle assigned members in a separate entity
     val comments: List<Any> = emptyList(), // TODO: Handle comments in a separate entity
     val createdAt: String? = null,
     val updatedAt: String? = null
@@ -56,9 +58,11 @@ fun TaskResponse.toDomain(): TaskModel {
             "DONE" -> StatusVariations.DONE
             else -> StatusVariations.PENDING // Default case
         },
-        deadline = deadline, // TODO: Parse correctly into LocalDateTime
+        deadline = deadline?.toLocalDateTime(),
         timer = timer,
         projectId = projectId,
+        tags = tags.map { it.toDomain() },
+        assignedMembers = assignedMembers.map { it.toDomain() },
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -76,7 +80,7 @@ fun TaskResponse.toEntity(): TaskEntity {
         title = title,
         description = description,
         status = status.uppercase(),
-        deadline = deadline, // TODO: Parse correctly into LocalDateTime
+        deadline = deadline,
         timer = timer,
         projectId = projectId,
         createdAt = createdAt,
