@@ -107,8 +107,6 @@ fun WorkspaceScreen(
 //    para poder mostrar u ocultar elementos de la UI según el rol del usuario en el workspace
 
 
-
-
 //    TODO: Show error and loading states
 //    Show feedback icon if the workspace is not found
     if (workspace.value == null) {
@@ -232,27 +230,27 @@ fun WorkspaceScreen(
             // Projects Section
             item {
                 Container(
-                    title = "Projects", dropdownMenuOptions = listOf(
-                        DropdownMenuOption(
-                            label = "Delete",
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Delete,
-                                    contentDescription = "Delete icon"
-                                )
-                            },
-                            onClick = { viewModel.setEditMode(WorkspaceEditMode.DELETE) }),
-                        DropdownMenuOption(
-                            label = "Update",
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Sync,
-                                    contentDescription = "Edit icon"
-                                )
-                            },
-                            onClick = { viewModel.setEditMode(WorkspaceEditMode.UPDATE) })
-                    )
-                ) {
+                    title = "Projects",
+                    dropdownMenuOptions = if (viewModel.hasSufficientPermissions(MemberRoles.ADMIN)) {
+                        listOf(
+                            DropdownMenuOption(
+                                label = "Delete",
+                                icon = {
+                                    Icon(Icons.Outlined.Delete, contentDescription = "Delete icon")
+                                },
+                                onClick = { viewModel.setEditMode(WorkspaceEditMode.DELETE) }
+                            ),
+                            DropdownMenuOption(
+                                label = "Update",
+                                icon = {
+                                    Icon(Icons.Outlined.Sync, contentDescription = "Edit icon")
+                                },
+                                onClick = { viewModel.setEditMode(WorkspaceEditMode.UPDATE) }
+                            )
+                        )
+                    } else emptyList()
+                )
+                {
                     if (projects.value.isNotEmpty()) {
                         //                    Show projects section
                         val chunkedProjects = projects.value.chunked(2)
@@ -316,25 +314,27 @@ fun WorkspaceScreen(
                     }
 
                     // "Create new project" button
-                    TextButton(
-                        onClick = { viewModel.showDialog() },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp),
-                    ) {
-                        Text(
-                            text = "Create new project",
-                            style = OutfitTypography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add icon",
+                    if (viewModel.hasSufficientPermissions(MemberRoles.ADMIN)) {
+                        TextButton(
+                            onClick = { viewModel.showDialog() },
+                            shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
-                                .padding(start = 4.dp)
-                                .size(16.dp)
-                        )
+                                .fillMaxWidth()
+                                .height(40.dp),
+                        ) {
+                            Text(
+                                text = "Create new project",
+                                style = OutfitTypography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add icon",
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .size(16.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -405,20 +405,22 @@ fun WorkspaceScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(
-                        onClick = { viewModel.showManageMembersDialog() },
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(size = 8.dp)
+                    if (viewModel.hasSufficientPermissions(MemberRoles.ADMIN)) {
+                        Button(
+                            onClick = { viewModel.showManageMembersDialog() },
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(size = 8.dp)
+                                )
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Manage members",
+                                style = OutfitTypography.bodyMedium,
+                                color = MaterialTheme.colorScheme.background
                             )
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Manage members",
-                            style = OutfitTypography.bodyMedium,
-                            color = MaterialTheme.colorScheme.background
-                        )
+                        }
                     }
                 }
             }
