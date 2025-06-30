@@ -158,21 +158,23 @@ class ProjectViewModel(
         _selectedTaskId.value = id
     }
 
-    suspend fun hasSufficientPermissions(
+    fun hasSufficientPermissions(
         minimumRole: MemberRoles
     ): Boolean {
-        return memberRoleRepository.hasSufficientPermissions(
-            projectId = projectId,
-            minimumRole = minimumRole
-        ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
-            when (resource) {
-                is Resource.Success -> resource.data == true
-                else -> false
-            }
-        } == true
+        return kotlinx.coroutines.runBlocking {
+            memberRoleRepository.hasSufficientPermissions(
+                projectId = projectId,
+                minimumRole = minimumRole
+            ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+                when (resource) {
+                    is Resource.Success -> resource.data == true
+                    else -> false
+                }
+            } == true
+        }
     }
-
 }
+
 
 /**
  * Factory for creating instances of [ProjectViewModel] with a specific projectId.
