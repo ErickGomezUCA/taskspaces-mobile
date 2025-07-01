@@ -61,7 +61,7 @@ class HomeViewModel(
                 _authUserId.value = userId
 
                 launch {
-                    workspaceRepository.getWorkspacesByUserId(_authUserId.value)
+                    workspaceRepository.getWorkspacesByUserId(userId)
                         .collect { resource ->
                             when (resource) {
                                 is Resource.Loading -> {
@@ -73,7 +73,11 @@ class HomeViewModel(
                                 }
 
                                 is Resource.Error -> {
-                                    _workspaces.value = UiState.Error(resource.message)
+                                    if (resource.message.startsWith("No workspace found")) {
+                                        _workspaces.value = UiState.Success(emptyList())
+                                    } else {
+                                        _workspaces.value = UiState.Error(resource.message)
+                                    }
                                 }
                             }
                         }
@@ -91,7 +95,11 @@ class HomeViewModel(
                             }
 
                             is Resource.Error -> {
-                                _workspacesSharedWithMe.value = UiState.Error(resource.message)
+                                if (resource.message.startsWith("No shared workspaces")) {
+                                    _workspacesSharedWithMe.value = UiState.Success(emptyList())
+                                } else {
+                                    _workspacesSharedWithMe.value = UiState.Error(resource.message)
+                                }
                             }
                         }
                     }
@@ -100,11 +108,24 @@ class HomeViewModel(
 // NOTE: The loading state for assigned tasks is working correctly,
 // but the data loads so quickly that the CircularProgressIndicator
 // is barely visible. You may want to add a slight delay
-        viewModelScope.launch {
-            taskRepository.getAssignedTasks(_authUserId.value).collect { tasks ->
-                _assignedTasks.value = UiState.Success(tasks)
-            }
-        }
+                taskRepository.getAssignedTasks(userId).collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            _assignedTasks.value = UiState.Loading
+                        }
+                        is Resource.Success -> {
+                            _assignedTasks.value = UiState.Success(resource.data)
+                        }
+                        is Resource.Error -> {
+                            if (resource.message.lowercase().contains("no task")) {
+                                _assignedTasks.value = UiState.Success(emptyList())
+                            } else {
+                                _assignedTasks.value = UiState.Error(resource.message)
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
