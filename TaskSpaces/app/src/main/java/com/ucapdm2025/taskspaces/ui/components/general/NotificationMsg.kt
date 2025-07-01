@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,39 +12,43 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+
 /**
- * Figma-style notification: white card with icon and message.
+ * A composable that renders a styled message card used to display success or error feedback.
+ *
+ * @param message The message text to be shown inside the notification.
+ * @param isSuccess Whether the message represents a success (`true`) or error (`false`) state.
  */
 @Composable
-fun NotificationMessage(message: String, isSuccess: Boolean) {
-    val icon = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Info
-    val iconTint = if (isSuccess) Color(0xFF1B873F) else Color(0xFF8B0000)
-    val backgroundColor = Color.White
-    val textColor = Color.Black
+private fun NotificationMessage(message: String, isSuccess: Boolean) {
+    val icon       = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Info
+    val iconTint   = if (isSuccess) Color(0xFF1B873F) else Color(0xFFB00020)
+    val bgColor    = Color(0xFFF0F0F0)
+    val textColor  = Color.Black
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(10.dp))
-            .background(backgroundColor, RoundedCornerShape(10.dp))
-            .padding(horizontal = 16.dp, vertical = 14.dp)
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        shadowElevation = 6.dp,
+        color = bgColor
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
             Icon(
                 imageVector = icon,
@@ -64,95 +67,104 @@ fun NotificationMessage(message: String, isSuccess: Boolean) {
 }
 
 /**
- * Shows the [NotificationMessage] centered on screen using a smooth animation.
+ * A composable that displays a floating notification banner.
+ * It animates in/out vertically and overlays the main content without displacing layout.
+ *
+ * This is typically used for showing transient messages (e.g., success or error states)
+ * after user actions such as creation, update, or deletion.
+ *
+ * @param event The UI event containing the message and status type.
+ * @param modifier Optional [Modifier] for further layout customization.
+ * @param topPadding Top spacing below the app bar or title to anchor the notification.
  */
 @Composable
 fun NotificationHost(
     event: UiEvent?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    topPadding: Dp = 96.dp
 ) {
-    AnimatedVisibility(
-        visible = event != null,
-        enter = slideInVertically { it / 2 } + fadeIn(),
-        exit = slideOutVertically { it / 2 } + fadeOut(),
+    Box(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(top = 200.dp)
+            .fillMaxSize()
+            .zIndex(10f),
+        contentAlignment = Alignment.TopCenter
     ) {
-        event?.let {
-            NotificationMessage(
-                message = when (it) {
-                    is UiEvent.Success -> it.message
-                    is UiEvent.Error -> it.message
-                },
-                isSuccess = it is UiEvent.Success
-            )
+        AnimatedVisibility(
+            visible = event != null,
+            enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+            exit  = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
+        ) {
+            event?.let {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = topPadding)
+                ) {
+                    NotificationMessage(
+                        message   = when (it) {
+                            is UiEvent.Success -> it.message
+                            is UiEvent.Error   -> it.message
+                        },
+                        isSuccess = it is UiEvent.Success
+                    )
+                }
+            }
         }
     }
 }
 
-/* -------- Previews -------- */
-
 /**
- * Preview of [NotificationMessage] success message in light theme.
+ * Preview of a success notification in light theme.
  */
 @Preview(showBackground = true)
 @Composable
-fun NotificationMessageSuccessPreviewLight() {
-    TaskSpacesTheme(darkTheme = false) {
-        ExtendedColors(darkTheme = false) {
-            NotificationMessage(
-                message = "Successfully completed the action",
-                isSuccess = true
+fun NotificationSuccessPreviewLight() {
+    TaskSpacesTheme {
+        ExtendedColors {
+            NotificationHost(
+                event = UiEvent.Success("Project created successfully")
             )
         }
     }
 }
-
 /**
- * Preview of [NotificationMessage] error message in light theme.
+ * Preview of an error notification in light theme.
  */
 @Preview(showBackground = true)
 @Composable
-fun NotificationMessageErrorPreviewLight() {
-    TaskSpacesTheme(darkTheme = false) {
-        ExtendedColors(darkTheme = false) {
-            NotificationMessage(
-                message = "The action could not be completed",
-                isSuccess = false
+fun NotificationErrorPreviewLight() {
+    TaskSpacesTheme {
+        ExtendedColors {
+            NotificationHost(
+                event = UiEvent.Error("Unable to create project")
             )
         }
     }
 }
-
 /**
- * Preview of [NotificationMessage] success message in dark theme.
+ * Preview of a success notification in dark theme.
  */
-@Preview(showBackground = true, backgroundColor = 0xFF121212)
+@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E)
 @Composable
-fun NotificationMessageSuccessPreviewDark() {
+fun NotificationSuccessPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            NotificationMessage(
-                message = "Successfully completed the action",
-                isSuccess = true
+            NotificationHost(
+                event = UiEvent.Success("Project created successfully")
             )
         }
     }
 }
-
 /**
- * Preview of [NotificationMessage] error message in dark theme.
+ * Preview of an error notification in dark theme.
  */
-@Preview(showBackground = true, backgroundColor = 0xFF121212)
+@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E)
 @Composable
-fun NotificationMessageErrorPreviewDark() {
+fun NotificationErrorPreviewDark() {
     TaskSpacesTheme(darkTheme = true) {
         ExtendedColors(darkTheme = true) {
-            NotificationMessage(
-                message = "The action could not be completed",
-                isSuccess = false
+            NotificationHost(
+                event = UiEvent.Error("Unable to create project")
             )
         }
     }
