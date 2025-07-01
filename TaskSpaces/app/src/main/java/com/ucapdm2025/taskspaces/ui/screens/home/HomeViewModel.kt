@@ -26,6 +26,7 @@ class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val authRepository: AuthRepository,
 //    private val taskRepository: TaskRepository
+
 ) : ViewModel() {
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -52,6 +53,13 @@ class HomeViewModel(
 
     private val _selectedWorkspaceId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
+
+    private val _wasCreateAttempted = MutableStateFlow(false)
+    val wasCreateAttempted: StateFlow<Boolean> = _wasCreateAttempted.asStateFlow()
+
+    fun setCreateAttempted(value: Boolean) {
+        _wasCreateAttempted.value = value
+    }
 
     //    Fetch user id from auth
     init {
@@ -107,19 +115,26 @@ class HomeViewModel(
     }
 
     fun createWorkspace(title: String) {
+        _wasCreateAttempted.value = true
+
+        val trimmedTitle = title.trim()
+        if (trimmedTitle.isEmpty()) {
+            Log.e("HomeViewModel", "Invalid workspace title: empty")
+            return
+        }
+
         viewModelScope.launch {
-            val response = workspaceRepository.createWorkspace(title)
+            val response = workspaceRepository.createWorkspace(trimmedTitle)
 
             if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
-                    // Log or handle the exception as needed
                     Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
                 }
             }
         }
     }
+
 
     fun updateWorkspace(id: Int, title: String) {
         viewModelScope.launch {
