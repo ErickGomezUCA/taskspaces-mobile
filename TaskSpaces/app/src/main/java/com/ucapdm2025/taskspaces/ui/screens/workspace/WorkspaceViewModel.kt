@@ -56,6 +56,21 @@ class WorkspaceViewModel(
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
 
+    private val _inviteUsername = MutableStateFlow("")
+    val inviteUsername: StateFlow<String> = _inviteUsername.asStateFlow()
+
+    private val _wasInviteAttempted = MutableStateFlow(false)
+    val wasInviteAttempted: StateFlow<Boolean> = _wasInviteAttempted.asStateFlow()
+
+    fun setInviteUsername(username: String) {
+        _inviteUsername.value = username
+    }
+
+    fun setInviteAttempted(value: Boolean) {
+        _wasInviteAttempted.value = value
+    }
+
+
     init {
 //        Get current workspace info
         viewModelScope.launch {
@@ -195,21 +210,26 @@ class WorkspaceViewModel(
     }
 
     fun inviteMember(username: String, memberRole: MemberRoles) {
+        val trimmed = username.trim()
+        if (trimmed.isEmpty()) {
+            Log.e("WorkspaceViewModel", "Username input is empty")
+            return
+        }
+
         viewModelScope.launch {
-            val response = workspaceRepository.inviteMember(username, memberRole, workspaceId)
+            val response = workspaceRepository.inviteMember(trimmed, memberRole, workspaceId)
 
             Log.d("WorkspaceViewModel", "Invite member response: $response")
 
             if (!response.isSuccess) {
-                // Handle error, e.g., show a message to the user
                 val exception = response.exceptionOrNull()
                 if (exception != null) {
-                    // Log or handle the exception as needed
                     Log.e("WorkspaceViewModel", "Error inviting member: ${exception.message}")
                 }
             }
         }
     }
+
 
     fun updateMemberRole(
         userId: Int,
