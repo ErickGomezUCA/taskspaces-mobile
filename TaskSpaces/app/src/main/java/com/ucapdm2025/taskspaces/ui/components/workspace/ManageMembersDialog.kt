@@ -235,3 +235,69 @@ fun ManageMembersDialog(
         }
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ManageMembersDialogEmptyLightPreview() {
+    TaskSpacesTheme {
+        ExtendedColors {
+            ManageMembersDialog()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ManageMembersDialogDarkPreview() {
+    val members = listOf(
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(
+                id = 1,
+                fullname = "Test 1",
+                username = "test 1",
+                email = "test@email.com"
+            ),
+            memberRole = MemberRoles.READER
+        ),
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(
+                id = 2,
+                fullname = "Test 2",
+                username = "test 2",
+                email = "test@email.com"
+            ),
+            memberRole = MemberRoles.COLLABORATOR
+        ),
+        WorkspaceMemberModel(
+            workspaceId = 1,
+            user = UserModel(
+                id = 3,
+                fullname = "Test 3",
+                username = "test 3",
+                email = "test@email.com"
+            ),
+            memberRole = MemberRoles.ADMIN
+        )
+
+
+    )
+
+
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            ManageMembersDialog(members = members)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ManageMembersDialogEmptyDarkPreview() {
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            ManageMembersDialog()
+        }
+    }
+}
