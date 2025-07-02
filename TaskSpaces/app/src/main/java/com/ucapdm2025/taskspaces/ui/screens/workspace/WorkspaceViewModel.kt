@@ -12,6 +12,7 @@ import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.helpers.friendlyMessage
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.components.workspace.WorkspaceEditMode
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -137,7 +138,8 @@ class WorkspaceViewModel(
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Project created successfully"))
             } else {
-                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to create project"
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to create project"
+                val msg = friendlyMessage(raw, "The project could not be created")
                 _uiEvent.emit(UiEvent.Error(msg))
                 Log.e("WorkspaceViewModel", "Error creating project: $msg")
             }
@@ -150,7 +152,8 @@ class WorkspaceViewModel(
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Project updated successfully"))
             } else {
-                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to update project"
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to update project"
+                val msg = friendlyMessage(raw, "The project could not be updated.")
                 _uiEvent.emit(UiEvent.Error(msg))
                 Log.e("WorkspaceViewModel", "Error updating project: $msg")
             }
@@ -163,7 +166,8 @@ class WorkspaceViewModel(
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Project deleted successfully"))
             } else {
-                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to delete project"
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to delete project"
+                val msg = friendlyMessage(raw, "The project could not be deleted")
                 _uiEvent.emit(UiEvent.Error(msg))
                 Log.e("WorkspaceViewModel", "Error deleting project: $msg")
             }
@@ -217,7 +221,8 @@ class WorkspaceViewModel(
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Invitation sent to @$username"))
             } else {
-                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to invite member"
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to invite member"
+                val msg = friendlyMessage(raw, "Could not invite member")
                 _uiEvent.emit(UiEvent.Error(msg))
                 Log.e("WorkspaceViewModel", "Error inviting member: $msg")
             }
@@ -240,7 +245,8 @@ class WorkspaceViewModel(
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Member role updated"))
             } else {
-                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to update role"
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to update role"
+                val msg = friendlyMessage(raw, "The role could not be updated.")
                 _uiEvent.emit(UiEvent.Error(msg))
                 Log.e("WorkspaceViewModel", "Error updating member role: $msg")
             }
@@ -259,7 +265,8 @@ class WorkspaceViewModel(
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Member removed"))
             } else {
-                val msg = response.exceptionOrNull()?.localizedMessage ?: "Unable to remove member"
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to remove member"
+                val msg = friendlyMessage(raw, "Could not delete member")
                 _uiEvent.emit(UiEvent.Error(msg))
                 Log.e("WorkspaceViewModel", "Error removing member: $msg")
             }
