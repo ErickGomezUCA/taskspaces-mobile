@@ -19,11 +19,9 @@ import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = SplashRoute) {
+    NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
-        composable<SplashRoute> {
-            SplashScreen(navController = navController)
-        }
+
 
         composable<HomeRoute> {
             HomeScreen(onNavigateWorkspace = { workspaceId ->
