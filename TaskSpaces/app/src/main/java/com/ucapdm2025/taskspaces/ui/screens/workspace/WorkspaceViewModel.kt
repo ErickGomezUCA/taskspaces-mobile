@@ -56,6 +56,18 @@ class WorkspaceViewModel(
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
 
+    private val _wasProjectCreateAttempted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val wasProjectCreateAttempted: StateFlow<Boolean> = _wasProjectCreateAttempted.asStateFlow()
+
+    fun markProjectCreateAttempted() {
+        _wasProjectCreateAttempted.value = true
+    }
+
+    fun resetProjectCreateAttempted() {
+        _wasProjectCreateAttempted.value = false
+    }
+
+
     init {
 //        Get current workspace info
         viewModelScope.launch {
