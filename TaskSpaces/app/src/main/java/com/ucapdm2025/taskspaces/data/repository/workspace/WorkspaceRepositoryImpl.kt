@@ -96,8 +96,7 @@ class WorkspaceRepositoryImpl(
 
         try {
 //            Fetch workspaces from remote
-            val remoteWorkspaces: List<WorkspaceResponse> =
-                workspaceService.getSharedWorkspaces().content
+            val remoteWorkspaces = workspaceService.getSharedWorkspaces().content
 
 //            Save all owners from remote
             ownerIds = remoteWorkspaces.map { it.ownerId }.distinct()
@@ -125,6 +124,12 @@ class WorkspaceRepositoryImpl(
                 "WorkspaceRepository: getWorkspacesByUserId",
                 "Error fetching workspaces: ${e.message}"
             )
+        }
+
+        if (ownerIds.isEmpty()) {
+            // There are no shared workspaces ⇒ we return empty list
+            emit(Resource.Success(emptyList()))
+            return@flow              // <— important to not reach the combine
         }
 
 //        Use local workspaces
