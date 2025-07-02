@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.comment
 
 import com.ucapdm2025.taskspaces.data.model.CommentModel
+import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -9,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
  * and delete a comment.
  */
 interface CommentRepository {
-    fun getCommentsByTaskId(taskId: Int): Flow<List<CommentModel>>
-    suspend fun createComment(content: String, authorId: Int, taskId: Int): CommentModel
-    suspend fun updateComment(id: Int, content: String, authorId: Int, taskId: Int): CommentModel
-    suspend fun deleteComment(id: Int): Boolean
+    fun getCommentsByTaskId(taskId: Int): Flow<Resource<List<CommentModel>>>
+    suspend fun createComment(content: String, taskId: Int): Result<CommentModel>
+    suspend fun updateComment(id: Int, content: String): Result<CommentModel>
+    suspend fun deleteComment(id: Int): Result<CommentModel>
 }

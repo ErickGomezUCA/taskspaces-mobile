@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,9 +41,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.R
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.screens.login.LoginViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight100
@@ -65,6 +68,7 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
 ) {
     val authToken = viewModel.authToken.collectAsStateWithLifecycle()
+    val loginState = viewModel.loginState.collectAsStateWithLifecycle()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -72,8 +76,9 @@ fun LoginScreen(
     var passwordError by remember { mutableStateOf(false) }
 
     // Observe the authentication token to trigger navigation on successful login
-    LaunchedEffect(authToken.value) {
-        if (authToken.value.isNotEmpty()) {
+    LaunchedEffect(loginState.value, authToken.value) {
+        if (loginState.value is UiState.Loading &&
+            authToken.value.isNotEmpty()) {
             onSuccessfulLogin()
         }
     }
@@ -189,6 +194,20 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Show error message if login fails
+            if (loginState.value is UiState.Error) {
+                val errorMessage = (loginState.value as UiState.Error).message
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+
             Button(
                 onClick = {
                     emailError = email.isBlank()
@@ -201,6 +220,19 @@ fun LoginScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text("Log in")
+            }
+        }
+        // Show loading indicator when login is in progress
+        if (loginState.value is UiState.Loading) {
+            Log.d("LoginScreen", "Rendering loading UI")
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(1f)
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
