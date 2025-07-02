@@ -1,6 +1,8 @@
 package com.ucapdm2025.taskspaces.data.remote.responses
 
 import com.ucapdm2025.taskspaces.data.model.SearchModel
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.WorkspaceResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
 
 /**
  * SearchResponse is a data class that represents the response from the API for a search operation.

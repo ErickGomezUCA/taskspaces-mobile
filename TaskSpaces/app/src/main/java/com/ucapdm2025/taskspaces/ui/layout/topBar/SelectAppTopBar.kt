@@ -1,14 +1,24 @@
 package com.ucapdm2025.taskspaces.ui.layout.topBar
 
+import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
+    val searchViewModel: SearchViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val searchQuery = searchViewModel.searchQuery.collectAsStateWithLifecycle()
+
     when (currentRoute) {
         "HomeRoute" -> {
             AppTopBar(
@@ -23,8 +33,8 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
             AppTopBarWithSearchBar(
                 query = "",
                 placeholder = "Search...",
-                onQueryChange = {},
-                onSearch = {})
+                onQueryChange = { searchViewModel.setQuery(it) },
+                onSearch = { searchViewModel.search(searchQuery.value) })
         }
 
         //        TODO: Handle query change and search action

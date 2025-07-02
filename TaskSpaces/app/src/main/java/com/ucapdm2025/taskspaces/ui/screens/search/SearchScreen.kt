@@ -1,6 +1,8 @@
-package com.ucapdm2025.taskspaces.ui.screens
+package com.ucapdm2025.taskspaces.ui.screens.search
 
 
+import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -11,13 +13,16 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.ui.components.general.*
 import com.ucapdm2025.taskspaces.ui.components.home.WorkspaceCard
-import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -37,21 +42,23 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * @param users List of users.
  */
 
+@SuppressLint("ContextCastToActivity")
 @Composable
-fun SearchScreen(
-    searchQuery: String = "", //switch to see "" default , "example" with results , "zzz" without results
-    workspaces: List<String> = sampleWorkspaces(searchQuery),
-    projects: List<String> = sampleProjects(searchQuery),
-    tasks: List<TaskModel> = sampleTasks(searchQuery),
-    users: List<String> = sampleUsers(searchQuery),
-) {
+fun SearchScreen() {
+    val viewModel: SearchViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val searchQuery = viewModel.searchQuery.collectAsStateWithLifecycle()
+    val searchResults = viewModel.searchResults.collectAsStateWithLifecycle()
+    val workspaces = searchResults.value?.workspaces ?: emptyList()
+    val projects = searchResults.value?.projects ?: emptyList()
+    val tasks = searchResults.value?.tasks ?: emptyList()
+
     val hasAnyResults =
-        workspaces.isNotEmpty() || projects.isNotEmpty() || tasks.isNotEmpty() || users.isNotEmpty()
+        workspaces.isNotEmpty() || projects.isNotEmpty() || tasks.isNotEmpty()
 
     when {
-        searchQuery.isEmpty() -> SearchInitialState()
+        searchQuery.value.isEmpty() -> SearchInitialState()
         !hasAnyResults -> SearchNoResults()
-        else -> SearchResults(workspaces, projects, tasks, users)
+        else -> SearchResults(workspaces, projects, tasks)
     }
 }
 
@@ -102,10 +109,9 @@ fun SearchNoResults() {
  */
 @Composable
 fun SearchResults(
-    workspaces: List<String>,
-    projects: List<String>,
+    workspaces: List<WorkspaceModel>,
+    projects: List<ProjectModel>,
     tasks: List<TaskModel>,
-    users: List<String>
 ) {
     LazyColumn(
         modifier = Modifier
@@ -119,7 +125,7 @@ fun SearchResults(
                     LazyRow( horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                         items(workspaces) {
                             WorkspaceCard(
-                                name = it,
+                                name = it.title,
                                 projectsCount = 2,
                                 membersCount = 5,
                                 modifier = Modifier
@@ -137,7 +143,7 @@ fun SearchResults(
                 SearchContainer(title = "Projects", onViewMoreClick = { }) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(projects) {
-                            ProjectCard(name = it)
+                            ProjectCard(name = it.title)
                         }
                     }
                 }
@@ -150,18 +156,6 @@ fun SearchResults(
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(tasks) {
 //                            TaskCard(title = it.title, tags = it.tags)
-                        }
-                    }
-                }
-            }
-        }
-
-        if (users.isNotEmpty()) {
-            item {
-                SearchContainer(title = "Users", onViewMoreClick = { }) {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(users) {
-                            UserCard(username = it)
                         }
                     }
                 }
@@ -196,63 +190,63 @@ fun sampleUsers(query: String): List<String> =
  * - Initial, With results, No results
  * - Light and dark theme variants
  */
-@Preview(showBackground = true)
-@Composable
-fun SearchInitialPreview() {
-    TaskSpacesTheme {
-        ExtendedColors {
-            SearchScreen(searchQuery = "")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SearchWithResultsPreview() {
-    TaskSpacesTheme {
-        ExtendedColors {
-            SearchScreen(searchQuery = "example")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SearchNoResultsPreview() {
-    TaskSpacesTheme {
-        ExtendedColors {
-            SearchScreen(searchQuery = "zzz")
-        }
-    }
-}
-
-
-@Preview(showBackground = true, backgroundColor = 0xFF27272A )
-@Composable
-fun SearchInitialDarkPreview() {
-    TaskSpacesTheme(darkTheme = true) {
-        ExtendedColors(darkTheme = true) {
-            SearchScreen(searchQuery = "")
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-@Composable
-fun SearchWithResultsDarkPreview() {
-    TaskSpacesTheme(darkTheme = true) {
-        ExtendedColors(darkTheme = true) {
-            SearchScreen(searchQuery = "example")
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-@Composable
-fun SearchNoResultsDarkPreview() {
-    TaskSpacesTheme(darkTheme = true) {
-        ExtendedColors(darkTheme = true) {
-            SearchScreen(searchQuery = "zzz")
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SearchInitialPreview() {
+//    TaskSpacesTheme {
+//        ExtendedColors {
+//            SearchScreen(searchQuery = "")
+//        }
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun SearchWithResultsPreview() {
+//    TaskSpacesTheme {
+//        ExtendedColors {
+//            SearchScreen(searchQuery = "example")
+//        }
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun SearchNoResultsPreview() {
+//    TaskSpacesTheme {
+//        ExtendedColors {
+//            SearchScreen(searchQuery = "zzz")
+//        }
+//    }
+//}
+//
+//
+//@Preview(showBackground = true, backgroundColor = 0xFF27272A )
+//@Composable
+//fun SearchInitialDarkPreview() {
+//    TaskSpacesTheme(darkTheme = true) {
+//        ExtendedColors(darkTheme = true) {
+//            SearchScreen(searchQuery = "")
+//        }
+//    }
+//}
+//
+//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+//@Composable
+//fun SearchWithResultsDarkPreview() {
+//    TaskSpacesTheme(darkTheme = true) {
+//        ExtendedColors(darkTheme = true) {
+//            SearchScreen(searchQuery = "example")
+//        }
+//    }
+//}
+//
+//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+//@Composable
+//fun SearchNoResultsDarkPreview() {
+//    TaskSpacesTheme(darkTheme = true) {
+//        ExtendedColors(darkTheme = true) {
+//            SearchScreen(searchQuery = "zzz")
+//        }
+//    }
+//}

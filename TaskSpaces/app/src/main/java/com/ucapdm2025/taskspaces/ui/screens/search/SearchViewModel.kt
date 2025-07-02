@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.search
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,9 @@ import kotlinx.coroutines.launch
  * ViewModel for managing search functionality in the application.
  */
 class SearchViewModel(private val searchRepository: SearchRepository): ViewModel() {
+    private val _searchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
     private val _searchResults: MutableStateFlow<SearchModel?> = MutableStateFlow(null)
     val searchResults = _searchResults.asStateFlow()
 
@@ -27,6 +31,7 @@ class SearchViewModel(private val searchRepository: SearchRepository): ViewModel
 
                     is Resource.Success -> {
                         _searchResults.value = resource.data
+                        Log.d("SearchViewModel", "Search results: ${resource.data}")
                     }
 
                     is Resource.Error -> {
@@ -36,6 +41,10 @@ class SearchViewModel(private val searchRepository: SearchRepository): ViewModel
                 }
             }
         }
+    }
+
+    fun setQuery(query: String) {
+        _searchQuery.value = query
     }
 }
 
