@@ -1,5 +1,7 @@
 package com.ucapdm2025.taskspaces.data.model
 
+import com.ucapdm2025.taskspaces.data.database.entities.CommentEntity
+
 /**
  * CommentModel represents a comment in the system.
  * It extends BaseModel to include common properties
@@ -16,7 +18,26 @@ data class CommentModel(
     override val id: Int,
     val content: String,
     val authorId: Int,
+    val author: UserModel,
     val taskId: Int,
-    override val createdAt: String = "",
-    override val updatedAt: String = "",
+    val edited: Boolean = false,
+    override val createdAt: String? = null,
+    override val updatedAt: String? = null,
 ): BaseModel(id, createdAt, updatedAt)
+
+/**
+ * Converts CommentModel to CommentEntity for database storage.
+ *
+ * @return CommentEntity representing the comment in the database.
+ */
+fun CommentModel.toDatabase(): CommentEntity {
+    return CommentEntity(
+        id = id,
+        content = content,
+        authorId = authorId,
+        taskId = taskId,
+        edited = edited,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}

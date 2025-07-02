@@ -59,9 +59,7 @@ fun TaskStatusColumn(
         tasks.forEach { task ->
             TaskCard(
                 title = task.title,
-//                tags = task.tags,
-                //TODO: Revert this
-                tags = emptyList<TagModel>(),
+                tags = task.tags,
                 onClick = { onTaskCardClick(task.id) }
             )
         }
@@ -109,7 +107,6 @@ fun TaskStatusColumnPreviewLight() {
                             breadcrumb = "",
                             title = "Design login screen",
                             description = "",
-                            deadline = "",
                             status = StatusVariations.PENDING,
                             projectId = 1,
                             createdAt = "",
@@ -120,7 +117,6 @@ fun TaskStatusColumnPreviewLight() {
                             breadcrumb = "",
                             title = "Connect API",
                             description = "",
-                            deadline = "",
                             status = StatusVariations.PENDING,
                             projectId = 1,
                             createdAt = "",
@@ -160,7 +156,6 @@ fun TaskStatusColumnPreviewDark() {
                             breadcrumb = "",
                             title = "Design login screen",
                             description = "",
-                            deadline = "",
                             status = StatusVariations.PENDING,
                             projectId = 1,
                             createdAt = "",
@@ -171,7 +166,6 @@ fun TaskStatusColumnPreviewDark() {
                             breadcrumb = "",
                             title = "Connect API",
                             description = "",
-                            deadline = "",
                             status = StatusVariations.PENDING,
                             projectId = 1,
                             createdAt = "",

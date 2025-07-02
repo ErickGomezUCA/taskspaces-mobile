@@ -30,6 +30,4 @@ interface WorkspaceDao {
 
     @Delete
     suspend fun deleteWorkspace(workspace: WorkspaceEntity)
-
-//    TODO: Set members queries
 }

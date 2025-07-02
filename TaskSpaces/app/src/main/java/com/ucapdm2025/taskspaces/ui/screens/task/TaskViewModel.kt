@@ -1,24 +1,34 @@
 package com.ucapdm2025.taskspaces.ui.screens.task
 
 import android.util.Log
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.CommentModel
+import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
+import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import java.lang.reflect.Member
+import java.time.LocalDateTime
 
 /**
  * ViewModel for managing a single task's data, including its comments.
@@ -27,9 +37,11 @@ import kotlinx.coroutines.launch
 class TaskViewModel(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
-    private val bookmarkRepository: BookmarkRepository
+    private val tagRepository: TagRepository,
+    private val memberRoleRepository: MemberRoleRepository,
+    private val bookmarkRepository: BookmarkRepository,
+    private val commentRepository: CommentRepository
 ) : ViewModel() {
-    private val commentRepository: CommentRepository = CommentRepositoryImpl()
 
     private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
 
@@ -39,12 +51,39 @@ class TaskViewModel(
     private val _isBookmarked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> = _isBookmarked.asStateFlow()
 
+    private val _showTagsDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showTagsDialog: StateFlow<Boolean> = _showTagsDialog.asStateFlow()
+
+    private val _tags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
+    val tags: StateFlow<List<TagModel>> = _tags.asStateFlow()
+
+    private val _projectTags: MutableStateFlow<List<TagModel>> = MutableStateFlow(emptyList())
+    val projectTags: StateFlow<List<TagModel>> = _projectTags.asStateFlow()
+
+    private val _showTaskMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showTaskMembersDialog: StateFlow<Boolean> = _showTaskMembersDialog.asStateFlow()
+
+    private val _members: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
+    val members: StateFlow<List<UserModel>> = _members.asStateFlow()
+
+    private val _workspaceMembers: MutableStateFlow<List<UserModel>> = MutableStateFlow(emptyList())
+    val workspaceMembers: StateFlow<List<UserModel>> = _workspaceMembers.asStateFlow()
+
     private val _comments: MutableStateFlow<List<CommentModel>> = MutableStateFlow(emptyList())
     val comments: StateFlow<List<CommentModel>> = _comments.asStateFlow()
 
+    private val _showUpdateCommentDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showUpdateCommentDialog: StateFlow<Boolean> = _showUpdateCommentDialog.asStateFlow()
+
+    private val _selectedCommentToUpdate: MutableStateFlow<CommentModel?> = MutableStateFlow(null)
+    val selectedCommentToUpdate: StateFlow<CommentModel?> = _selectedCommentToUpdate.asStateFlow()
+
+    private val _newComment: MutableStateFlow<String> = MutableStateFlow("")
+    val newComment: StateFlow<String> = _newComment.asStateFlow()
 
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
+//        Load _task
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
@@ -72,18 +111,7 @@ class TaskViewModel(
             }
         }
 
-        viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    commentRepository.getCommentsByTaskId(taskId)
-                } else {
-                    flowOf(emptyList()) // Emit empty list if no task ID is set
-                }
-            }.collect { comments ->
-                _comments.value = comments
-            }
-        }
-
+//        Load _isBookmarked
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { taskId ->
                 if (taskId != null) {
@@ -110,6 +138,147 @@ class TaskViewModel(
                 }
             }
         }
+
+//        Load _tags
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    tagRepository.getTagsByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val fetchedTags = resource.data
+                        _tags.value = fetchedTags
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _tags.value = emptyList()
+                }
+            }
+        }
+
+//        Load _projectTags
+        viewModelScope.launch {
+            _task.flatMapLatest { task ->
+                if (task != null) {
+                    tagRepository.getTagsByProjectId(task.projectId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val tags = resource.data
+                        _projectTags.value = tags
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _projectTags.value = emptyList()
+                }
+            }
+        }
+
+
+//        Load _members
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    taskRepository.getAssignedMembersByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val members = resource.data
+                        _members.value = members
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _members.value = emptyList()
+                }
+            }
+        }
+
+//        Load _workspaceMembers
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    taskRepository.getWorkspaceMembersByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val members = resource.data
+                        _workspaceMembers.value = members
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _workspaceMembers.value = emptyList()
+                }
+            }
+        }
+
+//        Load _comments
+        viewModelScope.launch {
+            _currentTaskId.flatMapLatest { taskId ->
+                if (taskId != null) {
+                    commentRepository.getCommentsByTaskId(taskId)
+                } else {
+                    flowOf(null) // Emit null if no task ID is set
+                }
+            }.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
+
+                    is Resource.Success -> {
+                        val comments = resource.data
+                        _comments.value = comments
+                    }
+
+                    is Resource.Error -> {
+                        // Handle error state if necessary
+                    }
+
+                    null -> _comments.value = emptyList()
+                }
+            }
+        }
     }
 
     /**
@@ -129,11 +298,35 @@ class TaskViewModel(
         _comments.value = emptyList() // Explicitly clear comments
     }
 
+    fun setTaskData(
+        title: String? = null,
+        status: StatusVariations? = null,
+        description: String? = null,
+        media: List<String>? = null, // TODO: Change to media model
+        deadline: LocalDateTime? = null,
+        timer: Float? = null,
+        members: List<Int>? = null, // TODO: Change to member model
+    ) {
+        val previousTask = _task.value
+
+        _task.value = previousTask?.copy(
+            title = title ?: previousTask.title,
+            status = status ?: previousTask.status,
+            description = description ?: previousTask.description,
+            deadline = deadline ?: previousTask.deadline,
+            timer = timer ?: previousTask.timer,
+        )
+    }
+
+    fun clearDeadline() {
+        _task.value = _task.value?.copy(deadline = null)
+    }
+
     fun updateTask(
         id: Int,
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
     ) {
@@ -158,31 +351,309 @@ class TaskViewModel(
         }
     }
 
-    fun createComment(content: String) {
+    //    Tags
+    fun showTagsDialog() {
+        _showTagsDialog.value = true
+    }
+
+    fun hideTagsDialog() {
+        _showTagsDialog.value = false
+    }
+
+    fun addTag(title: String, color: Color) {
+        var createdTag: Int = 0
+
         viewModelScope.launch {
-            commentRepository.createComment(
-                content = content,
-                authorId = 1,
+            val response = tagRepository.createTag(
+                title = title,
+                color = color.toArgb().toString(), // Convert Color to Int
+                projectId = _task.value?.projectId ?: 0
+            )
+
+            if (response.isSuccess) {
+                createdTag = response.getOrNull()?.id ?: 0
+            } else {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error creating tag: ${exception.message}")
+                }
+            }
+        }
+
+//        After creating the tag, assign it to the task
+        viewModelScope.launch {
+            if (createdTag != 0 && _task.value != null) {
+                val response = tagRepository.assignTagToTask(
+                    tagId = createdTag,
+                    taskId = _task.value!!.id
+                )
+
+                if (!response.isSuccess) {
+                    // Handle error, e.g., show a message to the user
+                    val exception = response.exceptionOrNull()
+                    if (exception != null) {
+                        // Log or handle the exception as needed
+                        Log.e("TaskViewModel", "Error adding tag to task: ${exception.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateTag(
+        id: Int,
+        title: String,
+        color: Color
+    ) {
+        viewModelScope.launch {
+            val response = tagRepository.updateTag(
+                id = id,
+                title = title,
+                color = color.toArgb().toString() // Convert Color to Int
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating tag: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun deleteTag(
+        id: Int
+    ) {
+        viewModelScope.launch {
+//            Unassign the tag from the task first
+            val responseTaskTag = tagRepository.unassignTagFromTask(
+                tagId = id,
                 taskId = _task.value?.id ?: 0
             )
+
+//            Then delete the tag
+            if (responseTaskTag.isSuccess) {
+                val response = tagRepository.deleteTag(id)
+
+                if (!response.isSuccess) {
+                    // Handle error, e.g., show a message to the user
+                    val exception = response.exceptionOrNull()
+                    if (exception != null) {
+                        // Log or handle the exception as needed
+                        Log.e("TaskViewModel", "Error deleting tag: ${exception.message}")
+                    }
+                }
+            } else {
+                // Handle error, e.g., show a message to the user
+                val exception = responseTaskTag.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error unassigning tag: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun assignTagToTask(
+        tagId: Int
+    ) {
+        viewModelScope.launch {
+            val response = tagRepository.assignTagToTask(
+                tagId = tagId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error assigning tag to task: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun unassignTagFromTask(
+        tagId: Int
+    ) {
+        viewModelScope.launch {
+            val response = tagRepository.unassignTagFromTask(
+                tagId = tagId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error assigning tag to task: ${exception.message}")
+                }
+            } else {
+                // Force reload tags after unassign
+                _currentTaskId.value?.let { reloadTags(it) }
+            }
+        }
+    }
+
+    fun reloadTags(taskId: Int = _currentTaskId.value ?: 0) {
+        viewModelScope.launch {
+            tagRepository.getTagsByTaskId(taskId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _tags.value = resource.data
+                    is Resource.Error, null -> _tags.value = emptyList()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    //    Task members
+    fun showTaskMembersDialog() {
+        _showTaskMembersDialog.value = true
+    }
+
+    fun hideTaskMembersDialog() {
+        _showTaskMembersDialog.value = false
+    }
+
+    fun assignMemberToTask(
+        userId: Int
+    ) {
+        viewModelScope.launch {
+            val response = taskRepository.assignMemberToTask(
+                userId = userId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error assigning member to task: ${exception.message}")
+                }
+            }
+        }
+    }
+
+    fun unassignMemberFromTask(
+        userId: Int
+    ) {
+        viewModelScope.launch {
+            val response = taskRepository.unassignMemberFromTask(
+                userId = userId,
+                taskId = _task.value?.id ?: 0
+            )
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e(
+                        "TaskViewModel",
+                        "Error unassigning member from task: ${exception.message}"
+                    )
+                }
+            } else {
+                _currentTaskId.value?.let { reloadMembers(it) }
+            }
+        }
+    }
+
+    fun reloadMembers(taskId: Int = _currentTaskId.value ?: 0) {
+        viewModelScope.launch {
+            taskRepository.getAssignedMembersByTaskId(taskId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _members.value = resource.data
+                    is Resource.Error, null -> _members.value = emptyList()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    //  Comments
+    fun showUpdateCommentDialog() {
+        _showUpdateCommentDialog.value = true
+    }
+
+    fun hideUpdateCommentDialog() {
+        _showUpdateCommentDialog.value = false
+    }
+
+    fun createComment(content: String) {
+        viewModelScope.launch {
+            val response = commentRepository.createComment(content, _currentTaskId.value ?: 0)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error creating comment: ${exception.message}")
+                }
+            }
         }
     }
 
     fun updateComment(id: Int, content: String) {
         viewModelScope.launch {
-            commentRepository.updateComment(
-                id = id,
-                content = content,
-                authorId = 1,
-                taskId = _task.value?.id ?: 0
-            )
+            val response = commentRepository.updateComment(id, content)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating comment: ${exception.message}")
+                }
+            }
         }
+    }
+
+    fun setSelectedCommentToUpdate(comment: CommentModel?) {
+        _selectedCommentToUpdate.value = comment
     }
 
     fun deleteComment(id: Int) {
         viewModelScope.launch {
-            commentRepository.deleteComment(id)
+            val response = commentRepository.deleteComment(id)
+
+            if (!response.isSuccess) {
+                // Handle error, e.g., show a message to the user
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("TaskViewModel", "Error updating comment: ${exception.message}")
+                }
+            } else {
+//                reload comments
+                _currentTaskId.value?.let { reloadComments(it) }
+            }
         }
+    }
+
+    fun reloadComments(taskId: Int = _currentTaskId.value ?: 0) {
+        viewModelScope.launch {
+            commentRepository.getCommentsByTaskId(taskId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _comments.value = resource.data
+                    is Resource.Error, null -> _comments.value = emptyList()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun setNewCommentValue(content: String) {
+        _newComment.value = content
     }
 
     //    TODO: Define how this function should work in the viewmodel
@@ -215,6 +686,21 @@ class TaskViewModel(
             }
         }
     }
+
+    suspend fun hasSufficientPermissions(
+        minimumRole: MemberRoles
+    ): Boolean {
+        return memberRoleRepository.hasSufficientPermissions(
+            taskId = taskId,
+            minimumRole = minimumRole
+        ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+            when (resource) {
+                is Resource.Success -> resource.data == true
+                else -> false
+            }
+        } == true
+    }
+
 }
 
 /**
@@ -223,12 +709,22 @@ class TaskViewModel(
 class TaskViewModelFactory(
     private val taskId: Int,
     private val taskRepository: TaskRepository,
-    private val bookmarkRepository: BookmarkRepository
+    private val tagRepository: TagRepository,
+    private val memberRoleRepository: MemberRoleRepository,
+    private val bookmarkRepository: BookmarkRepository,
+    private val commentRepository: CommentRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(taskId, taskRepository, bookmarkRepository) as T
+            return TaskViewModel(
+                taskId = taskId,
+                taskRepository = taskRepository,
+                tagRepository = tagRepository,
+                memberRoleRepository = memberRoleRepository,
+                bookmarkRepository = bookmarkRepository,
+                commentRepository = commentRepository
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

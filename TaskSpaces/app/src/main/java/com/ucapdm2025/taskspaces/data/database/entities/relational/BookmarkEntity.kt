@@ -1,7 +1,7 @@
-package com.ucapdm2025.taskspaces.data.database.entities
+package com.ucapdm2025.taskspaces.data.database.entities.relational
 
 import androidx.room.Entity
-import com.ucapdm2025.taskspaces.data.model.BookmarkModel
+import com.ucapdm2025.taskspaces.data.model.relational.BookmarkModel
 
 /**
  * BookmarkEntity is a data class that represents a bookmark for a task in the database.
