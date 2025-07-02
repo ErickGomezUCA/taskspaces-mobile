@@ -1,34 +1,38 @@
 package com.ucapdm2025.taskspaces.ui.screens.project
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
-import com.ucapdm2025.taskspaces.data.model.TagModel
-import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
+import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
 import com.ucapdm2025.taskspaces.ui.components.task.TaskDialog
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import kotlinx.coroutines.delay
 
 /**
  * A composable function that displays the main Projects screen.
@@ -50,44 +54,75 @@ fun ProjectScreen(
     val taskRepository = application.appProvider.provideTaskRepository()
     val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, memberRoleRepository, taskRepository))
 
-    val project = viewModel.project.collectAsStateWithLifecycle()
+    val projectState = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
     val showTaskDialog = viewModel.showTaskDialog.collectAsStateWithLifecycle()
     val selectedTaskId = viewModel.selectedTaskId.collectAsStateWithLifecycle()
+    val selectedTaskState = viewModel.selectedTaskState.collectAsStateWithLifecycle()
+    val notificationState = remember { mutableStateOf<UiEvent?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { evt ->
+            notificationState.value = evt
+            delay(3000)
+            notificationState.value = null
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // ✅ Siempre visible
+        NotificationHost(
+            event = notificationState.value,
+            topPadding = 96.dp
+        )
+
+        when (val state = projectState.value) {
+            UiState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+            }
+
+            is UiState.Error -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    FeedbackIcon(
+                        icon = Icons.Default.Close,
+                        title = state.message ?: "Sorry, we couldn't find this project."
+                    )
+                }
+            }
+
+            is UiState.Success -> {
+                // Tu contenido de proyecto
+            }
+        }
+    }
 
     val pendingTasks = tasks.value.filter { it.status == StatusVariations.PENDING }
     val doingTasks = tasks.value.filter { it.status == StatusVariations.DOING }
     val doneTasks = tasks.value.filter { it.status == StatusVariations.DONE }
 
-    fun onTaskCardClick(taskId: Int) {
-        viewModel.setSelectedTaskId(taskId)
-        viewModel.showTaskDialog()
+    fun handleTaskClick(id: Int) = viewModel.onTaskCardClick(id)
+
+    LaunchedEffect(taskId) {
+        if (taskId != null) handleTaskClick(taskId)
     }
 
 //    Automatically open task dialog of the specified taskId if provided.
 //    Do this only on first load of project screen.
     LaunchedEffect(taskId) {
-        if (taskId != null) {
+        if (taskId != null ) {
             viewModel.setSelectedTaskId(taskId)
             viewModel.showTaskDialog()
         }
     }
-    
-//    Show feedback icon if the project is not found
-    if (project.value == null) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FeedbackIcon(
-                icon = Icons.Default.Close,
-                title = "Sorry, we couldn't find this project.",
-            )
-            return
-        }
-    }
-
+    val taskReady = selectedTaskState.value is UiState.Success
 //    Task Dialog
     if (showTaskDialog.value) {
         TaskDialog(
@@ -96,6 +131,34 @@ fun ProjectScreen(
                 viewModel.reloadTasks()
                 viewModel.hideTaskDialog() },
         )
+    }
+    if (showTaskDialog.value) {
+        when (val state = selectedTaskState.value) {
+            UiState.Loading -> {
+                androidx.compose.ui.window.Dialog(onDismissRequest = { viewModel.hideTaskDialog() }) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
+            is UiState.Error -> {
+                androidx.compose.ui.window.Dialog(onDismissRequest = { viewModel.hideTaskDialog() }) {
+                    FeedbackIcon(
+                        icon = Icons.Default.Close,
+                        title = state.message ?: "Error loading task."
+                    )
+                }
+            }
+
+
+            is UiState.Success -> {
+
+            }
+        }
     }
 
     ProjectsBackground {
@@ -110,7 +173,7 @@ fun ProjectScreen(
                     status = StatusVariations.DONE,
                     tasks = doneTasks,
                     onTaskCardClick = { taskId ->
-                        onTaskCardClick(taskId)
+                        viewModel.onTaskCardClick(taskId)
                     },
                     onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
                         {
@@ -130,7 +193,7 @@ fun ProjectScreen(
                     status = StatusVariations.DOING,
                     tasks = doingTasks,
                     onTaskCardClick = { taskId ->
-                        onTaskCardClick(taskId)
+                        viewModel.onTaskCardClick(taskId)
                     },
                     onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
                         {
@@ -150,7 +213,7 @@ fun ProjectScreen(
                     status = StatusVariations.DONE,
                     tasks = doneTasks,
                     onTaskCardClick = { taskId ->
-                        onTaskCardClick(taskId)
+                        viewModel.onTaskCardClick(taskId)
                     },
                     onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
                         {
