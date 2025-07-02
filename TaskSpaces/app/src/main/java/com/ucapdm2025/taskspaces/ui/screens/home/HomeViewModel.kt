@@ -15,9 +15,14 @@ import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.helpers.friendlyMessage
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -29,6 +34,9 @@ class HomeViewModel(
     private val authRepository: AuthRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
 
@@ -134,13 +142,15 @@ class HomeViewModel(
         viewModelScope.launch {
             val response = workspaceRepository.createWorkspace(title)
 
-            if (!response.isSuccess) {
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Workspace “$title” created"))
+            } else {
                 // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("HomeViewModel", "Error creating workspace: ${exception.message}")
-                }
+                val exception = response.exceptionOrNull()?.localizedMessage ?: "Unable to create workspace"
+                val msg = friendlyMessage(exception, "The workspace could not be created")
+                _uiEvent.emit(UiEvent.Error(msg))
+                // Log or handle the exception as needed
+                Log.e("HomeViewModel", msg)
             }
         }
     }
@@ -149,13 +159,15 @@ class HomeViewModel(
         viewModelScope.launch {
             val response = workspaceRepository.updateWorkspace(id, title)
 
-            if (!response.isSuccess) {
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Workspace updated"))
                 // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("HomeViewModel", "Error updating workspace: ${exception.message}")
-                }
+            } else {
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to update workspace"
+                val msg = friendlyMessage(raw, "Could not update workspace")
+                _uiEvent.emit(UiEvent.Error(msg))
+                // Log or handle the exception as needed
+                Log.e("HomeViewModel", msg)
             }
         }
     }
@@ -164,13 +176,15 @@ class HomeViewModel(
         viewModelScope.launch {
             val response = workspaceRepository.deleteWorkspace(id)
 
-            if (!response.isSuccess) {
+            if (response.isSuccess) {
+                _uiEvent.emit(UiEvent.Success("Workspace deleted"))
+            } else {
                 // Handle error, e.g., show a message to the user
-                val exception = response.exceptionOrNull()
-                if (exception != null) {
-                    // Log or handle the exception as needed
-                    Log.e("HomeViewModel", "Error deleting workspace: ${exception.message}")
-                }
+                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to delete workspace"
+                val msg = friendlyMessage(raw, "Could not delete workspace")
+                _uiEvent.emit(UiEvent.Error(msg))
+                // Log or handle the exception as needed
+                Log.e("HomeViewModel", msg)
             }
         }
     }
