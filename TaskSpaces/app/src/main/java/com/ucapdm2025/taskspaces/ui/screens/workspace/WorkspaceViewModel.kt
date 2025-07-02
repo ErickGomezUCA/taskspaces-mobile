@@ -69,6 +69,18 @@ class WorkspaceViewModel(
     private val _showManageMembersDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showManageMembersDialog: StateFlow<Boolean> = _showManageMembersDialog.asStateFlow()
 
+    private val _wasProjectCreateAttempted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val wasProjectCreateAttempted: StateFlow<Boolean> = _wasProjectCreateAttempted.asStateFlow()
+
+    fun markProjectCreateAttempted() {
+        _wasProjectCreateAttempted.value = true
+    }
+
+    fun resetProjectCreateAttempted() {
+        _wasProjectCreateAttempted.value = false
+    }
+
+
     private val _uiEvent = MutableSharedFlow<UiEvent>()   // replay = 0 por defecto
     val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 

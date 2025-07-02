@@ -82,6 +82,7 @@ fun WorkspaceScreen(
     val workspaceRepository = application.appProvider.provideWorkspaceRepository()
     val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val projectRepository = application.appProvider.provideProjectRepository()
+
     val viewModel: WorkspaceViewModel = viewModel(
         factory = WorkspaceViewModelFactory(
             workspaceId,
@@ -100,6 +101,7 @@ fun WorkspaceScreen(
     val membersState = viewModel.membersState.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
     val notificationState = remember { mutableStateOf<UiEvent?>(null) }
+    val wasProjectCreateAttempted = viewModel.wasProjectCreateAttempted.collectAsStateWithLifecycle()
 
 //    Para manejar los roles de un workspace, ahora puedes hacerlo con:
 //
@@ -122,7 +124,7 @@ fun WorkspaceScreen(
             notificationState.value = null
         }
     }
-    
+
     when (val state = workspaceState.value) {
         is UiState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -170,56 +172,64 @@ fun WorkspaceScreen(
                     title = { Text(text = if (editMode.value == WorkspaceEditMode.UPDATE) "Update workspace" else "Create a new workspace") },
                     text = {
 //                    TODO: Add Icon field
-                        Column {
-                            TextField(
-                                value = projectDialogData.value,
-                                onValueChange = { viewModel.setProjectDialogData(it) },
-                                label = { Text(text = "Project Title") },
-                                placeholder = { Text(text = "Enter project title") }
-                            )
+                Column {
+                    TextField(
+                        value = projectDialogData.value,
+                        onValueChange = { viewModel.setProjectDialogData(it) },
+                        label = { Text(text = "Project Title") },
+                        placeholder = { Text(text = "Enter project title") },
+                        isError = wasProjectCreateAttempted.value && projectDialogData.value.isBlank(),
+                        supportingText = {
+                            if (wasProjectCreateAttempted.value && projectDialogData.value.isBlank()) {
+                                Text("Project title cannot be empty", color = MaterialTheme.colorScheme.error)
+                            }
                         }
-                    },
-                    confirmButton = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = { viewModel.hideDialog() },
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(8.dp),
-                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                            ) { Text(text = "Cancel") }
+                    )
 
-                            Button(
-                                onClick = {
-//                            Update selected workspace if in update mode, otherwise create a new one
-                                    if (editMode.value == WorkspaceEditMode.UPDATE) {
-//                                selectedWorkspaceId comes when the user selects a workspace to update on update mode
-                                        viewModel.updateProject(
-                                            id = selectedProjectId.value ?: 0,
-                                            title = projectDialogData.value,
-                                            icon = "",
-                                        )
+                }
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { viewModel.hideDialog() },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    ) { Text(text = "Cancel") }
 
-                                        viewModel.setSelectedProjectId(null)
-                                    } else {
-                                        viewModel.createProject(
-                                            title = projectDialogData.value,
-                                            icon = ""
-                                        )
-                                    }
+                    Button(
+                        onClick = {
+                            viewModel.markProjectCreateAttempted()
 
-                                    viewModel.setEditMode(WorkspaceEditMode.NONE)
-                                    viewModel.hideDialog()
-                                },
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(8.dp),
-                            ) { Text(text = if (editMode.value == WorkspaceEditMode.UPDATE) "Update" else "Create") }
-                        }
-                    }
-                )
+                            if (projectDialogData.value.isBlank()) {
+                                return@Button
+                            }
+
+                            if (editMode.value == WorkspaceEditMode.UPDATE) {
+                                viewModel.updateProject(
+                                    id = selectedProjectId.value ?: 0,
+                                    title = projectDialogData.value,
+                                    icon = "",
+                                )
+                                viewModel.setSelectedProjectId(null)
+                            } else {
+                                viewModel.createProject(title = projectDialogData.value, icon = "")
+                            }
+
+                            viewModel.setEditMode(WorkspaceEditMode.NONE)
+                            viewModel.hideDialog()
+                            viewModel.resetProjectCreateAttempted()
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                    ) { Text(text = if (editMode.value == WorkspaceEditMode.UPDATE) "Update" else "Create") }
+                }
             }
+        )
+    }
 
             if (showManageMembersDialog.value) {
                 ManageMembersDialog(
