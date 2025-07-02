@@ -10,6 +10,9 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +29,9 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * A composable function that represents the main home screen of the app.
@@ -46,6 +52,15 @@ fun HomeScreen(
     val workspaceDialogData = viewModel.workspaceDialogData.collectAsStateWithLifecycle()
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
     val selectedWorkspaceId = viewModel.selectedWorkspaceId.collectAsStateWithLifecycle()
+    val notificationState = remember { mutableStateOf<UiEvent?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collectLatest { evt ->
+            notificationState.value = evt
+            delay(3000)
+            notificationState.value = null
+        }
+    }
 
 //    Workspace dialog (for create and update workspace)
     if (showWorkspaceDialog.value) {
@@ -104,6 +119,12 @@ fun HomeScreen(
 //    Using a box to place this floating status dialog on top of the LazyColumn
 //    This floating status dialog shows the current edit mode for Home Screen
     Box(modifier = Modifier.fillMaxSize()) {
+            NotificationHost(
+                event = notificationState.value,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+            )
         if (editMode.value != HomeEditMode.NONE) {
             FloatingStatusDialog(
                 onClose = { viewModel.setEditMode(HomeEditMode.NONE) },
