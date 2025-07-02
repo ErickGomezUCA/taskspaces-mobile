@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
@@ -45,7 +46,11 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun SearchScreen() {
-    val viewModel: SearchViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val searchRepository = application.appProvider.provideSearchRepository()
+    val viewModel: SearchViewModel = viewModel(
+        factory = SearchViewModelFactory(searchRepository)
+    )
     val searchQuery = viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsStateWithLifecycle()
     val workspaces = searchResults.value?.workspaces ?: emptyList()

@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -82,7 +83,8 @@ fun HomeScreen(
                     // Title text field
                     TextField(
                         value = workspaceDialogData.value,
-                        onValueChange = { viewModel.setWorkspaceDialogData(it) },
+                        onValueChange = { viewModel.setWorkspaceDialogData(it)
+                            Log.d("test1", it)},
                         label = { Text(text = "Workspace Title") },
                         placeholder = { Text(text = "Enter workspace title") },
                         isError = wasCreateAttempted.value && workspaceDialogData.value.isBlank(),

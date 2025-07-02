@@ -9,14 +9,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModel
+import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
-    val searchViewModel: SearchViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val searchRepository = application.appProvider.provideSearchRepository()
+    val searchViewModel: SearchViewModel = viewModel(
+        factory = SearchViewModelFactory(searchRepository)
+    )
     val searchQuery = searchViewModel.searchQuery.collectAsStateWithLifecycle()
 
     when (currentRoute) {
@@ -31,7 +37,7 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
 //        TODO: Handle query change and search action
         "SearchRoute" -> {
             AppTopBarWithSearchBar(
-                query = "",
+                query = searchQuery.value,
                 placeholder = "Search...",
                 onQueryChange = { searchViewModel.setQuery(it) },
                 onSearch = { searchViewModel.search(searchQuery.value) })
