@@ -10,10 +10,14 @@ import com.ucapdm2025.taskspaces.data.remote.services.MemberRoleService
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
+import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
+import com.ucapdm2025.taskspaces.data.repository.tag.TagRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
@@ -65,10 +69,21 @@ class AppProvider(context: Context) {
     private val projectRepository: ProjectRepository =
         ProjectRepositoryImpl(projectDao, projectService)
 
+    //    Tag
+    private val tagDao = appDatabase.tagDao()
+    private val taskTagDao = appDatabase.taskTagDao()
+    private val tagService = RetrofitInstance.tagService
+    private val tagRepository: TagRepository = TagRepositoryImpl(tagDao, taskTagDao, tagService)
+
     //    Task
     private val taskDao = appDatabase.taskDao()
     private val taskService = RetrofitInstance.taskService
-    private val taskRepository: TaskRepository = TaskRepositoryImpl(taskDao, taskService)
+    private val taskAssignedDao = appDatabase.taskAssignedDao()
+    private val taskRepository: TaskRepository = TaskRepositoryImpl(
+        taskDao = taskDao, tagDao = tagDao, taskTagDao = taskTagDao, taskService = taskService,
+        userDao = userDao,
+        taskAssignedDao = taskAssignedDao
+    )
 
     //    Bookmark
     private val bookmarkDao = appDatabase.bookmarkDao()
@@ -79,6 +94,12 @@ class AppProvider(context: Context) {
         bookmarkService = bookmarkService,
         taskDao = taskDao
     )
+
+    //    Comment
+    private val commentDao = appDatabase.commentDao()
+    private val commentService = RetrofitInstance.commentService
+    private val commentRepository: CommentRepository =
+        CommentRepositoryImpl(commentDao, userDao, commentService)
 
     fun provideUserRepository(): UserRepository {
         return userRepository
@@ -106,5 +127,13 @@ class AppProvider(context: Context) {
 
     fun provideBookmarkRepository(): BookmarkRepository {
         return bookmarkRepository
+    }
+
+    fun provideTagRepository(): TagRepository {
+        return tagRepository
+    }
+
+    fun provideCommentRepository(): CommentRepository {
+        return commentRepository
     }
 }
