@@ -3,8 +3,7 @@ package com.ucapdm2025.taskspaces.ui.screens.workspace
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import kotlinx.coroutines.delay
-import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost   // ← Host creado antes
-import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
+import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +60,7 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.OutfitTypography
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Displays the workspace details screen, including sections for projects and members.
@@ -116,10 +116,10 @@ fun WorkspaceScreen(
 
     // Escuchar los eventos del ViewModel
     LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { evt ->
-            notificationState.value = evt       // mostrar
-            delay(3000)                         // 3 s
-            notificationState.value = null      // ocultar
+        viewModel.uiEvent.collectLatest { evt ->
+            notificationState.value = evt
+            delay(3000)
+            notificationState.value = null
         }
     }
     
@@ -225,8 +225,8 @@ fun WorkspaceScreen(
                 ManageMembersDialog(
                     onDismissRequest = { viewModel.hideManageMembersDialog() },
                     onInviteMember = { username, memberRole ->
-                        viewModel.inviteMember(username, memberRole)
                         viewModel.hideManageMembersDialog()
+                        viewModel.inviteMember(username, memberRole)
                     },
                     onRoleUpdated = { userId, memberRole ->
                         viewModel.updateMemberRole(userId = userId, newMemberRole = memberRole)
@@ -239,7 +239,6 @@ fun WorkspaceScreen(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                if (editMode.value == WorkspaceEditMode.NONE) {
                     NotificationHost(
                         event = notificationState.value,
                         modifier = Modifier
@@ -247,7 +246,6 @@ fun WorkspaceScreen(
                             .padding(bottom = 250.dp)
                             .zIndex(1f)
                     )
-                }
                 if (editMode.value != WorkspaceEditMode.NONE) {
                     FloatingStatusDialog(
                         onClose = { viewModel.setEditMode(WorkspaceEditMode.NONE) },
