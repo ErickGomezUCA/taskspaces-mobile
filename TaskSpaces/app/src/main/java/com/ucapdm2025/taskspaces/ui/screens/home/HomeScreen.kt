@@ -26,12 +26,12 @@ import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.YourWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
-import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+
 
 /**
  * A composable function that represents the main home screen of the app.
@@ -62,44 +62,71 @@ fun HomeScreen(
         }
     }
 
-//    Workspace dialog (for create and update workspace)
+    val isTitleValid = workspaceDialogData.value.trim().isNotEmpty()
+    val wasCreateAttempted = viewModel.wasCreateAttempted.collectAsStateWithLifecycle()
+
     if (showWorkspaceDialog.value) {
         AlertDialog(
-            onDismissRequest = { viewModel.hideDialog() },
-            title = { Text(text = if (editMode.value == HomeEditMode.UPDATE) "Update workspace" else "Create a new workspace") },
+            onDismissRequest = {
+                viewModel.hideDialog()
+                viewModel.setCreateAttempted(false) // reset
+            },
+            title = {
+                Text(
+                    text = if (editMode.value == HomeEditMode.UPDATE)
+                        "Update workspace" else "Create a new workspace"
+                )
+            },
             text = {
                 Column {
-//                    Title text field
+                    // Title text field
                     TextField(
                         value = workspaceDialogData.value,
                         onValueChange = { viewModel.setWorkspaceDialogData(it) },
                         label = { Text(text = "Workspace Title") },
-                        placeholder = { Text(text = "Enter workspace title") }
+                        placeholder = { Text(text = "Enter workspace title") },
+                        isError = wasCreateAttempted.value && workspaceDialogData.value.isBlank(),
+                        supportingText = {
+                            if (wasCreateAttempted.value && workspaceDialogData.value.isBlank()) {
+                                Text(
+                                    "Workspace title cannot be empty",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     )
                 }
             },
-//            Group both actions buttons in the same space (do not confuse with confirmButton)
+
+            // Group both actions buttons in the same space (do not confuse with confirmButton)
             confirmButton = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     OutlinedButton(
-                        onClick = { viewModel.hideDialog() },
+                        onClick = {
+                            viewModel.hideDialog()
+                            viewModel.setCreateAttempted(false) // reset
+                        },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                     ) { Text(text = "Cancel") }
+
                     Button(
                         onClick = {
-//                            Update selected workspace if in update mode, otherwise create a new one
+                            viewModel.setCreateAttempted(true)
+
+                            // Validate before continuing
+                            if (workspaceDialogData.value.isBlank()) return@Button
+
                             if (editMode.value == HomeEditMode.UPDATE) {
-//                                selectedWorkspaceId comes when the user selects a workspace to update on update mode
+                                // selectedWorkspaceId comes when the user selects a workspace to update on update mode
                                 viewModel.updateWorkspace(
                                     selectedWorkspaceId.value ?: 0,
                                     workspaceDialogData.value
                                 )
-
                                 viewModel.setSelectedWorkspaceId(null)
                             } else {
                                 viewModel.createWorkspace(workspaceDialogData.value)
@@ -107,10 +134,13 @@ fun HomeScreen(
 
                             viewModel.setEditMode(HomeEditMode.NONE)
                             viewModel.hideDialog()
+                            viewModel.setCreateAttempted(false) // reset after success
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                    ) { Text(text = if (editMode.value == HomeEditMode.UPDATE) "Update" else "Create") }
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(text = if (editMode.value == HomeEditMode.UPDATE) "Update" else "Create")
+                    }
                 }
             }
         )
@@ -153,7 +183,8 @@ fun HomeScreen(
                                     contentDescription = "Delete icon"
                                 )
                             },
-                            onClick = { viewModel.setEditMode(HomeEditMode.DELETE) }),
+                            onClick = { viewModel.setEditMode(HomeEditMode.DELETE) }
+                        ),
                         DropdownMenuOption(
                             label = "Update",
                             icon = {
@@ -162,7 +193,8 @@ fun HomeScreen(
                                     contentDescription = "Edit icon"
                                 )
                             },
-                            onClick = { viewModel.setEditMode(HomeEditMode.UPDATE) })
+                            onClick = { viewModel.setEditMode(HomeEditMode.UPDATE) }
+                        )
                     )
                 ) {
                     when (val state = workspaces.value) {
@@ -194,7 +226,7 @@ fun HomeScreen(
                                             viewModel.showDialog()
                                         }
 
-//                                Delete the workspace clicked when in delete mode
+                                //                                Delete the workspace clicked when in delete mode
 //                                TODO: Add a confirmation dialog before deleting
                                         HomeEditMode.DELETE -> {
                                             viewModel.deleteWorkspace(workspace.id)
@@ -212,7 +244,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-//            TODO: Add action to leave a workspace
+            // TODO: Add action to leave a workspace
             item {
 //            TODO: Add action to leave a workspace
                 Container(title = "Workspaces shared with me") {
@@ -292,9 +324,9 @@ fun HomeScreen(
             }
 
         }
-
     }
 }
+
 
 /**
  * Preview of the HomeScreen in light mode using theme colors.
@@ -308,6 +340,7 @@ fun HomeScreenLightPreview() {
         }
     }
 }
+
 
 /**
  * Preview of the HomeScreen in dark mode using theme colors.

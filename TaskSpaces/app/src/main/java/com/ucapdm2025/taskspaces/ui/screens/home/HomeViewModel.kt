@@ -62,6 +62,13 @@ class HomeViewModel(
     private val _selectedWorkspaceId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val selectedWorkspaceId: StateFlow<Int?> = _selectedWorkspaceId.asStateFlow()
 
+    private val _wasCreateAttempted = MutableStateFlow(false)
+    val wasCreateAttempted: StateFlow<Boolean> = _wasCreateAttempted.asStateFlow()
+
+    fun setCreateAttempted(value: Boolean) {
+        _wasCreateAttempted.value = value
+    }
+
     //    Fetch user id from auth
     init {
         viewModelScope.launch {
@@ -139,8 +146,16 @@ class HomeViewModel(
     }
 
     fun createWorkspace(title: String) {
+        _wasCreateAttempted.value = true
+
+        val trimmedTitle = title.trim()
+        if (trimmedTitle.isEmpty()) {
+            Log.e("HomeViewModel", "Invalid workspace title: empty")
+            return
+        }
+
         viewModelScope.launch {
-            val response = workspaceRepository.createWorkspace(title)
+            val response = workspaceRepository.createWorkspace(trimmedTitle)
 
             if (response.isSuccess) {
                 _uiEvent.emit(UiEvent.Success("Workspace “$title” created"))
@@ -154,6 +169,7 @@ class HomeViewModel(
             }
         }
     }
+
 
     fun updateWorkspace(id: Int, title: String) {
         viewModelScope.launch {
