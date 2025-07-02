@@ -72,6 +72,21 @@ class WorkspaceViewModel(
     private val _uiEvent = MutableSharedFlow<UiEvent>()   // replay = 0 por defecto
     val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 
+    private val _inviteUsername = MutableStateFlow("")
+    val inviteUsername: StateFlow<String> = _inviteUsername.asStateFlow()
+
+    private val _wasInviteAttempted = MutableStateFlow(false)
+    val wasInviteAttempted: StateFlow<Boolean> = _wasInviteAttempted.asStateFlow()
+
+    fun setInviteUsername(username: String) {
+        _inviteUsername.value = username
+    }
+
+    fun setInviteAttempted(value: Boolean) {
+        _wasInviteAttempted.value = value
+    }
+
+
     init {
 //        Get current workspace info
         viewModelScope.launch {
@@ -213,8 +228,14 @@ class WorkspaceViewModel(
     }
 
     fun inviteMember(username: String, memberRole: MemberRoles) {
+        val trimmed = username.trim()
+        if (trimmed.isEmpty()) {
+            Log.e("WorkspaceViewModel", "Username input is empty")
+            return
+        }
+
         viewModelScope.launch {
-            val response = workspaceRepository.inviteMember(username, memberRole, workspaceId)
+            val response = workspaceRepository.inviteMember(trimmed, memberRole, workspaceId)
 
             Log.d("WorkspaceViewModel", "Invite member response: $response")
 
@@ -228,6 +249,7 @@ class WorkspaceViewModel(
             }
         }
     }
+
 
     fun updateMemberRole(
         userId: Int,
