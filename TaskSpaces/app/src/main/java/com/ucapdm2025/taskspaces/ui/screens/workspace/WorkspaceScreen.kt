@@ -75,6 +75,7 @@ fun WorkspaceScreen(
     val workspaceRepository = application.appProvider.provideWorkspaceRepository()
     val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val projectRepository = application.appProvider.provideProjectRepository()
+
     val viewModel: WorkspaceViewModel = viewModel(
         factory = WorkspaceViewModelFactory(
             workspaceId,
@@ -92,6 +93,7 @@ fun WorkspaceScreen(
     val selectedProjectId = viewModel.selectedProjectId.collectAsStateWithLifecycle()
     val members = viewModel.members.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
+    val wasProjectCreateAttempted = viewModel.wasProjectCreateAttempted.collectAsStateWithLifecycle()
 
 //    Para manejar los roles de un workspace, ahora puedes hacerlo con:
 //
@@ -137,8 +139,15 @@ fun WorkspaceScreen(
                         value = projectDialogData.value,
                         onValueChange = { viewModel.setProjectDialogData(it) },
                         label = { Text(text = "Project Title") },
-                        placeholder = { Text(text = "Enter project title") }
+                        placeholder = { Text(text = "Enter project title") },
+                        isError = wasProjectCreateAttempted.value && projectDialogData.value.isBlank(),
+                        supportingText = {
+                            if (wasProjectCreateAttempted.value && projectDialogData.value.isBlank()) {
+                                Text("Project title cannot be empty", color = MaterialTheme.colorScheme.error)
+                            }
+                        }
                     )
+
                 }
             },
             confirmButton = {
@@ -155,15 +164,18 @@ fun WorkspaceScreen(
 
                     Button(
                         onClick = {
-//                            Update selected workspace if in update mode, otherwise create a new one
+                            viewModel.markProjectCreateAttempted()
+
+                            if (projectDialogData.value.isBlank()) {
+                                return@Button
+                            }
+
                             if (editMode.value == WorkspaceEditMode.UPDATE) {
-//                                selectedWorkspaceId comes when the user selects a workspace to update on update mode
                                 viewModel.updateProject(
                                     id = selectedProjectId.value ?: 0,
                                     title = projectDialogData.value,
                                     icon = "",
                                 )
-
                                 viewModel.setSelectedProjectId(null)
                             } else {
                                 viewModel.createProject(title = projectDialogData.value, icon = "")
@@ -171,6 +183,7 @@ fun WorkspaceScreen(
 
                             viewModel.setEditMode(WorkspaceEditMode.NONE)
                             viewModel.hideDialog()
+                            viewModel.resetProjectCreateAttempted()
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
