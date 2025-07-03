@@ -43,6 +43,7 @@ fun TaskStatusColumn(
     tasks: List<TaskModel>,
     onTaskCardClick: (Int) -> Unit,
     onAddTaskClick: () -> Unit,
+    onTaskDeleteClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -60,7 +61,9 @@ fun TaskStatusColumn(
             TaskCard(
                 title = task.title,
                 tags = task.tags,
-                onClick = { onTaskCardClick(task.id) }
+                onClick = { onTaskCardClick(task.id) },
+                taskId = task.id,
+                onDeleteClick = { onTaskDeleteClick(task.id) }
             )
         }
 
@@ -125,6 +128,7 @@ fun TaskStatusColumnPreviewLight() {
                     ),
                     onTaskCardClick = {},
                     onAddTaskClick = {},
+                    onTaskDeleteClick = {},
                 )
             }
         }
@@ -174,6 +178,7 @@ fun TaskStatusColumnPreviewDark() {
                     ),
                     onTaskCardClick = {},
                     onAddTaskClick = {},
+                    onTaskDeleteClick = {},
                 )
             }
         }

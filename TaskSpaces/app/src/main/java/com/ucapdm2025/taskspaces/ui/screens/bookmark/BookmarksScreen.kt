@@ -150,7 +150,9 @@ fun BookmarkList(
                                 title = task.title,
                                 //                                TODO: Add tags
                                 tags = emptyList(), // Replace with task.tags if available
-                                onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
+                                onClick = { onBookmarkedTaskClick(task.projectId, task.id) },
+                                taskId = task.id,
+                                onDeleteClick = {}
                             )
                         }
                     }

@@ -52,7 +52,10 @@ fun AssignedTasksSection(
                     createdAt = "",
                     updatedAt = ""
                 )
-            )
+            ),
+            taskId = 1,
+            onDeleteClick = {},
+            onClick = {}
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -75,7 +78,10 @@ fun AssignedTasksSection(
                     createdAt = "",
                     updatedAt = ""
                 )
-            )
+            ),
+            taskId = 2,
+            onDeleteClick = {},
+            onClick = {}
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -98,7 +104,10 @@ fun AssignedTasksSection(
                     createdAt = "",
                     updatedAt = ""
                 )
-            )
+            ),
+            taskId = 3,
+            onDeleteClick = {},
+            onClick = {}
         )
         Spacer(modifier = Modifier.height(12.dp))
 

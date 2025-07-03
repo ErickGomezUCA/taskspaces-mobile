@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
@@ -134,7 +135,7 @@ fun ProjectScreen(
     if (showTaskDialog.value) {
         when (val state = selectedTaskState.value) {
             UiState.Loading -> {
-                androidx.compose.ui.window.Dialog(onDismissRequest = { viewModel.hideTaskDialog() }) {
+                Dialog(onDismissRequest = { viewModel.hideTaskDialog() }) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -145,7 +146,7 @@ fun ProjectScreen(
             }
 
             is UiState.Error -> {
-                androidx.compose.ui.window.Dialog(onDismissRequest = { viewModel.hideTaskDialog() }) {
+                Dialog(onDismissRequest = { viewModel.hideTaskDialog() }) {
                     FeedbackIcon(
                         icon = Icons.Default.Close,
                         title = state.message ?: "Error loading task."
@@ -180,7 +181,8 @@ fun ProjectScreen(
                             status = StatusVariations.PENDING,
                         )
                         viewModel.showTaskDialog()
-                    }
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
             item {
@@ -196,7 +198,8 @@ fun ProjectScreen(
                             status = StatusVariations.DOING,
                         )
                         viewModel.showTaskDialog()
-                    }
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
             item {
@@ -212,7 +215,8 @@ fun ProjectScreen(
                             status = StatusVariations.DONE,
                         )
                         viewModel.showTaskDialog()
-                    }
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
         }

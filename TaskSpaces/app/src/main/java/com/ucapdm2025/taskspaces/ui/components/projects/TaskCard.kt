@@ -7,11 +7,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,10 +49,15 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @Composable
 fun TaskCard(
     title: String,
+    taskId: Int,
     tags: List<TagModel>,
+    onDeleteClick: (Int) -> Unit,
     //TODO: Replace with real navigation to the task chosen
     onClick: () -> Unit = {}
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,11 +72,58 @@ fun TaskCard(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 16.sp
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = title,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp
+                )
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More options"
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Delete") },
+                        onClick = {
+                            showMenu = false
+                            showDeleteDialog = true
+                        }
+                    )
+                }
+
+                if (showDeleteDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteDialog = false },
+                        title = { Text("Delete Task") },
+                        text = { Text("Are you sure you want to delete this task?") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                onDeleteClick(taskId)
+                                showDeleteDialog = false
+                            }) {
+                                Text("Delete")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDeleteDialog = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -101,7 +166,10 @@ fun TaskCardPreviewLight() {
         ExtendedColors(darkTheme = false) {
             TaskCard(
                 title = "Create initial mockups",
-                tags = tagsTest
+                tags = tagsTest,
+                taskId = 1,
+                onClick = {},
+                onDeleteClick = {}
             )
         }
     }
@@ -138,7 +206,10 @@ fun TaskCardPreviewDark() {
         ExtendedColors(darkTheme = true) {
             TaskCard(
                 title = "Create initial mockups",
-                tags = tagsTest
+                tags = tagsTest,
+                taskId = 2,
+                onClick = {},
+                onDeleteClick = {}
             )
         }
     }
