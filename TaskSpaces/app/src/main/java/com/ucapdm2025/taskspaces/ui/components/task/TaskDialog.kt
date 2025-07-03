@@ -437,62 +437,6 @@ fun TaskDialog(
                         onDeadlineClear = { viewModel.clearDeadline() }
                     )
 
-                    //TIMERS
-//                    TODO: Implement timer
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Timer,
-                                contentDescription = "Timer",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                "Timer",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 24.sp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-//            if (task.value?.userTimer == null) {
-//                OutlinedButton(
-//                    onClick = { },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    shape = RoundedCornerShape(8.dp),
-//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-//                ) {
-//                    Text("+ Add Timer")
-//                }
-//            } else {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .border(
-//                            1.dp,
-//                            MaterialTheme.colorScheme.onBackground,
-//                            RoundedCornerShape(8.dp)
-//                        ),
-//                    horizontalArrangement = Arrangement.Center
-//                ) {
-//                    Text(
-//                        text = task.value?.userTimer.time,
-//                        fontSize = 18.sp,
-//                        color = MaterialTheme.colorScheme.onBackground,
-//                        modifier = Modifier.padding(4.dp)
-//                    )
-//                }
-//                Spacer(modifier = Modifier.width(8.dp))
-//                OutlinedButton(
-//                    onClick = { },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    shape = RoundedCornerShape(8.dp),
-//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-//                ) {
-//                    Text(if (task.value?.userTimer.isRunning) "Pause" else "Resume")
-//                }
-//            }
-                    }
-
                     //MEMBERS
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
