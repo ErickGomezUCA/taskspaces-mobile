@@ -51,7 +51,17 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable<SearchRoute> {
-            SearchScreen()
+            SearchScreen(
+                onWorkspaceClick = { workspaceId ->
+                    navController.navigate(WorkspaceRoute(workspaceId))
+                },
+                onProjectClick = { projectId ->
+                    navController.navigate(ProjectRoute(projectId))
+                },
+                onTaskClick = { projectId, taskId ->
+                    navController.navigate(ProjectRoute(projectId, taskId))
+                }
+            )
         }
 
         composable<BookmarksRoute> {

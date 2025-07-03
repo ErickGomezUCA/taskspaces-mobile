@@ -1,35 +1,30 @@
 package com.ucapdm2025.taskspaces.ui.screens.search
 
 
-import android.annotation.SuppressLint
-import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.helpers.SearchHolder
-import com.ucapdm2025.taskspaces.ui.components.general.*
+import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
+import com.ucapdm2025.taskspaces.ui.components.general.SearchContainer
 import com.ucapdm2025.taskspaces.ui.components.home.WorkspaceCard
+import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
-import com.ucapdm2025.taskspaces.ui.components.workspace.UserCard
-import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
-import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
  * Composable that displays a search screen with dynamic results based on a query.
@@ -37,17 +32,14 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
  * - Initial: when the search query is empty
  * - No Results: when there are no results for the query
  * - Results: when there is data for any category (workspaces, projects, tasks, users)
- *
- * @param searchQuery  The search input from the user.
- * @param workspaces  List of workspace to show.
- * @param projects List of project to show.
- * @param tasks List of tasks with tags.
- * @param users List of users.
  */
 
-@SuppressLint("ContextCastToActivity")
 @Composable
-fun SearchScreen() {
+fun SearchScreen(
+    onWorkspaceClick: (workspaceId: Int) -> Unit = { workspaceId -> },
+    onProjectClick: (projectId: Int) -> Unit = { projectId -> },
+    onTaskClick: (projectId: Int, taskId: Int) -> Unit = { projectId, taskId -> },
+) {
     var searchResults = SearchHolder.results.value
     var searchQuery = SearchHolder.searchQuery.value
     var workspaces = searchResults?.workspaces ?: emptyList()
@@ -60,7 +52,14 @@ fun SearchScreen() {
     when {
         searchQuery.isEmpty() -> SearchInitialState()
         !hasAnyResults -> SearchNoResults()
-        else -> SearchResults(workspaces, projects, tasks)
+        else -> SearchResults(
+            workspaces,
+            projects,
+            tasks,
+            onWorkspaceClick,
+            onProjectClick,
+            onTaskClick
+        )
     }
 }
 
@@ -114,6 +113,9 @@ fun SearchResults(
     workspaces: List<WorkspaceModel>,
     projects: List<ProjectModel>,
     tasks: List<TaskModel>,
+    onWorkspaceClick: (workspaceId: Int) -> Unit = { workspaceId -> },
+    onProjectClick: (projectId: Int) -> Unit = { projectId -> },
+    onTaskClick: (projectId: Int, taskId: Int) -> Unit = { projectId, taskId -> },
 ) {
     LazyColumn(
         modifier = Modifier
@@ -124,12 +126,13 @@ fun SearchResults(
         if (workspaces.isNotEmpty()) {
             item {
                 SearchContainer(title = "Workspaces", onViewMoreClick = { }) {
-                    LazyRow( horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                         items(workspaces) {
                             WorkspaceCard(
                                 name = it.title,
                                 projectsCount = 2,
                                 membersCount = 5,
+                                onClick = { onWorkspaceClick(it.id) },
                                 modifier = Modifier
                                     .widthIn(min = 200.dp, max = 300.dp)
                                     .padding(end = 8.dp)
@@ -145,7 +148,7 @@ fun SearchResults(
                 SearchContainer(title = "Projects", onViewMoreClick = { }) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(projects) {
-                            ProjectCard(name = it.title)
+                            ProjectCard(name = it.title, onClick = { onProjectClick(it.id) })
                         }
                     }
                 }
@@ -157,7 +160,10 @@ fun SearchResults(
                 SearchContainer(title = "Tasks", onViewMoreClick = { }) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(tasks) {
-//                            TaskCard(title = it.title, tags = it.tags)
+                            TaskCard(
+                                title = it.title,
+                                tags = it.tags,
+                                onClick = { onTaskClick(it.projectId, it.id) })
                         }
                     }
                 }
@@ -171,14 +177,21 @@ fun sampleWorkspaces(query: String): List<String> =
     if (query == "zzz") emptyList() else listOf("Workspace 1", "Workspace 2")
 
 fun sampleProjects(query: String): List<String> =
-    if (query == "zzz") emptyList() else listOf("Project name", "Project name","Project name", "Project name")
+    if (query == "zzz") emptyList() else listOf(
+        "Project name",
+        "Project name",
+        "Project name",
+        "Project name"
+    )
 
 fun sampleTasks(query: String): List<TaskModel> =
     if (query == "zzz") emptyList() else listOf(
-        TaskModel(1, "TaskModel Title 1", projectId = 1,
+        TaskModel(
+            1, "TaskModel Title 1", projectId = 1,
 //            listOf(Tag("Tag", Color.Red), Tag("Tag", Color.Green))
         ),
-        TaskModel(2, "TaskModel Title 2", projectId = 1,
+        TaskModel(
+            2, "TaskModel Title 2", projectId = 1,
 //            listOf(Tag("Tag", Color.Blue))
         )
     )
