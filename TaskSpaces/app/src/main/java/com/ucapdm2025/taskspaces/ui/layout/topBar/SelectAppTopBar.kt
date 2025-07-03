@@ -52,13 +52,12 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
                 })
         }
 
-        //        TODO: Handle query change and search action
         "BookmarksRoute" -> {
-            AppTopBarWithSearchBar(
-                query = "",
-                placeholder = "Search tasks...",
-                onQueryChange = {},
-                onSearch = {})
+            AppTopBar(
+                title = "Your Bookmarks",
+                navController = navController,
+                variant = AppTopBarVariant.DEFAULT
+            )
         }
 
         "WorkspaceRoute",
