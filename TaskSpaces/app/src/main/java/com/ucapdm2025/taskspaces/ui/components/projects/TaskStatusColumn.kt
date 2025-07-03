@@ -63,7 +63,8 @@ fun TaskStatusColumn(
                 tags = task.tags,
                 onClick = { onTaskCardClick(task.id) },
                 taskId = task.id,
-                onDeleteClick = { onTaskDeleteClick(task.id) }
+                onDeleteClick = { onTaskDeleteClick(task.id) },
+                showDeleteButton = true // TODO: Apply show/hide logic based on member role
             )
         }
 
