@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import com.ucapdm2025.taskspaces.ui.components.onboarding.SplashScreen
 import com.ucapdm2025.taskspaces.ui.screens.bookmark.BookmarksScreen
 import com.ucapdm2025.taskspaces.ui.screens.home.HomeScreen
-import com.ucapdm2025.taskspaces.ui.screens.SearchScreen
+import com.ucapdm2025.taskspaces.ui.screens.search.SearchScreen
 
 import com.ucapdm2025.taskspaces.ui.screens.user.ChangePasswordScreen
 import com.ucapdm2025.taskspaces.ui.screens.user.SettingsScreen
@@ -51,7 +51,17 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable<SearchRoute> {
-            SearchScreen()
+            SearchScreen(
+                onWorkspaceClick = { workspaceId ->
+                    navController.navigate(WorkspaceRoute(workspaceId))
+                },
+                onProjectClick = { projectId ->
+                    navController.navigate(ProjectRoute(projectId))
+                },
+                onTaskClick = { projectId, taskId ->
+                    navController.navigate(ProjectRoute(projectId, taskId))
+                }
+            )
         }
 
         composable<BookmarksRoute> {
