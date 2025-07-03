@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.ui.layout.topBar
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +30,8 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
     LaunchedEffect(searchResults.value) {
         SearchHolder.results.value = searchResults.value
     }
+
+    Log.d("test1", currentRoute)
 
     when (currentRoute) {
         "HomeRoute" -> {
@@ -62,7 +65,6 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
 
         "WorkspaceRoute",
         "ProjectRoute",
-        "TaskRoute",
         "TimeTrackerRoute",
         "UserRoute",
         "SettingsRoute",
