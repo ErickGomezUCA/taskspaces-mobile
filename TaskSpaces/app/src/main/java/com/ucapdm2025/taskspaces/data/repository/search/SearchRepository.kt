@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
  * SearchRepository is an interface that defines the methods for managing search functionality in the application.
  */
 interface SearchRepository {
-    fun search(query: String): Flow<Resource<SearchModel>>
+    suspend fun search(query: String): Result<SearchModel>
     fun searchWorkspaces(query: String): Flow<Resource<List<WorkspaceModel>>>
     fun searchProjects(query: String): Flow<Resource<List<ProjectModel>>>
     fun searchTasks(query: String): Flow<Resource<List<TaskModel>>>

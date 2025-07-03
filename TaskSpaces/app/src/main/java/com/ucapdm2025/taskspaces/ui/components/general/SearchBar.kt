@@ -59,7 +59,7 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     placeholder: String = "Placeholder...",
     onQueryChange: (String) -> Unit,
-    onSearch: (String) -> Unit = {},
+    onSearch: (query: String) -> Unit = {query ->},
     enabled: Boolean = true,
 ) {
     var query by remember { mutableStateOf(query) }

@@ -29,7 +29,7 @@ fun AppTopBarWithSearchBar(
     query: String,
     placeholder: String = "Placeholder...",
     onQueryChange: (String) -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (query: String) -> Unit = {query ->}
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(

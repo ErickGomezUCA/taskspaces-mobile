@@ -23,24 +23,18 @@ class SearchViewModel(private val searchRepository: SearchRepository): ViewModel
 
     fun search(query: String) {
         viewModelScope.launch {
-            searchRepository.search(query).collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
+            Log.d("SearchVewModel: search", _searchQuery.value)
 
-                    is Resource.Success -> {
-                        _searchResults.value = resource.data
-                        Log.d("SearchViewModel", "Search results: ${resource.data}")
-                    }
+            val response = searchRepository.search(query)
 
-                    is Resource.Error -> {
-                        // Handle error state if necessary
-                        _searchResults.value = null
-                    }
-                }
+            if (response.isSuccess) {
+                _searchResults.value = response.getOrNull()
+                Log.d("SearchViewModel: search", "Search results: ${_searchResults.value}")
+            } else {
+                Log.e("SearchViewModel: search", "Error searching: ${response.exceptionOrNull()?.message}")
+                _searchResults.value = null
             }
-        }
+       }
     }
 
     fun setQuery(query: String) {

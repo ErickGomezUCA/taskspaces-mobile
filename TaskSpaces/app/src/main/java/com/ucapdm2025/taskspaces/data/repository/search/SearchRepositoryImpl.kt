@@ -1,11 +1,14 @@
 package com.ucapdm2025.taskspaces.data.repository.search
 
+import android.util.Log
+import coil3.network.HttpException
 import com.ucapdm2025.taskspaces.data.database.dao.SearchDao
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.SearchModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.services.SearchService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
@@ -14,44 +17,35 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 class SearchRepositoryImpl(
     private val searchDao: SearchDao,
     private val searchService: SearchService
 ) : SearchRepository {
-    override fun search(query: String): Flow<Resource<SearchModel>> = flow {
-        emit(Resource.Loading)
+    override suspend fun search(query: String): Result<SearchModel> {
+        return try {
+            val response = searchService.search(query)
 
-//        Search locally only
-//        TODO: Find a way to search to server when connected to the internet
-//        and locally when offline
-        var localWorkspaces: List<WorkspaceModel> = emptyList()
-        var localProjects: List<ProjectModel> = emptyList()
-        var localTasks: List<TaskModel> = emptyList()
+            Log.d("SearchRepository: search", "Search query: $query")
+            Log.d("SearchRepository: search", "Search response: $response")
 
-        searchDao.searchWorkspaces(query).map { entities ->
-            localWorkspaces = entities.map { it.toDomain() }
-        }.distinctUntilChanged()
+            val result = response.content.toDomain()
 
-        searchDao.searchProjects(query).map { entities ->
-            localProjects = entities.map { it.toDomain() }
-        }.distinctUntilChanged()
+            Log.d("SearchRepository: search", "Search results: $result")
 
-        searchDao.searchTasks(query).map { entities ->
-            localTasks = entities.map { it.toDomain() }
-        }.distinctUntilChanged()
+            Result.success(result)
+        } catch (e: HttpException) {
+            Log.e("SearchRepository: search", "Error searching: ${e.message}")
+            Result.failure(e)
+        } catch (e: IOException) {
+            Log.e("SearchRepository: search", "Network error: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("SearchRepository: search", "Unexpected error: ${e.message}")
+            Result.failure(e)
+        }
 
-        val search: Flow<Resource<SearchModel>> = flowOf(
-            Resource.Success(
-                SearchModel(
-                    workspaces = localWorkspaces,
-                    projects = localProjects,
-                    tasks = localTasks
-                )
-            )
-        )
-
-        emitAll(search)
     }
 
     override fun searchWorkspaces(query: String): Flow<Resource<List<WorkspaceModel>>> = flow {

@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.ui.screens.search
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,7 @@ import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
+import com.ucapdm2025.taskspaces.helpers.SearchHolder
 import com.ucapdm2025.taskspaces.ui.components.general.*
 import com.ucapdm2025.taskspaces.ui.components.home.WorkspaceCard
 import com.ucapdm2025.taskspaces.ui.components.workspace.ProjectCard
@@ -46,22 +48,17 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun SearchScreen() {
-    val application = LocalContext.current.applicationContext as TaskSpacesApplication
-    val searchRepository = application.appProvider.provideSearchRepository()
-    val viewModel: SearchViewModel = viewModel(
-        factory = SearchViewModelFactory(searchRepository)
-    )
-    val searchQuery = viewModel.searchQuery.collectAsStateWithLifecycle()
-    val searchResults = viewModel.searchResults.collectAsStateWithLifecycle()
-    val workspaces = searchResults.value?.workspaces ?: emptyList()
-    val projects = searchResults.value?.projects ?: emptyList()
-    val tasks = searchResults.value?.tasks ?: emptyList()
+    var searchResults = SearchHolder.results.value
+    var searchQuery = SearchHolder.searchQuery.value
+    var workspaces = searchResults?.workspaces ?: emptyList()
+    var projects = searchResults?.projects ?: emptyList()
+    var tasks = searchResults?.tasks ?: emptyList()
 
-    val hasAnyResults =
+    var hasAnyResults =
         workspaces.isNotEmpty() || projects.isNotEmpty() || tasks.isNotEmpty()
 
     when {
-        searchQuery.value.isEmpty() -> SearchInitialState()
+        searchQuery.isEmpty() -> SearchInitialState()
         !hasAnyResults -> SearchNoResults()
         else -> SearchResults(workspaces, projects, tasks)
     }
