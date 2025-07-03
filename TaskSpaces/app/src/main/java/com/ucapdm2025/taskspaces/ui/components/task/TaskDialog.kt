@@ -238,8 +238,11 @@ fun TaskDialog(
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
 
-                is UiState.Error -> {
-                }
+                is UiState.Error -> Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {}
 
                 is UiState.Success -> {
                     val loadedTask = state.data
