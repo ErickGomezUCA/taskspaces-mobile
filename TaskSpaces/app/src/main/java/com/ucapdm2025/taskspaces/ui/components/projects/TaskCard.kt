@@ -1,6 +1,7 @@
 package com.ucapdm2025.taskspaces.ui.components.projects
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,8 +53,9 @@ fun TaskCard(
     taskId: Int,
     tags: List<TagModel>,
     onDeleteClick: (Int) -> Unit,
-    //TODO: Replace with real navigation to the task chosen
-    onClick: () -> Unit = {}
+    breadcrumb: String = "",
+    onClick: () -> Unit = {},
+    showDeleteButton: Boolean = false,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -66,75 +68,87 @@ fun TaskCard(
         colors = CardDefaults.cardColors(containerColor = ExtendedTheme.colors.primary50),
         onClick = onClick
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                if (breadcrumb != "") {
+                    Text(
+                        text = breadcrumb,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        fontSize = 12.sp
+                    )
+                }
+
                 Text(
                     text = title,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp
                 )
-                IconButton(onClick = { showMenu = true }) {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    tags.forEach { tag ->
+                        Tag(tag = tag)
+                    }
+                }
+            }
+
+            if (showDeleteButton) {
+                IconButton(
+                    onClick = { showMenu = true },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Delete") },
-                        onClick = {
-                            showMenu = false
-                            showDeleteDialog = true
-                        }
-                    )
-                }
-
-                if (showDeleteDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showDeleteDialog = false },
-                        title = { Text("Delete Task") },
-                        text = { Text("Are you sure you want to delete this task?") },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                onDeleteClick(taskId)
-                                showDeleteDialog = false
-                            }) {
-                                Text("Delete")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showDeleteDialog = false }) {
-                                Text("Cancel")
-                            }
-                        }
+                        contentDescription = "More options",
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
             ) {
-                tags.forEach { tag ->
-                    Tag(tag = tag)
-                }
+                DropdownMenuItem(
+                    text = { Text("Delete") },
+                    onClick = {
+                        showMenu = false
+                        showDeleteDialog = true
+                    }
+                )
+            }
+
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    title = { Text("Delete Task") },
+                    text = { Text("Are you sure you want to delete this task?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            onDeleteClick(taskId)
+                            showDeleteDialog = false
+                        }) {
+                            Text("Delete")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
         }
     }
 }
+
 
 /**
  * A preview composable for the [TaskCard] component.
@@ -176,6 +190,127 @@ fun TaskCardPreviewLight() {
 }
 
 /**
+ * A preview composable for the [TaskCard] component with breadcrumb.
+ *
+ * Displays a sample task card with mock data and a breadcrumb for design-time visualization.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component.
+ *
+ * Displays a sample task card with mock data for design-time visualization in Android Studio.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardDeleteButtonPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest,
+                taskId = 1,
+                onClick = {},
+                onDeleteClick = {},
+                showDeleteButton = true
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component with breadcrumb.
+ *
+ * Displays a sample task card with mock data and a breadcrumb for design-time visualization.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbAndDeleteButtonPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {},
+                showDeleteButton = true
+            )
+        }
+    }
+}
+
+/**
  * A preview composable for the [TaskCard] component using the dark theme.
  *
  * Displays a sample task card with mock tags to visualize its appearance
@@ -210,6 +345,124 @@ fun TaskCardPreviewDark() {
                 taskId = 2,
                 onClick = {},
                 onDeleteClick = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme with breadcrumb.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme.
+ *
+ * Displays a sample task card with mock tags to visualize its appearance
+ * in dark mode with a custom dark background color.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardDeleteButtonPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest,
+                taskId = 2,
+                onClick = {},
+                onDeleteClick = {},
+                showDeleteButton = true
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme with breadcrumb.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbAndDeleteButtonPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {},
+                showDeleteButton = true
             )
         }
     }

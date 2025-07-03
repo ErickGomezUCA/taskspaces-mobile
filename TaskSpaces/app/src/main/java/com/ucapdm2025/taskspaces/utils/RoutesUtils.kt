@@ -9,5 +9,5 @@ import androidx.navigation.NavBackStackEntry
  * @return The current route as a String, or null if not available.
  */
 fun getCurrentRoute(navBackStackEntry: NavBackStackEntry?): String? {
-    return navBackStackEntry?.destination?.route?.split(".")?.last()
+    return navBackStackEntry?.destination?.route?.split(".")?.last()?.split("/")?.first()
 }

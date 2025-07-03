@@ -102,25 +102,30 @@ class TaskRepositoryImpl(
         emitAll(localTasks)
     }.flowOn(Dispatchers.IO)
 
-    // TODO: Implement this method
-//    TODO: Implement this in server backend
     override fun getAssignedTasks(userId: Int): Flow<Resource<List<TaskModel>>> = flow {
         emit(Resource.Loading)
 
         try {
             //            Fetch tasks from remote
             val remoteAssignedTasks: List<TaskResponse> =
-                taskService.getAssignedTasksByUserId(userId = userId).content
+                taskService.getAssignedTasks().content
 
             //            Save remote tasks to the database
             if (remoteAssignedTasks.isNotEmpty()) {
                 remoteAssignedTasks.forEach {
                     taskDao.createTask(it.toEntity())
+                    taskAssignedDao.createTaskAssigned(
+                        TaskAssignedEntity(
+                            taskId = it.id,
+                            userId = userId,
+                            createdAt = it.createdAt
+                        )
+                    )
                 }
             }
         } catch (e: Exception) {
             Log.d(
-                "TagRepository: getAssignedTasks",
+                "TaskRepository: getAssignedTasks",
                 "Error fetching assigned tasks: ${e.message}"
             )
         }
