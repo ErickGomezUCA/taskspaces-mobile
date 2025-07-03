@@ -258,11 +258,14 @@ fun TaskDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                task.value?.breadcrumb ?: "/",
+                                text = task.value?.breadcrumb ?: "/",
                                 fontSize = 14.sp,
-                                color = ExtendedTheme.colors.background50
+                                color = ExtendedTheme.colors.background50,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
 
