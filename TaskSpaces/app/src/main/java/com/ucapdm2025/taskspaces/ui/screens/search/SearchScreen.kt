@@ -161,6 +161,7 @@ fun SearchResults(
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(tasks) {
                             TaskCard(
+                                breadcrumb = it.breadcrumb,
                                 title = it.title,
                                 tags = it.tags,
                                 onClick = { onTaskClick(it.projectId, it.id) })

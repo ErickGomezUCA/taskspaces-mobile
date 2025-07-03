@@ -1,15 +1,29 @@
 package com.ucapdm2025.taskspaces.ui.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Sync
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -21,15 +35,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
-import com.ucapdm2025.taskspaces.ui.components.general.*
+import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.ui.components.general.Container
+import com.ucapdm2025.taskspaces.ui.components.general.DropdownMenuOption
+import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
+import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
+import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.YourWorkspacesSection
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-import com.ucapdm2025.taskspaces.helpers.UiState
-import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -44,6 +62,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun HomeScreen(
     onNavigateWorkspace: (Int) -> Unit,
+    onAssignedTaskClick: (projectId: Int, taskId: Int) -> Unit = { projectId, taskId -> },
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
     val workspaces = viewModel.workspaces.collectAsStateWithLifecycle()
@@ -83,8 +102,7 @@ fun HomeScreen(
                     // Title text field
                     TextField(
                         value = workspaceDialogData.value,
-                        onValueChange = { viewModel.setWorkspaceDialogData(it)
-                            Log.d("test1", it)},
+                        onValueChange = { viewModel.setWorkspaceDialogData(it) },
                         label = { Text(text = "Workspace Title") },
                         placeholder = { Text(text = "Enter workspace title") },
                         isError = wasCreateAttempted.value && workspaceDialogData.value.isBlank(),
@@ -151,12 +169,12 @@ fun HomeScreen(
 //    Using a box to place this floating status dialog on top of the LazyColumn
 //    This floating status dialog shows the current edit mode for Home Screen
     Box(modifier = Modifier.fillMaxSize()) {
-            NotificationHost(
-                event = notificationState.value,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp)
-            )
+        NotificationHost(
+            event = notificationState.value,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
         if (editMode.value != HomeEditMode.NONE) {
             FloatingStatusDialog(
                 onClose = { viewModel.setEditMode(HomeEditMode.NONE) },
@@ -228,7 +246,7 @@ fun HomeScreen(
                                             viewModel.showDialog()
                                         }
 
-                                //                                Delete the workspace clicked when in delete mode
+                                        //                                Delete the workspace clicked when in delete mode
 //                                TODO: Add a confirmation dialog before deleting
                                         HomeEditMode.DELETE -> {
                                             viewModel.deleteWorkspace(workspace.id)
@@ -265,7 +283,8 @@ fun HomeScreen(
                         is UiState.Error -> {
                             FeedbackIcon(
                                 icon = Icons.Outlined.Close,
-                                title = state.message ?: "Sorry, we couldn't load shared workspaces."
+                                title = state.message
+                                    ?: "Sorry, we couldn't load shared workspaces."
                             )
                         }
 
@@ -286,7 +305,11 @@ fun HomeScreen(
                             } else {
                                 SharedWorkspacesSection(
                                     sharedWorkspaces = state.data,
-                                    onClickWorkspaceCard = { workspace -> onNavigateWorkspace(workspace.id) }
+                                    onClickWorkspaceCard = { workspace ->
+                                        onNavigateWorkspace(
+                                            workspace.id
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -318,7 +341,10 @@ fun HomeScreen(
                         }
 
                         is UiState.Success -> {
-                            AssignedTasksSection(assignedTasks = state.data)
+                            AssignedTasksSection(
+                                assignedTasks = state.data,
+                                onAssignedTaskClick = onAssignedTaskClick
+                            )
                         }
                     }
                 }
