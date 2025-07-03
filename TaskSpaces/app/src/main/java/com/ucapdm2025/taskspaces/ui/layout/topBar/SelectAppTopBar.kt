@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.helpers.SearchHolder
+import com.ucapdm2025.taskspaces.ui.navigation.UserRoute
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModel
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -37,7 +38,7 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
         "HomeRoute" -> {
             AppTopBar(
                 title = "Welcome, USER",
-                navController = navController,
+                onUserClick = { navController.navigate(UserRoute) },
                 variant = AppTopBarVariant.HOME
             )
         }
@@ -58,7 +59,8 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
         "BookmarksRoute" -> {
             AppTopBar(
                 title = "Your Bookmarks",
-                navController = navController,
+                onReturn = { navController.popBackStack() },
+                onUserClick = { navController.navigate(UserRoute) },
                 variant = AppTopBarVariant.DEFAULT
             )
         }
@@ -69,16 +71,21 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
         "UserRoute",
         "SettingsRoute",
         "ChangePasswordRoute" -> {
-//            TODO: Add go back action here
             AppTopBar(
                 title = "Return",
-                navController = navController,
+                onReturn = { navController.popBackStack() },
+                onUserClick = { navController.navigate(UserRoute) },
                 variant = AppTopBarVariant.NAVIGATION
             )
         }
 
         else -> {
-            AppTopBar(title = "Top App Bar", navController = navController)
+            AppTopBar(
+                title = "Top App Bar",
+                onReturn = { navController.popBackStack() },
+                onUserClick = { navController.navigate(UserRoute) },
+                variant = AppTopBarVariant.DEFAULT
+            )
         }
     }
 }
