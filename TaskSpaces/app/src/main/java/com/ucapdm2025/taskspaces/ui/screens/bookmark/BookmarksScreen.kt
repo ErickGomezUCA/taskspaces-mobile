@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.bookmark
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -40,6 +41,8 @@ fun BookmarksScreen(
         viewModel(factory = BookmarkViewModelFactory(bookmarkRepository))
 
     val uiState = viewModel.bookmarkedTasksState.collectAsStateWithLifecycle()
+
+    Log.d("test1", uiState.toString())
 
     when (val state = uiState.value) {
         is UiState.Loading -> {
@@ -148,8 +151,7 @@ fun BookmarkList(
                         tasksInGroup.forEach { task ->
                             TaskCard(
                                 title = task.title,
-                                //                                TODO: Add tags
-                                tags = emptyList(), // Replace with task.tags if available
+                                tags = task.tags,
                                 onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
                             )
                         }
