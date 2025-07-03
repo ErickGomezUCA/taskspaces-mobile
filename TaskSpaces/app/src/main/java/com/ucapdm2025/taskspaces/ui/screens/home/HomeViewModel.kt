@@ -83,71 +83,79 @@ class HomeViewModel(
     //    Fetch user id from auth
     init {
         viewModelScope.launch {
-            authRepository.authUserId
-                .flatMapLatest { userId ->
-                    _authUserId.value = userId
+            authRepository.authUserId.collect { userId ->
+                _authUserId.value = userId
 
-                    val userFlow = userRepository.getUserById(userId)
-                    val workspacesFlow = workspaceRepository.getWorkspacesByUserId(userId)
-                    val sharedWorkspacesFlow = workspaceRepository.getWorkspacesSharedWithMe()
-                    val tasksFlow = taskRepository.getAssignedTasks(userId)
+                launch {
+                    workspaceRepository.getWorkspacesByUserId(userId)
+                        .collect { resource ->
+                            when (resource) {
+                                is Resource.Loading -> {
+                                    _workspaces.value = UiState.Loading
+                                }
 
-                    combine(
-                        userFlow,
-                        workspacesFlow,
-                        sharedWorkspacesFlow,
-                        tasksFlow
-                    ) { userRes, wsRes, sharedWsRes, taskRes ->
-                        // User
-                        if (userRes is Resource.Success<*>) {
-                            val user = userRes.data as? UserModel
-                            _userName.value = user?.fullname ?: ""
-                            Log.d("HomeViewModel", "Auth user ID: $userId")
-                        }
+                                is Resource.Success -> {
+                                    _workspaces.value = UiState.Success(resource.data)
+                                }
 
-                        // Workspaces
-                        when (wsRes) {
-                            is Resource.Loading -> _workspaces.value = UiState.Loading
-                            is Resource.Success -> _workspaces.value = UiState.Success(wsRes.data)
-                            is Resource.Error -> {
-                                if (wsRes.message.startsWith("No workspace found")) {
-                                    _workspaces.value = UiState.Success(emptyList())
-                                } else {
-                                    _workspaces.value = UiState.Error(wsRes.message)
+                                is Resource.Error -> {
+                                    if (resource.message.startsWith("No workspace found")) {
+                                        _workspaces.value = UiState.Success(emptyList())
+                                    } else {
+                                        _workspaces.value = UiState.Error(resource.message)
+                                    }
                                 }
                             }
                         }
+                }
 
-                        // Shared Workspaces
-                        when (sharedWsRes) {
-                            is Resource.Loading -> _workspacesSharedWithMe.value = UiState.Loading
-                            is Resource.Success -> _workspacesSharedWithMe.value = UiState.Success(sharedWsRes.data)
+                launch {
+                    workspaceRepository.getWorkspacesSharedWithMe().collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> {
+                                _workspacesSharedWithMe.value = UiState.Loading
+                            }
+
+                            is Resource.Success -> {
+                                _workspacesSharedWithMe.value = UiState.Success(resource.data)
+                            }
+
                             is Resource.Error -> {
-                                if (sharedWsRes.message.startsWith("No shared workspaces")) {
+                                if (resource.message.startsWith("No shared workspaces")) {
                                     _workspacesSharedWithMe.value = UiState.Success(emptyList())
                                 } else {
-                                    _workspacesSharedWithMe.value = UiState.Error(sharedWsRes.message)
-                                }
-                            }
-                        }
-
-                        // Tasks
-                        when (taskRes) {
-                            is Resource.Loading -> _assignedTasks.value = UiState.Loading
-                            is Resource.Success -> _assignedTasks.value = UiState.Success(taskRes.data)
-                            is Resource.Error -> {
-                                if (taskRes.message.lowercase().contains("no task")) {
-                                    _assignedTasks.value = UiState.Success(emptyList())
-                                } else {
-                                    _assignedTasks.value = UiState.Error(taskRes.message)
+                                    _workspacesSharedWithMe.value = UiState.Error(resource.message)
                                 }
                             }
                         }
                     }
                 }
-                .collect{}
+
+// NOTE: The loading state for assigned tasks is working correctly,
+// but the data loads so quickly that the CircularProgressIndicator
+// is barely visible. You may want to add a slight delay
+                taskRepository.getAssignedTasks(userId).collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            _assignedTasks.value = UiState.Loading
+                        }
+                        is Resource.Success -> {
+                            _assignedTasks.value = UiState.Success(resource.data)
+                        }
+                        is Resource.Error -> {
+                            if (resource.message.lowercase().contains("no task")) {
+                                _assignedTasks.value = UiState.Success(emptyList())
+                            } else {
+                                _assignedTasks.value = UiState.Error(resource.message)
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     }
+
 
     fun createWorkspace(title: String) {
         _wasCreateAttempted.value = true
