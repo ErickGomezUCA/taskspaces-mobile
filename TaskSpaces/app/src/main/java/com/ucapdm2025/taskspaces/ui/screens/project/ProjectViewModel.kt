@@ -40,10 +40,6 @@ class ProjectViewModel(
     private val memberRoleRepository: MemberRoleRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
-
-    private val _uiEvent = MutableSharedFlow<UiEvent>()
-    val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
-
     private val _project: MutableStateFlow<UiState<ProjectModel>> = MutableStateFlow(UiState.Loading)
     val project: StateFlow<UiState<ProjectModel>> = _project.asStateFlow()
 
@@ -56,24 +52,18 @@ class ProjectViewModel(
     private val _selectedTaskId: MutableStateFlow<Int> = MutableStateFlow(0)
     val selectedTaskId: StateFlow<Int> = _selectedTaskId.asStateFlow()
 
-    private val _selectedTaskState = MutableStateFlow<UiState<TaskModel>>(UiState.Loading)
-    val selectedTaskState: StateFlow<UiState<TaskModel>> = _selectedTaskState.asStateFlow()
-
     init {
         viewModelScope.launch {
             projectRepository.getProjectById(projectId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        _project.value = UiState.Loading
                     }
 
                     is Resource.Success -> {
                         val project = resource.data
-                        _project.value = UiState.Success(project!!)
                     }
 
                     is Resource.Error -> {
-                        _project.value = UiState.Error(resource.message)
                     }
                 }
             }
@@ -92,7 +82,6 @@ class ProjectViewModel(
                     }
 
                     is Resource.Error -> {
-                        Log.e("ProjectViewModel", "Error loading tasks: ${resource.message}")
                     }
                 }
             }
@@ -118,52 +107,17 @@ class ProjectViewModel(
             )
 
             if (response.isSuccess) {
-                val createdTask = response.getOrThrow()
-                _selectedTaskId.value   = createdTask.id
-                _selectedTaskState.value = UiState.Success(createdTask)
-                _showTaskDialog.value    = true
-
-                Log.d("ProjectViewModel", "Creating task: $title")
-                _uiEvent.emit(UiEvent.Success("Task “$title” created"))
+                _selectedTaskId.value = response.getOrThrow().id
             } else {
                 // Handle error, e.g., show a message to the user
-                val raw = response.exceptionOrNull()?.localizedMessage ?: "Unable to create task"
-                _uiEvent.emit(UiEvent.Error(friendlyMessage(raw, "Could not create task")))
-                // Log or handle the exception as needed
-                Log.e("ProjectViewModel", raw)
+                val exception = response.exceptionOrNull()
+                if (exception != null) {
+                    // Log or handle the exception as needed
+                    Log.e("ProjectViewModel", "Error creating task: ${exception.message}")
+                }
             }
         }
     }
-
-    fun onTaskCardClick(taskId: Int) {
-        viewModelScope.launch {
-            _selectedTaskState.value = UiState.Loading
-            _showTaskDialog.value = true
-
-            val resource = taskRepository
-                .getTaskById(taskId)
-                .first { it !is Resource.Loading }
-
-            when (resource) {
-                is Resource.Success -> {
-                    val task = resource.data
-                    if (task != null) {
-                        _selectedTaskId.value = task.id
-                        _selectedTaskState.value = UiState.Success(task)
-                    } else {
-                        _selectedTaskState.value = UiState.Error("Task not found")
-                    }
-                }
-
-                is Resource.Error -> {
-                    _selectedTaskState.value = UiState.Error(resource.message ?: "Failed to load task")
-                }
-
-                else -> {} // nunca llega acá
-            }
-        }
-    }
-
 
     fun deleteTask(id: Int) {
         viewModelScope.launch {
@@ -180,31 +134,6 @@ class ProjectViewModel(
 
         }
     }
-
-    fun updateTask(task: TaskModel) {
-        viewModelScope.launch {
-            val response = taskRepository.updateTask(
-                id = task.id,
-                title = task.title,
-                description = task.description,
-                deadline = task.deadline,
-                timer = task.timer,
-                status = task.status
-            )
-
-            if (response.isSuccess) {
-                Log.d("ProjectViewModel", "Task updated successfully: $task")
-                _uiEvent.emit(UiEvent.Success("Task “${task.title}” updated"))
-                reloadTasks()
-            } else {
-                val raw = response.exceptionOrNull()?.localizedMessage ?: "Failed to update task"
-                Log.e("ProjectViewModel", raw)
-                _uiEvent.emit(UiEvent.Error(friendlyMessage(raw, "Could not update task")))
-            }
-        }
-    }
-
-
     fun reloadTasks() {
         viewModelScope.launch {
             taskRepository.getTasksByProjectId(projectId).collect { resource ->
