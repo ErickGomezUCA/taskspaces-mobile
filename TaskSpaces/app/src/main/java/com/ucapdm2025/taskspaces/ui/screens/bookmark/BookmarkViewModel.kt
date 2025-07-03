@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.ucapdm2025.taskspaces.helpers.UiState
+
 
 /**
  * BookmarkViewModel is a ViewModel that manages the state of bookmarked tasks.
@@ -22,22 +24,21 @@ import kotlinx.coroutines.launch
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository
 ): ViewModel() {
-    private val _bookmarkedTasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
-    val bookmarkedTasks: StateFlow<List<TaskModel>> = _bookmarkedTasks.asStateFlow()
+    private val _bookmarkedTasksState = MutableStateFlow<UiState<List<TaskModel>>>(UiState.Loading)
+    val bookmarkedTasksState: StateFlow<UiState<List<TaskModel>>> = _bookmarkedTasksState.asStateFlow()
 
     init {
         viewModelScope.launch {
             bookmarkRepository.getUserBookmarks().collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // Handle loading state if necessary
+                        _bookmarkedTasksState.value = UiState.Loading
                     }
                     is Resource.Success -> {
-                        val tasks = resource.data
-                        _bookmarkedTasks.value = tasks
+                        _bookmarkedTasksState.value = UiState.Success(resource.data)
                     }
                     is Resource.Error -> {
-                        // Handle error state if necessary
+                        _bookmarkedTasksState.value = UiState.Error(resource.message)
                     }
                 }
             }

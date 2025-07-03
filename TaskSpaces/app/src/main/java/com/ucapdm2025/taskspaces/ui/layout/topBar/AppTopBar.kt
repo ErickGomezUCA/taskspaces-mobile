@@ -26,7 +26,8 @@ import com.ucapdm2025.taskspaces.utils.getTopAppBarContentColor
 @Composable
 fun AppTopBar(
     title: String,
-    navController: NavHostController,
+    onReturn: () -> Unit = {},
+    onUserClick : (UserRoute) -> Unit = {},
     variant: AppTopBarVariant = AppTopBarVariant.DEFAULT
 ) {
     TopAppBar(
@@ -37,7 +38,7 @@ fun AppTopBar(
         title = { Text(text = title) },
         navigationIcon = {
             if (variant == AppTopBarVariant.NAVIGATION) {
-                IconButton(onClick = { /* TODO: Handle back navigation */ }) {
+                IconButton(onClick = onReturn) {
                     Icon(
                         imageVector = Icons.Default.ArrowBackIosNew,
                         contentDescription = "Back",
@@ -47,7 +48,7 @@ fun AppTopBar(
             }
         },
         actions = {
-            IconButton(onClick = { navController.navigate(UserRoute) }) {
+            IconButton(onClick = { onUserClick(UserRoute) }) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "User",
@@ -62,7 +63,7 @@ fun AppTopBar(
 @Composable
 fun AppTopBarDefaultLightPreview() {
     TaskSpacesTheme {
-        AppTopBar(title = "Title example", navController = rememberNavController())
+        AppTopBar(title = "Title example", onReturn = {}, onUserClick = {})
     }
 }
 
@@ -72,7 +73,7 @@ fun AppTopBarHomeLightPreview() {
     TaskSpacesTheme {
         AppTopBar(
             title = "Title example",
-            navController = rememberNavController(),
+            onReturn = {}, onUserClick = {},
             variant = AppTopBarVariant.HOME
         )
     }
@@ -84,7 +85,7 @@ fun AppTopBarNavigationLightPreview() {
     TaskSpacesTheme {
         AppTopBar(
             title = "Title example",
-            navController = rememberNavController(),
+            onReturn = {}, onUserClick = {},
             variant = AppTopBarVariant.NAVIGATION
         )
     }
@@ -94,7 +95,7 @@ fun AppTopBarNavigationLightPreview() {
 @Composable
 fun AppTopBarDefaultDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        AppTopBar(title = "Title example", navController = rememberNavController())
+        AppTopBar(title = "Title example", onReturn = {}, onUserClick = {})
     }
 }
 
@@ -104,7 +105,7 @@ fun AppTopBarHomeDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         AppTopBar(
             title = "Title example",
-            navController = rememberNavController(),
+            onReturn = {}, onUserClick = {},
             variant = AppTopBarVariant.HOME
         )
     }
@@ -116,7 +117,7 @@ fun AppTopBarNavigationDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
         AppTopBar(
             title = "Title example",
-            navController = rememberNavController(),
+            onReturn = {}, onUserClick = {},
             variant = AppTopBarVariant.NAVIGATION
         )
     }
