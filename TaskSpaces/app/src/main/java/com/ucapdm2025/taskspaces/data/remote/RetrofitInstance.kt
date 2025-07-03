@@ -24,7 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitInstance {
     //    IMPORTANT: Include "/" at the end of the base url
 //    Production backend URL
-    private const val BASE_URL = "https://taskspaces-backend.me/api/"
+//    private const val BASE_URL = "https://taskspaces-backend.me/api/"
+    private const val BASE_URL = "http://192.168.0.29:3000/api/"
 
     val client = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {

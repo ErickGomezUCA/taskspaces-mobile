@@ -148,8 +148,7 @@ fun BookmarkList(
                         tasksInGroup.forEach { task ->
                             TaskCard(
                                 title = task.title,
-                                //                                TODO: Add tags
-                                tags = emptyList(), // Replace with task.tags if available
+                                tags = task.tags,
                                 onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
                             )
                         }

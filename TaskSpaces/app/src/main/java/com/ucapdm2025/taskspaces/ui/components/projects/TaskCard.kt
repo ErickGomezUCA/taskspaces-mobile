@@ -37,7 +37,7 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun TaskCard(
     title: String,
     tags: List<TagModel>,
-    //TODO: Replace with real navigation to the task chosen
+    breadcrumb: String = "",
     onClick: () -> Unit = {}
 ) {
     Card(

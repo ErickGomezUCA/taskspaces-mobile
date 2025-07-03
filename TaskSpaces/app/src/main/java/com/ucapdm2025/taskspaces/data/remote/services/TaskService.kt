@@ -31,9 +31,8 @@ interface TaskService {
     suspend fun deleteTask(@Path("id") id: Int): BaseResponse<TaskResponse>
 
 //    Members
-//    TODO: Implement this in server backend
-    @GET("tasks/assigned/{userId}")
-    suspend fun getAssignedTasksByUserId(@Path("userId") userId: Int): BaseResponse<List<TaskResponse>>
+    @GET("tasks/assigned")
+    suspend fun getAssignedTasks(): BaseResponse<List<TaskResponse>>
 
     @GET("tasks/{taskId}/members")
     suspend fun getMembersByTaskId(@Path("taskId") taskId: Int): BaseResponse<List<UserResponse>>
