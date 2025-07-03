@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ucapdm2025.taskspaces.ui.components.onboarding.SplashScreen
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
 import com.ucapdm2025.taskspaces.ui.screens.LoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
@@ -16,7 +17,11 @@ import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
 fun OnboardingNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = LoginRoute) {
+    NavHost(navController = navController, startDestination = SplashRoute) {
+        composable<SplashRoute> {
+            SplashScreen(navController = navController)
+        }
+
         composable<OnboardingRoute> {
             OnboardingScreen(navController = navController)
         }
