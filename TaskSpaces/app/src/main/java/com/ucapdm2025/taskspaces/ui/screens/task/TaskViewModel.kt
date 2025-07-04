@@ -2,7 +2,6 @@ package com.ucapdm2025.taskspaces.ui.screens.task
 
 import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import java.lang.reflect.Member
 import java.time.LocalDateTime
 
 /**
@@ -90,8 +88,8 @@ class TaskViewModel(
 //        Load _task
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
-                id?.let { taskRepository.getTaskById(it)} ?:
-                    flowOf(null) // Emit null if no task ID is set
+                id?.let { taskRepository.getTaskById(it) }
+                    ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -114,8 +112,10 @@ class TaskViewModel(
                         )
                     }
 
-                    null -> {_task.value = null
-                    _taskState.value = UiState.Error("Task not found") }
+                    null -> {
+                        _task.value = null
+                        _taskState.value = UiState.Error("Task not found")
+                    }
                 }
             }
         }
@@ -149,9 +149,8 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
-                tagRepository.getTagsByTaskId(it)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                    tagRepository.getTagsByTaskId(it)
+                } ?: flowOf(null) // Emit null if no task ID is set
             }.collect { resource ->
                 when (resource) {
 
@@ -160,7 +159,7 @@ class TaskViewModel(
 
 
                     is Resource.Error,
-                        null -> _tags.value = emptyList()// Handle error state if necessary
+                    null -> _tags.value = emptyList()// Handle error state if necessary
                     else -> {}
                 }
             }
@@ -171,8 +170,7 @@ class TaskViewModel(
             _task.flatMapLatest { task ->
                 task?.let {
                     tagRepository.getTagsByProjectId(it.projectId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                } ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -192,9 +190,8 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
-                taskRepository.getAssignedMembersByTaskId(taskId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                    taskRepository.getAssignedMembersByTaskId(taskId)
+                } ?: flowOf(null) // Emit null if no task ID is set
             }.collect { resource ->
                 when (resource) {
 
@@ -212,9 +209,8 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
-                taskRepository.getWorkspaceMembersByTaskId(taskId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                    taskRepository.getWorkspaceMembersByTaskId(taskId)
+                } ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -234,8 +230,7 @@ class TaskViewModel(
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
                     commentRepository.getCommentsByTaskId(taskId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                } ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -392,7 +387,10 @@ class TaskViewModel(
             val a = (color.alpha * 255).toInt()
             val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
 
-            Log.d("TaskViewModel", "Updating tag with id: $id, title: $title and color: ${hexColor}")
+            Log.d(
+                "TaskViewModel",
+                "Updating tag with id: $id, title: $title and color: ${hexColor}"
+            )
 
             val response = tagRepository.updateTag(
                 id = id,
@@ -415,30 +413,15 @@ class TaskViewModel(
         id: Int
     ) {
         viewModelScope.launch {
-//            Unassign the tag from the task first
-            val responseTaskTag = tagRepository.unassignTagFromTask(
-                tagId = id,
-                taskId = _task.value?.id ?: 0
-            )
-
 //            Then delete the tag
-            if (responseTaskTag.isSuccess) {
-                val response = tagRepository.deleteTag(id)
+            val response = tagRepository.deleteTag(id)
 
-                if (!response.isSuccess) {
-                    // Handle error, e.g., show a message to the user
-                    val exception = response.exceptionOrNull()
-                    if (exception != null) {
-                        // Log or handle the exception as needed
-                        Log.e("TaskViewModel", "Error deleting tag: ${exception.message}")
-                    }
-                }
-            } else {
+            if (!response.isSuccess) {
                 // Handle error, e.g., show a message to the user
-                val exception = responseTaskTag.exceptionOrNull()
+                val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    Log.e("TaskViewModel", "Error unassigning tag: ${exception.message}")
+                    Log.e("TaskViewModel", "Error deleting tag: ${exception.message}")
                 }
             }
         }
