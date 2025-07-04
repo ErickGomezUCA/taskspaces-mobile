@@ -44,7 +44,7 @@ fun TaskStatusColumn(
     status: StatusVariations,
     tasks: List<TaskModel>,
     onTaskCardClick: (Int) -> Unit,
-    onAddTaskClick: () -> Unit,
+    onAddTaskClick: (() -> Unit)? = null,
 ) {
     val scrollState = rememberScrollState()  // Inicializamos el estado del scroll
 
@@ -68,22 +68,24 @@ fun TaskStatusColumn(
                 onClick = { onTaskCardClick(task.id) }
             )
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            TextButton(
-                onClick = { onAddTaskClick() },
-                contentPadding = PaddingValues(0.dp),
+        onAddTaskClick?.let { onClick ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Add New Task +",
-                    fontSize = 16.sp
-                )
+                TextButton(
+                    onClick = onClick,
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Text(
+                        text = "Add New Task +",
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
+
     }
 }
 

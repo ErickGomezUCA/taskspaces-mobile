@@ -22,6 +22,8 @@ import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
 import com.ucapdm2025.taskspaces.ui.components.task.TaskDialog
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -106,12 +108,16 @@ fun ProjectScreen(
                     onTaskCardClick = { taskId ->
                         onTaskCardClick(taskId)
                     },
-                    onAddTaskClick = {
-                        viewModel.createTask(
-                            title = "New task",
-                            status = StatusVariations.PENDING,
-                        )
-                        viewModel.showTaskDialog()
+                    onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+                        {
+                            viewModel.createTask(
+                                title = "New task",
+                                status = StatusVariations.PENDING,
+                            )
+                            viewModel.showTaskDialog()
+                        }
+                    } else {
+                        null
                     }
                 )
             }
@@ -122,12 +128,16 @@ fun ProjectScreen(
                     onTaskCardClick = { taskId ->
                         onTaskCardClick(taskId)
                     },
-                    onAddTaskClick = {
-                        viewModel.createTask(
-                            title = "New task",
-                            status = StatusVariations.DOING,
-                        )
-                        viewModel.showTaskDialog()
+                    onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+                        {
+                            viewModel.createTask(
+                                title = "New task",
+                                status = StatusVariations.DOING,
+                            )
+                            viewModel.showTaskDialog()
+                        }
+                    } else {
+                        null
                     }
                 )
             }
@@ -138,12 +148,16 @@ fun ProjectScreen(
                     onTaskCardClick = { taskId ->
                         onTaskCardClick(taskId)
                     },
-                    onAddTaskClick = {
-                        viewModel.createTask(
-                            title = "New task",
-                            status = StatusVariations.DONE,
-                        )
-                        viewModel.showTaskDialog()
+                    onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+                        {
+                            viewModel.createTask(
+                                title = "New task",
+                                status = StatusVariations.DONE,
+                            )
+                            viewModel.showTaskDialog()
+                        }
+                    } else {
+                        null
                     }
                 )
             }
