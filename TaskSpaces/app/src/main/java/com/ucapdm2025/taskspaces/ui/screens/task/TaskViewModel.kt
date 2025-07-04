@@ -334,9 +334,17 @@ class TaskViewModel(
         var createdTag: Int = 0
 
         viewModelScope.launch {
+            val r = (color.red * 255).toInt()
+            val g = (color.green * 255).toInt()
+            val b = (color.blue * 255).toInt()
+            val a = (color.alpha * 255).toInt()
+            val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
+
+            Log.d("TaskViewModel", "Adding tag with title: $title and color: ${hexColor}")
+
             val response = tagRepository.createTag(
                 title = title,
-                color = color.toArgb().toString(), // Convert Color to Int
+                color = hexColor, // Convert Color to #RRGGBBAA
                 projectId = _task.value?.projectId ?: 0
             )
 
@@ -378,10 +386,16 @@ class TaskViewModel(
         color: Color
     ) {
         viewModelScope.launch {
+            val r = (color.red * 255).toInt()
+            val g = (color.green * 255).toInt()
+            val b = (color.blue * 255).toInt()
+            val a = (color.alpha * 255).toInt()
+            val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
+
             val response = tagRepository.updateTag(
                 id = id,
                 title = title,
-                color = color.toArgb().toString() // Convert Color to Int
+                color = hexColor
             )
 
             if (!response.isSuccess) {
@@ -699,3 +713,4 @@ class TaskViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
