@@ -117,6 +117,7 @@ fun TaskDialog(
     val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
     val commentRepository = application.appProvider.provideCommentRepository()
+    val authRepository = application.appProvider.provideAuthRepository()
     val viewModel: TaskViewModel =
         viewModel(
             factory = TaskViewModelFactory(
@@ -125,10 +126,12 @@ fun TaskDialog(
                 tagRepository = tagRepository,
                 memberRoleRepository = memberRoleRepository,
                 bookmarkRepository = bookmarkRepository,
-                commentRepository = commentRepository
+                commentRepository = commentRepository,
+                authRepository = authRepository
             )
         )
 
+    val currentUserId = viewModel.currentUserId.collectAsStateWithLifecycle()
     val task = viewModel.task.collectAsStateWithLifecycle()
     val taskState = viewModel.taskState.collectAsStateWithLifecycle()
     val tags = viewModel.tags.collectAsStateWithLifecycle()
@@ -485,7 +488,11 @@ fun TaskDialog(
                                                     modifier = Modifier
                                                         .size(80.dp)
                                                         .clip(RoundedCornerShape(8.dp))
-                                                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                                                        .border(
+                                                            1.dp,
+                                                            Color.Gray,
+                                                            RoundedCornerShape(8.dp)
+                                                        )
                                                 ) {
                                                     if (mimeType?.startsWith("image") == true) {
                                                         Image(
@@ -679,44 +686,46 @@ fun TaskDialog(
                                                                 }
                                                             }
                                                         }
-//                                            TODO: Hide this dropdown when current user is not the author of the comment
-                                                        DropdownMenu(
-                                                            options = listOf(
-                                                                DropdownMenuOption(
-                                                                    label = "Edit",
-                                                                    icon = {
-                                                                        Icon(
-                                                                            Icons.Default.Edit,
-                                                                            contentDescription = "Edit Comment",
-                                                                            tint = MaterialTheme.colorScheme.onBackground
-                                                                        )
-                                                                    },
-                                                                    onClick = {
-                                                                        viewModel.setSelectedCommentToUpdate(
-                                                                            comment
-                                                                        )
-                                                                        viewModel.showUpdateCommentDialog()
-                                                                    }
-                                                                ),
-                                                                DropdownMenuOption(
-                                                                    label = "Delete",
-                                                                    icon = {
-                                                                        Icon(
-                                                                            Icons.Default.Delete,
-                                                                            contentDescription = "Delete Comment",
-                                                                            tint = MaterialTheme.colorScheme.onBackground
-                                                                        )
-                                                                    },
+
+                                                        // Show only if the current user is the author of the comment
+                                                        if (currentUserId.value == comment.author.id) {
+                                                            DropdownMenu(
+                                                                options = listOf(
+                                                                    DropdownMenuOption(
+                                                                        label = "Edit",
+                                                                        icon = {
+                                                                            Icon(
+                                                                                Icons.Default.Edit,
+                                                                                contentDescription = "Edit Comment",
+                                                                                tint = MaterialTheme.colorScheme.onBackground
+                                                                            )
+                                                                        },
+                                                                        onClick = {
+                                                                            viewModel.setSelectedCommentToUpdate(
+                                                                                comment
+                                                                            )
+                                                                            viewModel.showUpdateCommentDialog()
+                                                                        }
+                                                                    ),
+                                                                    DropdownMenuOption(
+                                                                        label = "Delete",
+                                                                        icon = {
+                                                                            Icon(
+                                                                                Icons.Default.Delete,
+                                                                                contentDescription = "Delete Comment",
+                                                                                tint = MaterialTheme.colorScheme.onBackground
+                                                                            )
+                                                                        },
 //                                                        TODO: Add delete confirmation dialog
-                                                                    onClick = {
-                                                                        viewModel.deleteComment(
-                                                                            comment.id
-                                                                        )
-                                                                    }
+                                                                        onClick = {
+                                                                            viewModel.deleteComment(
+                                                                                comment.id
+                                                                            )
+                                                                        }
+                                                                    )
                                                                 )
                                                             )
-                                                        )
-                                                    }
+                                                        }                                                    }
                                                     Spacer(modifier = Modifier.height(2.dp))
                                                     Text(
                                                         text = comment.content,
