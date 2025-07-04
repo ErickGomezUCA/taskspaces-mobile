@@ -29,10 +29,16 @@ data class TagModel (
  * @return TagEntity representing the tag in the database.
  */
 fun TagModel.toDatabase(): TagEntity {
+    val r = (color.red * 255).toInt()
+    val g = (color.green * 255).toInt()
+    val b = (color.blue * 255).toInt()
+    val a = (color.alpha * 255).toInt()
+    val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
+
     return TagEntity(
         id = id,
         title = title,
-        color = color.toArgb().toString(), // Convert Color to String representation
+        color = hexColor, // Convert Color to String representation
         projectId = projectId,
         createdAt = createdAt,
         updatedAt = updatedAt
