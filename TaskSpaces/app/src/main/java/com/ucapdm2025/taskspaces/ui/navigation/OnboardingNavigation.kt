@@ -45,7 +45,7 @@ fun OnboardingNavigation() {
 //        Inside of AppScaffold there is AppNavigation, where the bottom bar handles the
 //        navigation between all those screens
         composable<AppRoute> {
-            AppScaffold()
+            AppScaffold(onboardingController = navController)
         }
     }
 }

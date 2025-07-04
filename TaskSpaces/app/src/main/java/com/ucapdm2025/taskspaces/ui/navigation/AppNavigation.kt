@@ -15,7 +15,7 @@ import com.ucapdm2025.taskspaces.ui.screens.workspace.WorkspaceScreen
 
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController, onboardingController: NavHostController) {
     NavHost(navController = navController, startDestination = HomeRoute) {
 //        TODO: Implement all views by their routes here
 
@@ -76,6 +76,13 @@ fun AppNavigation(navController: NavHostController) {
             UserScreen(
                 onNavigateToSettings = {
                     navController.navigate(SettingsRoute)
+                },
+                onLogOut = {
+                    onboardingController.navigate(LoginRoute) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
