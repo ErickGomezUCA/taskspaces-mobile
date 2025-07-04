@@ -265,7 +265,7 @@ fun TaskDialog(
                                 color = ExtendedTheme.colors.background50,
                                 maxLines = 1,
                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
 
