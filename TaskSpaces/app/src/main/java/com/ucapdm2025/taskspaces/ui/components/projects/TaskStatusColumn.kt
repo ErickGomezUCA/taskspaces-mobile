@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,8 +46,11 @@ fun TaskStatusColumn(
     onTaskCardClick: (Int) -> Unit,
     onAddTaskClick: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()  // Inicializamos el estado del scroll
+
     Column(
         modifier = Modifier
+            .verticalScroll(scrollState)
             .background(
                 color = ExtendedTheme.colors.projectColumn,
                 shape = RoundedCornerShape(16.dp)
