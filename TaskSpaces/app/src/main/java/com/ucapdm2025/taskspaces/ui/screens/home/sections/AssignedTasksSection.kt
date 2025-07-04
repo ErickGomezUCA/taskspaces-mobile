@@ -4,12 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +20,7 @@ import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 /**
@@ -31,88 +34,28 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun AssignedTasksSection(
     modifier: Modifier = Modifier,
     assignedTasks: List<TaskModel> = emptyList<TaskModel>(),
+    onAssignedTaskClick: (projectId: Int, taskId: Int) -> Unit = { projectId, taskId -> }
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        TaskCard(
-            title = "Task Title",
-            tags = listOf(
-                TagModel(
-                    id = 1,
-                    title = "Tag",
-                    color = Color.Red,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                ),
-                TagModel(
-                    id = 2,
-                    title = "Tag",
-                    color = Color.Blue,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
+        if (assignedTasks.isNotEmpty()){
+            assignedTasks.forEach { task ->
+                TaskCard(
+                    taskId = task.id,
+                    breadcrumb = task.breadcrumb,
+                    title = task.title,
+                    tags = task.tags,
+                    onDeleteClick = {},
+                    onClick = { onAssignedTaskClick(task.projectId, task.id) },
                 )
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TaskCard(
-            title = "Task Title",
-            tags = listOf(
-                TagModel(
-                    id = 1,
-                    title = "Tag",
-                    color = Color.Red,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                ),
-                TagModel(
-                    id = 2,
-                    title = "Tag",
-                    color = Color.Blue,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                )
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TaskCard(
-            title = "Task Title",
-            tags = listOf(
-                TagModel(
-                    id = 1,
-                    title = "Tag",
-                    color = Color.Red,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                ),
-                TagModel(
-                    id = 2,
-                    title = "Tag",
-                    color = Color.Blue,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                )
-            )
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-
-        if (assignedTasks.size > 2) {
-            Button(
-                onClick = { /* See more tasks */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                shape = MaterialTheme.shapes.medium
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("See more")
+                Text(text = "No assigned tasks found...", color = ExtendedTheme.colors.onBackground50)
             }
         }
     }

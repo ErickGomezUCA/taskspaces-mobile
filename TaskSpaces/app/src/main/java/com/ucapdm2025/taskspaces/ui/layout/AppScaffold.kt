@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.ui.layout.topBar.SelectAppTopBar
@@ -20,7 +21,7 @@ import com.ucapdm2025.taskspaces.utils.getCurrentRoute
  * Includes a bottom navigation bar and a content area for navigation.
  */
 @Composable
-fun AppScaffold() {
+fun AppScaffold(onboardingController: NavHostController) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = getCurrentRoute(navBackStackEntry) ?: "UnknownRoute"
@@ -31,7 +32,7 @@ fun AppScaffold() {
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            AppNavigation(navController = navController)
+            AppNavigation(navController = navController, onboardingController = onboardingController)
         }
     }
 }
@@ -44,7 +45,7 @@ fun AppScaffold() {
 @Composable
 fun AppScaffoldLightPreview() {
     TaskSpacesTheme {
-        AppScaffold()
+        AppScaffold(rememberNavController())
     }
 }
 
@@ -52,6 +53,6 @@ fun AppScaffoldLightPreview() {
 @Composable
 fun AppScaffoldDarkPreview() {
     TaskSpacesTheme(darkTheme = true) {
-        AppScaffold()
+        AppScaffold(rememberNavController())
     }
 }

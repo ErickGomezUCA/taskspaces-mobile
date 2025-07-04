@@ -1,6 +1,5 @@
 package com.ucapdm2025.taskspaces.ui.screens.project
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,20 +11,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
-import com.ucapdm2025.taskspaces.data.model.TagModel
-import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.projects.ProjectsBackground
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskStatusColumn
 import com.ucapdm2025.taskspaces.ui.components.task.TaskDialog
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -45,8 +43,9 @@ fun ProjectScreen(
 ) {
     val application = LocalContext.current.applicationContext as TaskSpacesApplication
     val projectRepository = application.appProvider.provideProjectRepository()
+    val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val taskRepository = application.appProvider.provideTaskRepository()
-    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, taskRepository))
+    val viewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectId, projectRepository, memberRoleRepository, taskRepository))
 
     val project = viewModel.project.collectAsStateWithLifecycle()
     val tasks = viewModel.tasks.collectAsStateWithLifecycle()
@@ -65,13 +64,12 @@ fun ProjectScreen(
 //    Automatically open task dialog of the specified taskId if provided.
 //    Do this only on first load of project screen.
     LaunchedEffect(taskId) {
-        if (taskId != null) {
+        if (taskId != null ) {
             viewModel.setSelectedTaskId(taskId)
             viewModel.showTaskDialog()
         }
     }
-    
-//    Show feedback icon if the project is not found
+    //    Show feedback icon if the project is not found
     if (project.value == null) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -90,7 +88,11 @@ fun ProjectScreen(
     if (showTaskDialog.value) {
         TaskDialog(
             taskId = selectedTaskId.value,
-            onDismissRequest = { viewModel.hideTaskDialog() },
+            onDismissRequest = {
+                viewModel.reloadTasks()
+                viewModel.hideTaskDialog()
+            },
+            projectViewModel = viewModel,
         )
     }
 
@@ -108,13 +110,19 @@ fun ProjectScreen(
                     onTaskCardClick = { taskId ->
                         onTaskCardClick(taskId)
                     },
-                    onAddTaskClick = {
-                        viewModel.createTask(
-                            title = "New task",
-                            status = StatusVariations.PENDING,
-                        )
-                        viewModel.showTaskDialog()
-                    }
+                    onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+                        {
+                            viewModel.createTask(
+                                title = "New task",
+                                status = StatusVariations.PENDING,
+                            )
+                            viewModel.showTaskDialog()
+                        }
+                    } else {
+                        null
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) },
+                    hasDeletePermission = viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)
                 )
             }
             item {
@@ -124,13 +132,18 @@ fun ProjectScreen(
                     onTaskCardClick = { taskId ->
                         onTaskCardClick(taskId)
                     },
-                    onAddTaskClick = {
-                        viewModel.createTask(
-                            title = "New task",
-                            status = StatusVariations.DOING,
-                        )
-                        viewModel.showTaskDialog()
-                    }
+                    onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+                        {
+                            viewModel.createTask(
+                                title = "New task",
+                                status = StatusVariations.DOING,
+                            )
+                            viewModel.showTaskDialog()
+                        }
+                    } else {
+                        null
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
             item {
@@ -140,13 +153,18 @@ fun ProjectScreen(
                     onTaskCardClick = { taskId ->
                         onTaskCardClick(taskId)
                     },
-                    onAddTaskClick = {
-                        viewModel.createTask(
-                            title = "New task",
-                            status = StatusVariations.DONE,
-                        )
-                        viewModel.showTaskDialog()
-                    }
+                    onAddTaskClick = if (viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)) {
+                        {
+                            viewModel.createTask(
+                                title = "New task",
+                                status = StatusVariations.DONE,
+                            )
+                            viewModel.showTaskDialog()
+                        }
+                    } else {
+                        null
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
         }

@@ -6,14 +6,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ucapdm2025.taskspaces.data.model.ProjectModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
+import kotlinx.coroutines.flow.first
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepositoryImpl
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.helpers.friendlyMessage
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
+import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -27,10 +37,11 @@ import java.time.LocalDateTime
 class ProjectViewModel(
     private val projectId: Int,
     private val projectRepository: ProjectRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
-    private val _project: MutableStateFlow<ProjectModel?> = MutableStateFlow(null)
-    val project: StateFlow<ProjectModel?> = _project.asStateFlow()
+    private val _project: MutableStateFlow<UiState<ProjectModel>> = MutableStateFlow(UiState.Loading)
+    val project: StateFlow<UiState<ProjectModel>> = _project.asStateFlow()
 
     private val _tasks: MutableStateFlow<List<TaskModel>> = MutableStateFlow(emptyList())
     val tasks: StateFlow<List<TaskModel>> = _tasks.asStateFlow()
@@ -46,16 +57,13 @@ class ProjectViewModel(
             projectRepository.getProjectById(projectId).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        // Handle loading state if necessary
                     }
 
                     is Resource.Success -> {
                         val project = resource.data
-                        _project.value = project
                     }
 
                     is Resource.Error -> {
-                        // Handle error state if necessary
                     }
                 }
             }
@@ -74,7 +82,6 @@ class ProjectViewModel(
                     }
 
                     is Resource.Error -> {
-                        // Handle error state if necessary
                     }
                 }
             }
@@ -85,7 +92,7 @@ class ProjectViewModel(
     fun createTask(
         title: String,
         description: String? = null,
-        deadline: String? = null,
+        deadline: LocalDateTime? = null,
         timer: Float? = null,
         status: StatusVariations = StatusVariations.PENDING,
     ) {
@@ -108,7 +115,6 @@ class ProjectViewModel(
                     // Log or handle the exception as needed
                     Log.e("ProjectViewModel", "Error creating task: ${exception.message}")
                 }
-
             }
         }
     }
@@ -128,6 +134,17 @@ class ProjectViewModel(
 
         }
     }
+    fun reloadTasks() {
+        viewModelScope.launch {
+            taskRepository.getTasksByProjectId(projectId).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> _tasks.value = resource.data
+                    is Resource.Error, null -> _tasks.value = emptyList()
+                    else -> {}
+                }
+            }
+        }
+    }
 
 //    Dialog functions
     fun showTaskDialog() {
@@ -141,7 +158,24 @@ class ProjectViewModel(
     fun setSelectedTaskId(id: Int) {
         _selectedTaskId.value = id
     }
+
+    fun hasSufficientPermissions(
+        minimumRole: MemberRoles
+    ): Boolean {
+        return kotlinx.coroutines.runBlocking {
+            memberRoleRepository.hasSufficientPermissions(
+                projectId = projectId,
+                minimumRole = minimumRole
+            ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+                when (resource) {
+                    is Resource.Success -> resource.data == true
+                    else -> false
+                }
+            } == true
+        }
+    }
 }
+
 
 /**
  * Factory for creating instances of [ProjectViewModel] with a specific projectId.
@@ -152,12 +186,13 @@ class ProjectViewModel(
 class ProjectViewModelFactory(
     private val projectId: Int,
     private val projectRepository: ProjectRepository,
+    private val memberRoleRepository: MemberRoleRepository,
     private val taskRepository: TaskRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProjectViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ProjectViewModel(projectId, projectRepository, taskRepository) as T
+            return ProjectViewModel(projectId, projectRepository, memberRoleRepository, taskRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

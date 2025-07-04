@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.components.general
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,6 +30,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -54,9 +59,11 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     placeholder: String = "Placeholder...",
     onQueryChange: (String) -> Unit,
-    onSearch: (String) -> Unit = {},
+    onSearch: (query: String) -> Unit = {query ->},
     enabled: Boolean = true,
 ) {
+    var query by remember { mutableStateOf(query) }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -65,7 +72,9 @@ fun SearchBar(
         // Main text field
         BasicTextField(
             value = query,
-            onValueChange = onQueryChange,
+            onValueChange = {
+                query = it
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .background(
@@ -115,7 +124,7 @@ fun SearchBar(
                 exit = fadeOut() + scaleOut()
             ) {
                 IconButton(
-                    onClick = { onQueryChange("") },
+                    onClick = { },
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(

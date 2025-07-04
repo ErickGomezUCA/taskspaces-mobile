@@ -1,18 +1,12 @@
 package com.ucapdm2025.taskspaces.ui.screens.bookmark
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.util.Log
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,16 +16,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
-import com.ucapdm2025.taskspaces.ui.components.general.Container
-import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
-import com.ucapdm2025.taskspaces.ui.components.general.SortBySelector
-import com.ucapdm2025.taskspaces.ui.components.general.SortOption
+import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.ui.components.general.*
 import com.ucapdm2025.taskspaces.ui.components.projects.TaskCard
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
-
-// TODO: Connect BookmarksScreen to real ViewModel state.
-
 /**
  * Displays the bookmarks screen with one of three states:
  * - Empty if no bookmarks exist
@@ -51,28 +40,42 @@ fun BookmarksScreen(
     val viewModel: BookmarkViewModel =
         viewModel(factory = BookmarkViewModelFactory(bookmarkRepository))
 
-    val bookmarkedTasks = viewModel.bookmarkedTasks.collectAsStateWithLifecycle()
+    val uiState = viewModel.bookmarkedTasksState.collectAsStateWithLifecycle()
 
-    val filtered = bookmarkedTasks.value.filter {
-        it.title.contains(searchQuery, ignoreCase = true)
+    Log.d("test1", uiState.toString())
+
+    when (val state = uiState.value) {
+        is UiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is UiState.Error -> {
+            FeedbackIcon(
+                icon = Icons.Outlined.Close,
+                title = state.message
+            )
+        }
+
+        is UiState.Success -> {
+            val filtered = state.data.filter {
+                it.title.contains(searchQuery, ignoreCase = true)
+            }
+
+            when {
+                state.data.isEmpty() -> EmptyBookmarks()
+                filtered.isEmpty() -> NoResults()
+                else -> BookmarkList(filtered, onBookmarkedTaskClick)
+            }
+        }
+        // TODO: Replace sampleTasks() with actual ViewModel-backed state
+        // TODO: Hook into navigation when a task is clicked (from TaskCard)
     }
-    when {
-        bookmarkedTasks.value.isEmpty() -> {
-            EmptyBookmarks()
-        }
-
-        filtered.isEmpty() -> {
-            NoResults()
-        }
-
-        else -> {
-            BookmarkList(filtered, onBookmarkedTaskClick)
-        }
-    }
-    // TODO: Replace sampleTasks() with actual ViewModel-backed state
-    // TODO: Hook into navigation when a task is clicked (from TaskCard)
 }
-
 /**
  * Displays a centered icon and message indicating that no bookmarks have been saved.
  */
@@ -91,7 +94,6 @@ fun EmptyBookmarks() {
         )
     }
 }
-
 /**
  * Displays a centered icon and message indicating that no bookmarks have been saved.
  */
@@ -110,15 +112,18 @@ fun NoResults() {
         )
     }
 }
-
 /**
  * Displays a list of bookmarked tasks inside a styled container.
  *
  * @param bookmarks List of tasks to display as cards
  */
 @Composable
-fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (projectId: Int, taskId: Int) -> Unit) {
+fun BookmarkList(
+    bookmarks: List<TaskModel>,
+    onBookmarkedTaskClick: (projectId: Int, taskId: Int) -> Unit
+) {
     var sortOption by remember { mutableStateOf(SortOption.NAME) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,7 +137,7 @@ fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (projectId: 
         val groupedTasks: Map<String, List<TaskModel>> = bookmarks.groupBy { it.breadcrumb }
         // TODO: Apply real sorting logic later based on sortOption
 
-//        Show bookmarked tasks grouped by breadcrumb
+        //        Show bookmarked tasks grouped by breadcrumb
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -145,9 +150,10 @@ fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (projectId: 
                     ) {
                         tasksInGroup.forEach { task ->
                             TaskCard(
+                                taskId = task.id,
                                 title = task.title,
-//                                TODO: Add tags
-                                tags = emptyList(), // or task.tags if available,
+                                tags = task.tags,
+                                onDeleteClick = {},
                                 onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
                             )
                         }
@@ -157,6 +163,7 @@ fun BookmarkList(bookmarks: List<TaskModel>, onBookmarkedTaskClick: (projectId: 
         }
     }
 }
+
 
 /**
  * Preview of the bookmarks screen with content.

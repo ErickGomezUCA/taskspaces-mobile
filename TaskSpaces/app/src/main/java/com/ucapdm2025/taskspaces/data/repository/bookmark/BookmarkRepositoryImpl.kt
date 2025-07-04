@@ -2,15 +2,18 @@ package com.ucapdm2025.taskspaces.data.repository.bookmark
 
 import android.util.Log
 import coil3.network.HttpException
-import com.ucapdm2025.taskspaces.data.database.dao.BookmarkDao
+import com.ucapdm2025.taskspaces.data.database.dao.relational.BookmarkDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
+import com.ucapdm2025.taskspaces.data.database.entities.relational.toDomain
 import com.ucapdm2025.taskspaces.data.database.entities.toDomain
-import com.ucapdm2025.taskspaces.data.model.BookmarkModel
+import com.ucapdm2025.taskspaces.data.model.relational.BookmarkModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
-import com.ucapdm2025.taskspaces.data.model.toDatabase
+import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.responses.BookmarkResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toDomain
+import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
@@ -46,6 +49,8 @@ class BookmarkRepositoryImpl(
             val remoteBookmarks: List<BookmarkResponse> =
                 bookmarkService.getUserBookmarks().content
 
+            Log.d("test1", remoteBookmarks.toString())
+
             //            Save remote bookmarks to the database
             if (remoteBookmarks.isNotEmpty()) {
                 remoteBookmarks.forEach {
@@ -64,20 +69,12 @@ class BookmarkRepositoryImpl(
             bookmarkDao.getBookmarksByUserId(userId = userId).map { entities ->
                 val bookmarks = entities.map { it.toDomain() }
 
-                if (bookmarks.isEmpty()) {
-                    //                Logs an error if no projects are found for the user
-                    Resource.Error("No bookmarks found for  user with ID: $userId")
-                } else {
-//                    Convert bookmarks into tasks
-//                    Because bookmarks only have userId and taskId as their columns, but to obtain
-//                    the task information, we need to convert them into TaskModel
-                    val localTasks = bookmarks.mapNotNull { bookmark ->
-                        taskDao.getTaskById(bookmark.taskId).first()?.toDomain()
-                    }
+                val localTasks = bookmarks.mapNotNull { bookmark ->
+                    taskDao.getTaskById(bookmark.taskId).first()?.toDomain()
+                }
 
 //                Returns the tasks bookmarked as a success (to domain)
-                    Resource.Success(localTasks)
-                }
+                Resource.Success(localTasks)
             }.distinctUntilChanged()
 
         emitAll(localBookmarkedTasks)
