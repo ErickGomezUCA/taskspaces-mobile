@@ -96,11 +96,11 @@ class HomeViewModel(
                             when (resource) {
                                 is Resource.Success -> {
 
-                                    _currentUserName.value = resource.data?.fullname ?: "User"
+                                    _currentUserName.value = resource.data?.fullname ?: ""
                                 }
                                 is Resource.Error -> {
                                     Log.e("HomeViewModel", "Error fetching user from UserRepository: ${resource.message}")
-                                    _currentUserName.value = "User"
+                                    _currentUserName.value = ""
                                 }
                                 is Resource.Loading -> {
                                 }
