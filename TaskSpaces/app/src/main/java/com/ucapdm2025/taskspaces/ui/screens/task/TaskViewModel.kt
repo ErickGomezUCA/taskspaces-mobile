@@ -1,8 +1,8 @@
 package com.ucapdm2025.taskspaces.ui.screens.task
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,6 +10,7 @@ import com.ucapdm2025.taskspaces.data.model.CommentModel
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
+import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import java.lang.reflect.Member
 import java.time.LocalDateTime
 
 /**
@@ -40,10 +40,14 @@ class TaskViewModel(
     private val tagRepository: TagRepository,
     private val memberRoleRepository: MemberRoleRepository,
     private val bookmarkRepository: BookmarkRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
+
+    private val _currentUserId: MutableStateFlow<Int> = MutableStateFlow(0)
+    val currentUserId: StateFlow<Int> = _currentUserId.asStateFlow()
 
     private val _task: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
     val task: StateFlow<TaskModel?> = _task.asStateFlow()
@@ -84,14 +88,32 @@ class TaskViewModel(
     private val _taskState = MutableStateFlow<UiState<TaskModel>>(UiState.Loading)
     val taskState: StateFlow<UiState<TaskModel>> = _taskState.asStateFlow()
 
+    private val _selectedMediaUris = MutableStateFlow<List<Uri>>(emptyList())
+    val selectedMediaUris: StateFlow<List<Uri>> = _selectedMediaUris.asStateFlow()
+
+    // Media upload state
+    private val _uploadedMediaUrl = MutableStateFlow<String?>(null)
+    val uploadedMediaUrl: StateFlow<String?> = _uploadedMediaUrl.asStateFlow()
+
+    private val _isUploadingMedia = MutableStateFlow(false)
+    val isUploadingMedia: StateFlow<Boolean> = _isUploadingMedia.asStateFlow()
+
+    private val _mediaUploadError = MutableStateFlow<String?>(null)
+    val mediaUploadError: StateFlow<String?> = _mediaUploadError.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            authRepository.authUserId.collect { userId ->
+                _currentUserId.value = userId
+            }
+        }
+
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
 //        Load _task
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
-                id?.let { taskRepository.getTaskById(it)} ?:
-                    flowOf(null) // Emit null if no task ID is set
+                id?.let { taskRepository.getTaskById(it) }
+                    ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -114,8 +136,10 @@ class TaskViewModel(
                         )
                     }
 
-                    null -> {_task.value = null
-                    _taskState.value = UiState.Error("Task not found") }
+                    null -> {
+                        _task.value = null
+                        _taskState.value = UiState.Error("Task not found")
+                    }
                 }
             }
         }
@@ -149,9 +173,8 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
-                tagRepository.getTagsByTaskId(it)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                    tagRepository.getTagsByTaskId(it)
+                } ?: flowOf(null) // Emit null if no task ID is set
             }.collect { resource ->
                 when (resource) {
 
@@ -160,7 +183,7 @@ class TaskViewModel(
 
 
                     is Resource.Error,
-                        null -> _tags.value = emptyList()// Handle error state if necessary
+                    null -> _tags.value = emptyList()// Handle error state if necessary
                     else -> {}
                 }
             }
@@ -171,8 +194,7 @@ class TaskViewModel(
             _task.flatMapLatest { task ->
                 task?.let {
                     tagRepository.getTagsByProjectId(it.projectId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                } ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -192,9 +214,8 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
-                taskRepository.getAssignedMembersByTaskId(taskId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                    taskRepository.getAssignedMembersByTaskId(taskId)
+                } ?: flowOf(null) // Emit null if no task ID is set
             }.collect { resource ->
                 when (resource) {
 
@@ -212,9 +233,8 @@ class TaskViewModel(
         viewModelScope.launch {
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
-                taskRepository.getWorkspaceMembersByTaskId(taskId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                    taskRepository.getWorkspaceMembersByTaskId(taskId)
+                } ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -234,8 +254,7 @@ class TaskViewModel(
             _currentTaskId.flatMapLatest { id ->
                 id?.let {
                     commentRepository.getCommentsByTaskId(taskId)
-                } ?:
-                    flowOf(null) // Emit null if no task ID is set
+                } ?: flowOf(null) // Emit null if no task ID is set
 
             }.collect { resource ->
                 when (resource) {
@@ -334,9 +353,17 @@ class TaskViewModel(
         var createdTag: Int = 0
 
         viewModelScope.launch {
+            val r = (color.red * 255).toInt()
+            val g = (color.green * 255).toInt()
+            val b = (color.blue * 255).toInt()
+            val a = (color.alpha * 255).toInt()
+            val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
+
+            Log.d("TaskViewModel", "Adding tag with title: $title and color: ${hexColor}")
+
             val response = tagRepository.createTag(
                 title = title,
-                color = color.toArgb().toString(), // Convert Color to Int
+                color = hexColor, // Convert Color to #RRGGBBAA
                 projectId = _task.value?.projectId ?: 0
             )
 
@@ -378,10 +405,21 @@ class TaskViewModel(
         color: Color
     ) {
         viewModelScope.launch {
+            val r = (color.red * 255).toInt()
+            val g = (color.green * 255).toInt()
+            val b = (color.blue * 255).toInt()
+            val a = (color.alpha * 255).toInt()
+            val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
+
+            Log.d(
+                "TaskViewModel",
+                "Updating tag with id: $id, title: $title and color: ${hexColor}"
+            )
+
             val response = tagRepository.updateTag(
                 id = id,
                 title = title,
-                color = color.toArgb().toString() // Convert Color to Int
+                color = hexColor
             )
 
             if (!response.isSuccess) {
@@ -399,30 +437,15 @@ class TaskViewModel(
         id: Int
     ) {
         viewModelScope.launch {
-//            Unassign the tag from the task first
-            val responseTaskTag = tagRepository.unassignTagFromTask(
-                tagId = id,
-                taskId = _task.value?.id ?: 0
-            )
-
 //            Then delete the tag
-            if (responseTaskTag.isSuccess) {
-                val response = tagRepository.deleteTag(id)
+            val response = tagRepository.deleteTag(id)
 
-                if (!response.isSuccess) {
-                    // Handle error, e.g., show a message to the user
-                    val exception = response.exceptionOrNull()
-                    if (exception != null) {
-                        // Log or handle the exception as needed
-                        Log.e("TaskViewModel", "Error deleting tag: ${exception.message}")
-                    }
-                }
-            } else {
+            if (!response.isSuccess) {
                 // Handle error, e.g., show a message to the user
-                val exception = responseTaskTag.exceptionOrNull()
+                val exception = response.exceptionOrNull()
                 if (exception != null) {
                     // Log or handle the exception as needed
-                    Log.e("TaskViewModel", "Error unassigning tag: ${exception.message}")
+                    Log.e("TaskViewModel", "Error deleting tag: ${exception.message}")
                 }
             }
         }
@@ -671,6 +694,25 @@ class TaskViewModel(
         } == true
     }
 
+
+//    Media
+    fun setSelectedMediaUris(uris: List<Uri>) {
+        _selectedMediaUris.value = uris
+    }
+
+//    fun uploadMediaToTask(uri: Uri) {
+//        _isUploadingMedia.value = true
+//        _mediaUploadError.value = null
+//        viewModelScope.launch {
+//            val result = mediaRepository.uploadMedia(uri, _task.value?.id ?: 0)
+//            if (result.isSuccess) {
+//                _uploadedMediaUrl.value = result.getOrNull()?.url
+//            } else {
+//                _mediaUploadError.value = result.exceptionOrNull()?.message ?: "Failed to upload media"
+//            }
+//            _isUploadingMedia.value = false
+//        }
+//    }
 }
 
 /**
@@ -682,7 +724,8 @@ class TaskViewModelFactory(
     private val tagRepository: TagRepository,
     private val memberRoleRepository: MemberRoleRepository,
     private val bookmarkRepository: BookmarkRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val authRepository: AuthRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
@@ -693,9 +736,11 @@ class TaskViewModelFactory(
                 tagRepository = tagRepository,
                 memberRoleRepository = memberRoleRepository,
                 bookmarkRepository = bookmarkRepository,
-                commentRepository = commentRepository
+                commentRepository = commentRepository,
+                authRepository = authRepository
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

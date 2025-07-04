@@ -1,8 +1,13 @@
 package com.ucapdm2025.taskspaces.ui.components.task
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +34,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.Task
@@ -40,13 +47,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.rememberAsyncImagePainter
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.helpers.UiState
@@ -104,6 +117,7 @@ fun TaskDialog(
     val memberRoleRepository = application.appProvider.provideMemberRoleRepository()
     val bookmarkRepository = application.appProvider.provideBookmarkRepository()
     val commentRepository = application.appProvider.provideCommentRepository()
+    val authRepository = application.appProvider.provideAuthRepository()
     val viewModel: TaskViewModel =
         viewModel(
             factory = TaskViewModelFactory(
@@ -112,10 +126,12 @@ fun TaskDialog(
                 tagRepository = tagRepository,
                 memberRoleRepository = memberRoleRepository,
                 bookmarkRepository = bookmarkRepository,
-                commentRepository = commentRepository
+                commentRepository = commentRepository,
+                authRepository = authRepository
             )
         )
 
+    val currentUserId = viewModel.currentUserId.collectAsStateWithLifecycle()
     val task = viewModel.task.collectAsStateWithLifecycle()
     val taskState = viewModel.taskState.collectAsStateWithLifecycle()
     val tags = viewModel.tags.collectAsStateWithLifecycle()
@@ -129,6 +145,16 @@ fun TaskDialog(
     val newComment = viewModel.newComment.collectAsStateWithLifecycle()
     val showUpdateCommentDialog = viewModel.showUpdateCommentDialog.collectAsStateWithLifecycle()
     val selectedCommentToUpdate = viewModel.selectedCommentToUpdate.collectAsStateWithLifecycle()
+    val selectedMediaUris = viewModel.selectedMediaUris.collectAsStateWithLifecycle()
+
+    val pickMediaLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenMultipleDocuments(),
+        onResult = { uris ->
+            viewModel.setSelectedMediaUris(uris)
+
+        }
+    )
+
 
     val hasPermission = projectViewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)
 
@@ -181,7 +207,7 @@ fun TaskDialog(
                         shape = RoundedCornerShape(8.dp),
                     ) { Text(text = "Save") }
                 }
-            }   
+            }
         },
         text = {
             Column {
@@ -275,11 +301,16 @@ fun TaskDialog(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        task.value?.breadcrumb ?: "/",
-                                        fontSize = 14.sp,
-                                        color = ExtendedTheme.colors.background50
-                                    )
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = task.value?.breadcrumb ?: "/",
+                                            fontSize = 14.sp,
+                                            color = ExtendedTheme.colors.background50,
+                                            maxLines = 1,
+                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
 
                                     if (hasPermission) {
                                         DropdownMenu(
@@ -326,7 +357,6 @@ fun TaskDialog(
 
                                         OutlinedTextField(
                                             value = task.value?.title ?: "No title",
-                                            label = {Text("Title")},
                                             onValueChange = { viewModel.setTaskData(title = it) },
                                             placeholder = { Text("Add a title...") },
                                             modifier = Modifier.fillMaxWidth()
@@ -402,24 +432,22 @@ fun TaskDialog(
                                             Tag(it)
                                         }
                                     }
-                                    if (hasPermission) {
-                                        OutlinedButton(
-                                            onClick = { viewModel.showTagsDialog() },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(8.dp),
-                                            border = BorderStroke(
-                                                1.dp,
-                                                MaterialTheme.colorScheme.primary
-                                            )
-                                        ) {
-                                            Text(if (tags.value != emptyList<TagModel>()) "Manage Tags" else "Add Tags +")
-                                        }
+                                    OutlinedButton(
+                                        onClick = { viewModel.showTagsDialog() },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary
+                                        )
+                                    ) {
+                                        Text(if (tags.value != emptyList<TagModel>()) "Manage Tags" else "Add Tags +")
                                     }
                                 }
 
                                 //MEDIA
 //                    TODO: Implement media upload and display
-                                Column {
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
                                             Icons.Default.Image,
@@ -434,26 +462,61 @@ fun TaskDialog(
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
                                     }
-//            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//                task.value?.images.forEach {
-//                    Image(
-//                        painter = painterResource(id = it),
-//                        contentDescription = null,
-//                        modifier = Modifier.size(48.dp)
-//                    )
-//                }
-//            }
-                                    if (hasPermission){
-                                        OutlinedButton(
-                                            onClick = { },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(8.dp),
-                                            border = BorderStroke(
-                                                1.dp,
-                                                MaterialTheme.colorScheme.primary
-                                            )
+
+                                    OutlinedButton(
+                                        onClick = {
+                                            pickMediaLauncher.launch(arrayOf("image/*", "video/*"))
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                                    ) {
+                                        Text("Add Media +")
+                                    }
+
+                                    if (selectedMediaUris.value.isNotEmpty()) {
+                                        LazyRow(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 8.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
-                                            Text("Add Media +")
+                                            items(selectedMediaUris.value) { uri ->
+                                                val context = LocalContext.current
+                                                val mimeType = context.contentResolver.getType(uri)
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(80.dp)
+                                                        .clip(RoundedCornerShape(8.dp))
+                                                        .border(
+                                                            1.dp,
+                                                            Color.Gray,
+                                                            RoundedCornerShape(8.dp)
+                                                        )
+                                                ) {
+                                                    if (mimeType?.startsWith("image") == true) {
+                                                        Image(
+                                                            painter = rememberAsyncImagePainter(uri),
+                                                            contentDescription = "Image",
+                                                            modifier = Modifier.fillMaxSize()
+                                                        )
+                                                    } else if (mimeType?.startsWith("video") == true) {
+                                                        Box(
+                                                            contentAlignment = Alignment.Center,
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .background(Color.Black)
+                                                        ) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.PlayArrow,
+                                                                contentDescription = "Video",
+                                                                tint = Color.White,
+                                                                modifier = Modifier.size(36.dp)
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -491,18 +554,16 @@ fun TaskDialog(
                                             )
                                         }
                                     }
-                                    if(hasPermission){
-                                        OutlinedButton(
-                                            onClick = { viewModel.showTaskMembersDialog() },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(8.dp),
-                                            border = BorderStroke(
-                                                1.dp,
-                                                MaterialTheme.colorScheme.primary
-                                            )
-                                        ) {
-                                            Text(if (members.value.isNotEmpty()) "Manage Members" else "Add Members +")
-                                        }
+                                    OutlinedButton(
+                                        onClick = { viewModel.showTaskMembersDialog() },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary
+                                        )
+                                    ) {
+                                        Text(if (members.value.isNotEmpty()) "Manage Members" else "Add Members +")
                                     }
                                 }
 
@@ -523,42 +584,40 @@ fun TaskDialog(
                                         )
                                     }
 
-                                    if(hasPermission){
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(bottom = 8.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        OutlinedTextField(
+                                            value = newComment.value,
+                                            onValueChange = { viewModel.setNewCommentValue(it) },
+                                            placeholder = { Text("Add a comment...") },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp), // Set your desired corner radius
+                                            color = MaterialTheme.colorScheme.primary
                                         ) {
-                                            OutlinedTextField(
-                                                value = newComment.value,
-                                                onValueChange = { viewModel.setNewCommentValue(it) },
-                                                placeholder = { Text("Add a comment...") },
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                            Surface(
-                                                shape = RoundedCornerShape(8.dp), // Set your desired corner radius
-                                                color = MaterialTheme.colorScheme.primary
+                                            IconButton(
+                                                onClick = {
+                                                    if (newComment.value.isNotBlank()) {
+                                                        viewModel.createComment(newComment.value)
+                                                        viewModel.setNewCommentValue("")
+                                                    }
+                                                },
+                                                enabled = newComment.value.isNotBlank(),
+                                                modifier = Modifier
+                                                    .height(56.dp)
+                                                    .aspectRatio(1f)
                                             ) {
-                                                IconButton(
-                                                    onClick = {
-                                                        if (newComment.value.isNotBlank()) {
-                                                            viewModel.createComment(newComment.value)
-                                                            viewModel.setNewCommentValue("")
-                                                        }
-                                                    },
-                                                    enabled = newComment.value.isNotBlank(),
-                                                    modifier = Modifier
-                                                        .height(56.dp)
-                                                        .aspectRatio(1f)
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Send,
-                                                        contentDescription = "Send",
-                                                        tint = MaterialTheme.colorScheme.onPrimary
-                                                    )
-                                                }
+                                                Icon(
+                                                    imageVector = Icons.Default.Send,
+                                                    contentDescription = "Send",
+                                                    tint = MaterialTheme.colorScheme.onPrimary
+                                                )
                                             }
                                         }
                                     }
@@ -627,44 +686,46 @@ fun TaskDialog(
                                                                 }
                                                             }
                                                         }
-//                                            TODO: Hide this dropdown when current user is not the author of the comment
-                                                        DropdownMenu(
-                                                            options = listOf(
-                                                                DropdownMenuOption(
-                                                                    label = "Edit",
-                                                                    icon = {
-                                                                        Icon(
-                                                                            Icons.Default.Edit,
-                                                                            contentDescription = "Edit Comment",
-                                                                            tint = MaterialTheme.colorScheme.onBackground
-                                                                        )
-                                                                    },
-                                                                    onClick = {
-                                                                        viewModel.setSelectedCommentToUpdate(
-                                                                            comment
-                                                                        )
-                                                                        viewModel.showUpdateCommentDialog()
-                                                                    }
-                                                                ),
-                                                                DropdownMenuOption(
-                                                                    label = "Delete",
-                                                                    icon = {
-                                                                        Icon(
-                                                                            Icons.Default.Delete,
-                                                                            contentDescription = "Delete Comment",
-                                                                            tint = MaterialTheme.colorScheme.onBackground
-                                                                        )
-                                                                    },
+
+                                                        // Show only if the current user is the author of the comment
+                                                        if (currentUserId.value == comment.author.id) {
+                                                            DropdownMenu(
+                                                                options = listOf(
+                                                                    DropdownMenuOption(
+                                                                        label = "Edit",
+                                                                        icon = {
+                                                                            Icon(
+                                                                                Icons.Default.Edit,
+                                                                                contentDescription = "Edit Comment",
+                                                                                tint = MaterialTheme.colorScheme.onBackground
+                                                                            )
+                                                                        },
+                                                                        onClick = {
+                                                                            viewModel.setSelectedCommentToUpdate(
+                                                                                comment
+                                                                            )
+                                                                            viewModel.showUpdateCommentDialog()
+                                                                        }
+                                                                    ),
+                                                                    DropdownMenuOption(
+                                                                        label = "Delete",
+                                                                        icon = {
+                                                                            Icon(
+                                                                                Icons.Default.Delete,
+                                                                                contentDescription = "Delete Comment",
+                                                                                tint = MaterialTheme.colorScheme.onBackground
+                                                                            )
+                                                                        },
 //                                                        TODO: Add delete confirmation dialog
-                                                                    onClick = {
-                                                                        viewModel.deleteComment(
-                                                                            comment.id
-                                                                        )
-                                                                    }
+                                                                        onClick = {
+                                                                            viewModel.deleteComment(
+                                                                                comment.id
+                                                                            )
+                                                                        }
+                                                                    )
                                                                 )
                                                             )
-                                                        )
-                                                    }
+                                                        }                                                    }
                                                     Spacer(modifier = Modifier.height(2.dp))
                                                     Text(
                                                         text = comment.content,

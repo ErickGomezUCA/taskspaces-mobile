@@ -13,6 +13,7 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
+import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
@@ -37,12 +38,16 @@ class HomeViewModel(
     private val authRepository: AuthRepository,
     private val taskRepository: TaskRepository,
     private val memberRoleRepository: MemberRoleRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    private val _currentUserName = MutableStateFlow("")
+    val currentUserName: StateFlow<String> = _currentUserName.asStateFlow()
 
     private val _workspaces = MutableStateFlow<UiState<List<WorkspaceModel>>>(UiState.Loading)
     val workspaces: StateFlow<UiState<List<WorkspaceModel>>> = _workspaces.asStateFlow()
@@ -84,6 +89,25 @@ class HomeViewModel(
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
                 _authUserId.value = userId
+
+                if (userId != 0) {
+                    launch {
+                        userRepository.getUserById(userId).collect { resource ->
+                            when (resource) {
+                                is Resource.Success -> {
+
+                                    _currentUserName.value = resource.data?.fullname ?: ""
+                                }
+                                is Resource.Error -> {
+                                    Log.e("HomeViewModel", "Error fetching user from UserRepository: ${resource.message}")
+                                    _currentUserName.value = ""
+                                }
+                                is Resource.Loading -> {
+                                }
+                            }
+                        }
+                    }
+                }
 
                 launch {
                     workspaceRepository.getWorkspacesByUserId(userId)
@@ -273,7 +297,8 @@ class HomeViewModel(
                     application.appProvider.provideWorkspaceRepository(),
                     application.appProvider.provideAuthRepository(),
                     application.appProvider.provideTaskRepository(),
-                    application.appProvider.provideMemberRoleRepository()
+                    application.appProvider.provideMemberRoleRepository(),
+                    application.appProvider.provideUserRepository()
                 )
             }
         }
