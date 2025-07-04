@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,11 +44,15 @@ fun TaskStatusColumn(
     status: StatusVariations,
     tasks: List<TaskModel>,
     onTaskCardClick: (Int) -> Unit,
-    onAddTaskClick: () -> Unit,
-    onTaskDeleteClick: (Int) -> Unit
+    onAddTaskClick: (() -> Unit)? = null,
+    onTaskDeleteClick: (Int) -> Unit,
+    hasDeletePermission: Boolean = false,
 ) {
+    val scrollState = rememberScrollState()  // Inicializamos el estado del scroll
+
     Column(
         modifier = Modifier
+            .verticalScroll(scrollState)
             .background(
                 color = ExtendedTheme.colors.projectColumn,
                 shape = RoundedCornerShape(16.dp)
@@ -64,25 +70,27 @@ fun TaskStatusColumn(
                 onClick = { onTaskCardClick(task.id) },
                 taskId = task.id,
                 onDeleteClick = { onTaskDeleteClick(task.id) },
-                showDeleteButton = true // TODO: Apply show/hide logic based on member role
+                hasDeletePermission = hasDeletePermission
             )
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            TextButton(
-                onClick = { onAddTaskClick() },
-                contentPadding = PaddingValues(0.dp),
+        onAddTaskClick?.let { onClick ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Add New Task +",
-                    fontSize = 16.sp
-                )
+                TextButton(
+                    onClick = onClick,
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Text(
+                        text = "Add New Task +",
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
+
     }
 }
 

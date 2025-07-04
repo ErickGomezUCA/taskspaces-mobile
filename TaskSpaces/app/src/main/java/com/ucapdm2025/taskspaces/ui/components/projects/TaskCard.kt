@@ -33,8 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.ui.components.general.Tag
-import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
-import com.ucapdm2025.taskspaces.ui.screens.project.ProjectViewModel
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -57,11 +55,10 @@ fun TaskCard(
     onDeleteClick: (Int) -> Unit,
     breadcrumb: String = "",
     onClick: () -> Unit = {},
-    projectViewModel: ProjectViewModel
+    hasDeletePermission: Boolean = false,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val hasPermission = projectViewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)
 
     Card(
         modifier = Modifier
@@ -102,7 +99,7 @@ fun TaskCard(
                 }
             }
 
-            if (hasPermission) {
+            if (hasDeletePermission) {
                 IconButton(
                     onClick = { showMenu = true },
                     modifier = Modifier.align(Alignment.TopEnd)
@@ -158,317 +155,312 @@ fun TaskCard(
  *
  * Displays a sample task card with mock data for design-time visualization in Android Studio.
  */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardPreviewLight() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = false) {
-//        ExtendedColors(darkTheme = false) {
-//            TaskCard(
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                taskId = 1,
-//                onClick = {},
-//                onDeleteClick = {},
-//                breadcrumb = "",
-//                projectViewModel = TODO()
-//            )
-//        }
-//    }
-//}
-//
-///**
-// * A preview composable for the [TaskCard] component with breadcrumb.
-// *
-// * Displays a sample task card with mock data and a breadcrumb for design-time visualization.
-// */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardBreadcrumbPreviewLight() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = false) {
-//        ExtendedColors(darkTheme = false) {
-//            TaskCard(
-//                taskId = 1,
-//                breadcrumb = "Workspace 1 / Project 1",
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                onDeleteClick = {},
-//                onClick = {}
-//            )
-//        }
-//    }
-//}
-//
-///**
-// * A preview composable for the [TaskCard] component.
-// *
-// * Displays a sample task card with mock data for design-time visualization in Android Studio.
-// */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardDeleteButtonPreviewLight() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = false) {
-//        ExtendedColors(darkTheme = false) {
-//            TaskCard(
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                taskId = 1,
-//                onClick = {},
-//                onDeleteClick = {},
-//                showDeleteButton = true
-//            )
-//        }
-//    }
-//}
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest,
+                taskId = 1,
+                onClick = {},
+                onDeleteClick = {},
+                breadcrumb = "",
+            )
+        }
+    }
+}
 
 /**
  * A preview composable for the [TaskCard] component with breadcrumb.
  *
  * Displays a sample task card with mock data and a breadcrumb for design-time visualization.
  */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardBreadcrumbAndDeleteButtonPreviewLight() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = false) {
-//        ExtendedColors(darkTheme = false) {
-//            TaskCard(
-//                taskId = 1,
-//                breadcrumb = "Workspace 1 / Project 1",
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                onDeleteClick = {},
-//                onClick = {},
-//                showDeleteButton = true
-//            )
-//        }
-//    }
-//}
-//
-///**
-// * A preview composable for the [TaskCard] component using the dark theme.
-// *
-// * Displays a sample task card with mock tags to visualize its appearance
-// * in dark mode with a custom dark background color.
-// */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardPreviewDark() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = true) {
-//        ExtendedColors(darkTheme = true) {
-//            TaskCard(
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                taskId = 2,
-//                onClick = {},
-//                onDeleteClick = {}
-//            )
-//        }
-//    }
-//}
-//
-///**
-// * A preview composable for the [TaskCard] component using the dark theme with breadcrumb.
-// */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardBreadcrumbPreviewDark() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = true) {
-//        ExtendedColors(darkTheme = true) {
-//            TaskCard(
-//                taskId = 1,
-//                breadcrumb = "Workspace 1 / Project 1",
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                onDeleteClick = {},
-//                onClick = {}
-//            )
-//        }
-//    }
-//}
-//
-///**
-// * A preview composable for the [TaskCard] component using the dark theme.
-// *
-// * Displays a sample task card with mock tags to visualize its appearance
-// * in dark mode with a custom dark background color.
-// */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardDeleteButtonPreviewDark() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = true) {
-//        ExtendedColors(darkTheme = true) {
-//            TaskCard(
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                taskId = 2,
-//                onClick = {},
-//                onDeleteClick = {},
-//                showDeleteButton = true
-//            )
-//        }
-//    }
-//}
-//
-///**
-// * A preview composable for the [TaskCard] component using the dark theme with breadcrumb.
-// */
-//@Preview(showBackground = true, backgroundColor = 0xFF27272A)
-//@Composable
-//fun TaskCardBreadcrumbAndDeleteButtonPreviewDark() {
-//    val tagsTest = listOf(
-//        TagModel(
-//            id = 1,
-//            title = "Tag",
-//            color = Color.Red,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        ),
-//        TagModel(
-//            id = 2,
-//            title = "Tag",
-//            color = Color.Blue,
-//            projectId = 1,
-//            createdAt = "",
-//            updatedAt = ""
-//        )
-//    )
-//    TaskSpacesTheme(darkTheme = true) {
-//        ExtendedColors(darkTheme = true) {
-//            TaskCard(
-//                taskId = 1,
-//                breadcrumb = "Workspace 1 / Project 1",
-//                title = "Create initial mockups",
-//                tags = tagsTest,
-//                onDeleteClick = {},
-//                onClick = {},
-//                showDeleteButton = true
-//            )
-//        }
-//    }
-//}
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component.
+ *
+ * Displays a sample task card with mock data for design-time visualization in Android Studio.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardDeleteButtonPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest,
+                taskId = 1,
+                onClick = {},
+                onDeleteClick = {},
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component with breadcrumb.
+ *
+ * Displays a sample task card with mock data and a breadcrumb for design-time visualization.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbAndDeleteButtonPreviewLight() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = false) {
+        ExtendedColors(darkTheme = false) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {},
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme.
+ *
+ * Displays a sample task card with mock tags to visualize its appearance
+ * in dark mode with a custom dark background color.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest,
+                taskId = 2,
+                onClick = {},
+                onDeleteClick = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme with breadcrumb.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme.
+ *
+ * Displays a sample task card with mock tags to visualize its appearance
+ * in dark mode with a custom dark background color.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardDeleteButtonPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                title = "Create initial mockups",
+                tags = tagsTest,
+                taskId = 2,
+                onClick = {},
+                onDeleteClick = {},
+            )
+        }
+    }
+}
+
+/**
+ * A preview composable for the [TaskCard] component using the dark theme with breadcrumb.
+ */
+@Preview(showBackground = true, backgroundColor = 0xFF27272A)
+@Composable
+fun TaskCardBreadcrumbAndDeleteButtonPreviewDark() {
+    val tagsTest = listOf(
+        TagModel(
+            id = 1,
+            title = "Tag",
+            color = Color.Red,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        ),
+        TagModel(
+            id = 2,
+            title = "Tag",
+            color = Color.Blue,
+            projectId = 1,
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
+    TaskSpacesTheme(darkTheme = true) {
+        ExtendedColors(darkTheme = true) {
+            TaskCard(
+                taskId = 1,
+                breadcrumb = "Workspace 1 / Project 1",
+                title = "Create initial mockups",
+                tags = tagsTest,
+                onDeleteClick = {},
+                onClick = {},
+            )
+        }
+    }
+}
