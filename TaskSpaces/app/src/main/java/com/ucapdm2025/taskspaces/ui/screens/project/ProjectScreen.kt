@@ -90,7 +90,9 @@ fun ProjectScreen(
             taskId = selectedTaskId.value,
             onDismissRequest = {
                 viewModel.reloadTasks()
-                viewModel.hideTaskDialog() },
+                viewModel.hideTaskDialog()
+            },
+            projectViewModel = viewModel,
         )
     }
 
@@ -118,7 +120,9 @@ fun ProjectScreen(
                         }
                     } else {
                         null
-                    }
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) },
+                    hasDeletePermission = viewModel.hasSufficientPermissions(MemberRoles.COLLABORATOR)
                 )
             }
             item {
@@ -138,7 +142,8 @@ fun ProjectScreen(
                         }
                     } else {
                         null
-                    }
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
             item {
@@ -158,7 +163,8 @@ fun ProjectScreen(
                         }
                     } else {
                         null
-                    }
+                    },
+                    onTaskDeleteClick = { taskId -> viewModel.deleteTask(taskId) }
                 )
             }
         }

@@ -45,6 +45,8 @@ fun TaskStatusColumn(
     tasks: List<TaskModel>,
     onTaskCardClick: (Int) -> Unit,
     onAddTaskClick: (() -> Unit)? = null,
+    onTaskDeleteClick: (Int) -> Unit,
+    hasDeletePermission: Boolean = false,
 ) {
     val scrollState = rememberScrollState()  // Inicializamos el estado del scroll
 
@@ -65,7 +67,10 @@ fun TaskStatusColumn(
             TaskCard(
                 title = task.title,
                 tags = task.tags,
-                onClick = { onTaskCardClick(task.id) }
+                onClick = { onTaskCardClick(task.id) },
+                taskId = task.id,
+                onDeleteClick = { onTaskDeleteClick(task.id) },
+                hasDeletePermission = hasDeletePermission
             )
         }
         onAddTaskClick?.let { onClick ->
@@ -132,6 +137,7 @@ fun TaskStatusColumnPreviewLight() {
                     ),
                     onTaskCardClick = {},
                     onAddTaskClick = {},
+                    onTaskDeleteClick = {},
                 )
             }
         }
@@ -181,6 +187,7 @@ fun TaskStatusColumnPreviewDark() {
                     ),
                     onTaskCardClick = {},
                     onAddTaskClick = {},
+                    onTaskDeleteClick = {},
                 )
             }
         }

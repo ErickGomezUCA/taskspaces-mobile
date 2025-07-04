@@ -36,10 +36,12 @@ fun AssignedTasksSection(
     Column(modifier = modifier.fillMaxWidth()) {
         assignedTasks.forEach { task ->
             TaskCard(
+                taskId = task.id,
                 breadcrumb = task.breadcrumb,
                 title = task.title,
                 tags = task.tags,
-                onClick = { onAssignedTaskClick(task.projectId, task.id) }
+                onDeleteClick = {},
+                onClick = { onAssignedTaskClick(task.projectId, task.id) },
             )
         }
     }
