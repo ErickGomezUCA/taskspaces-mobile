@@ -24,6 +24,12 @@ import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import com.ucapdm2025.taskspaces.helpers.UiState
 
 
 /**
@@ -35,13 +41,12 @@ import androidx.compose.foundation.verticalScroll
  * @param onNavigateToSettings Triggered when "Personal details" is tapped.
  */
 @Composable
-fun UserScreen(onNavigateToSettings: () -> Unit = {}) {
-    // TODO: Replace these UI states with values from the ViewModel once the backend is connected
-    var languageExpanded by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf("English") }
-    var notificationsEnabled by remember { mutableStateOf(true) }
-    var darkModeEnabled by remember { mutableStateOf(true) }
+fun UserScreen(
+    onNavigateToSettings: () -> Unit = {},
+    viewModel: UserDetailsViewModel = viewModel(factory = UserDetailsViewModel.Factory)
+) {
     val scrollState = rememberScrollState()
+    val userState by viewModel.user.collectAsState()
 
     Column(
         modifier = Modifier
@@ -50,23 +55,57 @@ fun UserScreen(onNavigateToSettings: () -> Unit = {}) {
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Profile picture placeholder
-        Box(
-            modifier = Modifier
-                .size(72.dp)
-                .background(Color(0xFFD6BBFB), shape = CircleShape)
-        )
+        when (userState) {
+            is UiState.Loading -> {
+                CircularProgressIndicator()
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            is UiState.Error -> {
+                Text(
+                    text = (userState as UiState.Error).message,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
-        // User display name and handle
-        // TODO: Replace with dynamic user data (name and handle) from ViewModel
-        Text("Firstname Lastname", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground)
-        Text("@username", color = Color.Gray)
+            is UiState.Success -> {
+                val user = (userState as UiState.Success).data
+
+                if (user.avatar != null) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(user.avatar)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    // Placeholder avatar
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFD6BBFB))
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = user.fullname,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(text = "@${user.username}", color = Color.Gray)
+            }
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Section: Account settings
+        // Account settings
         Text(
             text = "Account settings",
             color = MaterialTheme.colorScheme.onBackground,
@@ -80,7 +119,7 @@ fun UserScreen(onNavigateToSettings: () -> Unit = {}) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Section: Plan
+        // Plan
         Text(
             text = "Organizations / Plan",
             color = MaterialTheme.colorScheme.onBackground,
@@ -91,145 +130,9 @@ fun UserScreen(onNavigateToSettings: () -> Unit = {}) {
                 .padding(bottom = 8.dp)
         )
         CardButton("Plan Premium", onClick = { })
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Section: Settings
-        Text(
-            text = "Settings",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .border(0.3.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))
-                .background(ExtendedTheme.colors.background05)
-
-        ) {
-            // Language option
-            // TODO: Language selection will eventually be stored/loaded from user preferences via ViewModel
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                    contentAlignment = Alignment.CenterEnd
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { languageExpanded = true }
-                ) {
-                    Text("Language", color = Color.Gray)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(selectedLanguage, color = Color.Gray)
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            modifier = Modifier.rotate(90f),
-                            contentDescription = "Expand language menu",
-                            tint = Color(0xFF9966E2)
-                        )
-                    }
-                }
-
-            DropdownMenu(
-                expanded = languageExpanded,
-                onDismissRequest = { languageExpanded = false },
-                modifier = Modifier .width(IntrinsicSize.Min) .align(Alignment.TopEnd)
-            ) {
-                DropdownMenuItem(
-                    text = { Text("English") },
-                    onClick = {
-                        selectedLanguage = "English"
-                        languageExpanded = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Español") },
-                    onClick = {
-                        selectedLanguage = "Español"
-                        languageExpanded = false
-
-                         }
-                    )
-                }
-            }
-
-            Divider(color = Color.LightGray, thickness = 1.dp)
-
-            // Notifications toggle
-            // TODO: Notification setting should be read and written via ViewModel
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-            ) {
-                Text("Notifications", color = Color.Gray)
-                Switch(
-                    checked = notificationsEnabled,
-                    onCheckedChange = { notificationsEnabled = it },
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Color(0xFF9966E2),
-                        uncheckedThumbColor = Color.LightGray,
-                        uncheckedTrackColor = Color(0xFFE0E0E0),
-                        checkedBorderColor = Color.Transparent,
-                        uncheckedBorderColor = Color.Transparent
-                    )
-
-                )
-            }
-
-            Divider(color = Color.LightGray, thickness = 1.dp)
-
-            // Dark mode toggle
-            // TODO: Dark mode setting should sync with app theme or user preference via ViewModel
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-            ) {
-                Text("Dark mode", color = Color.Gray)
-                Switch(
-                    checked = darkModeEnabled,
-                    onCheckedChange = { darkModeEnabled = it },
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Color(0xFF9966E2),
-                        uncheckedThumbColor = Color.LightGray,
-                        uncheckedTrackColor = Color(0xFFE0E0E0),
-                        checkedBorderColor = Color.Transparent,
-                        uncheckedBorderColor = Color.Transparent
-                    )
-
-                )
-            }
-        }
     }
 }
 
-/**
- * Reusable button with label and trailing arrow icon.
- *
- * @param text Button text label.
- * @param onClick Click callback.
- */
 @Composable
 private fun CardButton(text: String, onClick: () -> Unit) {
     Box(
@@ -242,7 +145,11 @@ private fun CardButton(text: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                text = text,
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
+            )
             Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color(0xFF9966E2))
         }
     }
