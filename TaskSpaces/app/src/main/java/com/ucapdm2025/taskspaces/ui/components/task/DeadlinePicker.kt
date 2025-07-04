@@ -52,7 +52,8 @@ fun DeadlinePicker(
     deadline: LocalDateTime?,
     onDeadlineSelected: (LocalDateTime?) -> Unit,
     onDeadlineClear: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hasPermission: Boolean = false
 ) {
     val formatter = DateTimeFormatter.ofPattern("d / MMM / yyyy - h:mm a")
     val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
@@ -103,13 +104,15 @@ fun DeadlinePicker(
                 }
             }
 
-            OutlinedButton(
-                onClick = { setShowDialog(true) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            ) {
-                Text(if (deadline != null) "Set new deadline" else "Add Deadline +")
+            if (hasPermission){
+                OutlinedButton(
+                    onClick = { setShowDialog(true) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(if (deadline != null) "Set new deadline" else "Add Deadline +")
+                }
             }
 
         }
