@@ -107,11 +107,16 @@ fun ManageTagsDialog(
                                 .clickable {
                                     // Cycle through a predefined palette
                                     val palette = listOf(
-                                        Color.Red,
-                                        Color.Green,
-                                        Color.Blue,
-                                        Color.Magenta,
-                                        Color.Yellow
+                                        Color(0xFFEF4444),
+                                        Color(0xFFF59E0B),
+                                        Color(0xFF10B981),
+                                        Color(0xFF3B82F6),
+                                        Color(0xFF8B5CF6),
+                                        Color(0xFFEC4899),
+                                        Color(0xFF6B7280),
+                                        Color(0xFF22D3EE),
+                                        Color(0xFFF43F5E),
+                                        Color(0xFF14B8A6)
                                     )
                                     val nextColor =
                                         palette[(palette.indexOf(color) + 1) % palette.size]
@@ -150,11 +155,16 @@ fun ManageTagsDialog(
                             .background(newColor, CircleShape)
                             .clickable {
                                 val palette = listOf(
-                                    Color.Red,
-                                    Color.Green,
-                                    Color.Blue,
-                                    Color.Magenta,
-                                    Color.Yellow
+                                    Color(0xFFEF4444),
+                                    Color(0xFFF59E0B),
+                                    Color(0xFF10B981),
+                                    Color(0xFF3B82F6),
+                                    Color(0xFF8B5CF6),
+                                    Color(0xFFEC4899),
+                                    Color(0xFF6B7280),
+                                    Color(0xFF22D3EE),
+                                    Color(0xFFF43F5E),
+                                    Color(0xFF14B8A6) 
                                 )
                                 newColor = palette[(palette.indexOf(newColor) + 1) % palette.size]
                             }
