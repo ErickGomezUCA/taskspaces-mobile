@@ -1,7 +1,7 @@
 package com.ucapdm2025.taskspaces.data.remote.services
 
 import com.ucapdm2025.taskspaces.data.remote.responses.BaseResponse
-import com.ucapdm2025.taskspaces.data.remote.responses.MediaResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.media.MediaResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
 import retrofit2.http.POST

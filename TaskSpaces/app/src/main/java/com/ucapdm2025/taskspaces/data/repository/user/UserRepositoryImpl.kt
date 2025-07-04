@@ -13,7 +13,7 @@ import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.SignUpRequest
-import com.ucapdm2025.taskspaces.data.remote.responses.MediaResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.media.MediaResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity

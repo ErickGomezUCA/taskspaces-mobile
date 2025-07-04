@@ -1,7 +1,7 @@
 package com.ucapdm2025.taskspaces.data.repository.user
 
 import com.ucapdm2025.taskspaces.data.model.UserModel
-import com.ucapdm2025.taskspaces.data.remote.responses.MediaResponse
+import com.ucapdm2025.taskspaces.data.remote.responses.media.MediaResponse
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.flow.Flow
 

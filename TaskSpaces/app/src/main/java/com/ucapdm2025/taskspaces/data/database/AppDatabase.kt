@@ -17,6 +17,7 @@ import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskAssignedDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.TaskTagDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.WorkspaceMemberDao
 import com.ucapdm2025.taskspaces.data.database.entities.CommentEntity
+import com.ucapdm2025.taskspaces.data.database.entities.MediaEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.BookmarkEntity
 import com.ucapdm2025.taskspaces.data.database.entities.ProjectEntity
 import com.ucapdm2025.taskspaces.data.database.entities.TagEntity
@@ -25,6 +26,7 @@ import com.ucapdm2025.taskspaces.data.database.entities.UserEntity
 import com.ucapdm2025.taskspaces.data.database.entities.WorkspaceEntity
 import com.ucapdm2025.taskspaces.data.database.entities.catalog.MemberRoleEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskAssignedEntity
+import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskMediaEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.TaskTagEntity
 import com.ucapdm2025.taskspaces.data.database.entities.relational.WorkspaceMemberEntity
 
@@ -32,8 +34,8 @@ import com.ucapdm2025.taskspaces.data.database.entities.relational.WorkspaceMemb
  * AppDatabase is the main database class for the TaskSpaces application.
  */
 @Database(
-    entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class, TaskEntity::class, BookmarkEntity::class, MemberRoleEntity::class, WorkspaceMemberEntity::class, TagEntity::class, TaskTagEntity::class, TaskAssignedEntity::class, CommentEntity::class],
-    version = 10,
+    entities = [UserEntity::class, WorkspaceEntity::class, ProjectEntity::class, TaskEntity::class, BookmarkEntity::class, MemberRoleEntity::class, WorkspaceMemberEntity::class, TagEntity::class, TaskTagEntity::class, TaskAssignedEntity::class, CommentEntity::class, MediaEntity::class, TaskMediaEntity::class],
+    version = 11,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

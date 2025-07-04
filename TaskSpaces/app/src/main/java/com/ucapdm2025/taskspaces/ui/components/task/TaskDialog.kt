@@ -145,13 +145,13 @@ fun TaskDialog(
     val newComment = viewModel.newComment.collectAsStateWithLifecycle()
     val showUpdateCommentDialog = viewModel.showUpdateCommentDialog.collectAsStateWithLifecycle()
     val selectedCommentToUpdate = viewModel.selectedCommentToUpdate.collectAsStateWithLifecycle()
-    val selectedMediaUris = remember { mutableStateListOf<Uri>() }
+    val selectedMediaUris = viewModel.selectedMediaUris.collectAsStateWithLifecycle()
 
     val pickMediaLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
-            selectedMediaUris.clear()
-            selectedMediaUris.addAll(uris)
+            viewModel.setSelectedMediaUris(uris)
+
         }
     )
 
@@ -474,14 +474,14 @@ fun TaskDialog(
                                         Text("Add Media +")
                                     }
 
-                                    if (selectedMediaUris.isNotEmpty()) {
+                                    if (selectedMediaUris.value.isNotEmpty()) {
                                         LazyRow(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(top = 8.dp),
                                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
-                                            items(selectedMediaUris) { uri ->
+                                            items(selectedMediaUris.value) { uri ->
                                                 val context = LocalContext.current
                                                 val mimeType = context.contentResolver.getType(uri)
                                                 Box(
