@@ -326,6 +326,7 @@ fun TaskDialog(
 
                                         OutlinedTextField(
                                             value = task.value?.title ?: "No title",
+                                            label = {Text("Title")},
                                             onValueChange = { viewModel.setTaskData(title = it) },
                                             placeholder = { Text("Add a title...") },
                                             modifier = Modifier.fillMaxWidth()
