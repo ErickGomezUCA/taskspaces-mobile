@@ -170,8 +170,8 @@ fun ProjectScreen(
         ) {
             item {
                 TaskStatusColumn(
-                    status = StatusVariations.DONE,
-                    tasks = doneTasks,
+                    status = StatusVariations.PENDING,
+                    tasks = pendingTasks,
                     onTaskCardClick = { taskId ->
                         viewModel.onTaskCardClick(taskId)
                     },
@@ -179,7 +179,7 @@ fun ProjectScreen(
                         {
                             viewModel.createTask(
                                 title = "New task",
-                                status = StatusVariations.DONE,
+                                status = StatusVariations.PENDING,
                             )
                             viewModel.showTaskDialog()
                         }
@@ -199,7 +199,7 @@ fun ProjectScreen(
                         {
                             viewModel.createTask(
                                 title = "New task",
-                                status = StatusVariations.DONE,
+                                status = StatusVariations.DOING,
                             )
                             viewModel.showTaskDialog()
                         }
