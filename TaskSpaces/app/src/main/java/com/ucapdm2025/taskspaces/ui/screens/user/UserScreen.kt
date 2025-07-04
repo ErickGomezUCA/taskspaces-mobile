@@ -30,6 +30,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.ucapdm2025.taskspaces.helpers.UiState
+import com.ucapdm2025.taskspaces.ui.screens.login.LoginViewModel
 
 
 /**
@@ -43,7 +44,8 @@ import com.ucapdm2025.taskspaces.helpers.UiState
 @Composable
 fun UserScreen(
     onNavigateToSettings: () -> Unit = {},
-    viewModel: UserDetailsViewModel = viewModel(factory = UserDetailsViewModel.Factory)
+    viewModel: UserDetailsViewModel = viewModel(factory = UserDetailsViewModel.Factory),
+    loginViewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)
 ) {
     val scrollState = rememberScrollState()
     val userState by viewModel.user.collectAsState()
@@ -82,7 +84,6 @@ fun UserScreen(
                             .clip(CircleShape)
                     )
                 } else {
-                    // Placeholder avatar
                     Box(
                         modifier = Modifier
                             .size(72.dp)
@@ -105,7 +106,7 @@ fun UserScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Account settings
+        // Section: Account settings
         Text(
             text = "Account settings",
             color = MaterialTheme.colorScheme.onBackground,
@@ -119,7 +120,7 @@ fun UserScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Plan
+        // Section: Plan
         Text(
             text = "Organizations / Plan",
             color = MaterialTheme.colorScheme.onBackground,
@@ -130,9 +131,31 @@ fun UserScreen(
                 .padding(bottom = 8.dp)
         )
         CardButton("Plan Premium", onClick = { })
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = { loginViewModel.logout() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(text = "Log Out")
+        }
     }
 }
 
+/**
+ * Reusable button with label and trailing arrow icon.
+ *
+ * @param text Button text label.
+ * @param onClick Click callback.
+ */
 @Composable
 private fun CardButton(text: String, onClick: () -> Unit) {
     Box(
@@ -145,11 +168,7 @@ private fun CardButton(text: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = text,
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Text(text, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onBackground)
             Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color(0xFF9966E2))
         }
     }
