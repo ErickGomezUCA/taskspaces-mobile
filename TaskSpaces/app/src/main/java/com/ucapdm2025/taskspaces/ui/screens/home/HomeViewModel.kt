@@ -78,6 +78,12 @@ class HomeViewModel(
         _wasCreateAttempted.value = value
     }
 
+    private val _showDeleteConfirmationDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showDeleteConfirmationDialog: StateFlow<Boolean> = _showDeleteConfirmationDialog.asStateFlow()
+
+    private val _pendingWorkspaceToDeleteId: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val pendingWorkspaceToDeleteId: StateFlow<Int?> = _pendingWorkspaceToDeleteId.asStateFlow()
+
     //    Fetch user id from auth
     init {
         viewModelScope.launch {
@@ -259,6 +265,16 @@ class HomeViewModel(
 
     fun setSelectedWorkspaceId(id: Int?) {
         _selectedWorkspaceId.value = id
+    }
+    // Delete confirmation dialog functions
+    fun showDeleteConfirmationDialog(workspaceId: Int) {
+        _pendingWorkspaceToDeleteId.value = workspaceId
+        _showDeleteConfirmationDialog.value = true
+    }
+
+    fun hideDeleteConfirmationDialog() {
+        _pendingWorkspaceToDeleteId.value = null
+        _showDeleteConfirmationDialog.value = false
     }
 
     fun hasSufficientPermissions(
