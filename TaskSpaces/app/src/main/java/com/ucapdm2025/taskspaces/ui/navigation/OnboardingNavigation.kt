@@ -8,7 +8,7 @@ import com.ucapdm2025.taskspaces.ui.components.onboarding.SplashScreen
 import com.ucapdm2025.taskspaces.ui.layout.AppScaffold
 import com.ucapdm2025.taskspaces.ui.screens.LoginScreen
 import com.ucapdm2025.taskspaces.ui.screens.OnboardingScreen
-import com.ucapdm2025.taskspaces.ui.screens.SignUpScreen
+import com.ucapdm2025.taskspaces.ui.screens.signup.SignUpScreen
 
 /**
  * A composable function that sets up the navigation graph for the onboarding flow.
