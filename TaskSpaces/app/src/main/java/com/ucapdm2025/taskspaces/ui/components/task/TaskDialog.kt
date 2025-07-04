@@ -518,7 +518,8 @@ fun TaskDialog(
                                 DeadlinePicker(
                                     deadline = task.value?.deadline,
                                     onDeadlineSelected = { viewModel.setTaskData(deadline = it) },
-                                    onDeadlineClear = { viewModel.clearDeadline() }
+                                    onDeadlineClear = { viewModel.clearDeadline() },
+                                    hasPermission = hasPermission
                                 )
 
                                 //MEMBERS
