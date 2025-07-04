@@ -9,6 +9,7 @@ import com.ucapdm2025.taskspaces.data.model.CommentModel
 import com.ucapdm2025.taskspaces.data.model.TagModel
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
+import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
@@ -38,10 +39,14 @@ class TaskViewModel(
     private val tagRepository: TagRepository,
     private val memberRoleRepository: MemberRoleRepository,
     private val bookmarkRepository: BookmarkRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _currentTaskId: MutableStateFlow<Int?> = MutableStateFlow(null)
+
+    private val _currentUserId: MutableStateFlow<Int> = MutableStateFlow(0)
+    val currentUserId: StateFlow<Int> = _currentUserId.asStateFlow()
 
     private val _task: MutableStateFlow<TaskModel?> = MutableStateFlow(null)
     val task: StateFlow<TaskModel?> = _task.asStateFlow()
@@ -84,6 +89,12 @@ class TaskViewModel(
 
 
     init {
+        viewModelScope.launch {
+            authRepository.authUserId.collect { userId ->
+                _currentUserId.value = userId
+            }
+        }
+
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
 //        Load _task
         viewModelScope.launch {
@@ -681,7 +692,8 @@ class TaskViewModelFactory(
     private val tagRepository: TagRepository,
     private val memberRoleRepository: MemberRoleRepository,
     private val bookmarkRepository: BookmarkRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val authRepository: AuthRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
@@ -692,7 +704,8 @@ class TaskViewModelFactory(
                 tagRepository = tagRepository,
                 memberRoleRepository = memberRoleRepository,
                 bookmarkRepository = bookmarkRepository,
-                commentRepository = commentRepository
+                commentRepository = commentRepository,
+                authRepository = authRepository
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

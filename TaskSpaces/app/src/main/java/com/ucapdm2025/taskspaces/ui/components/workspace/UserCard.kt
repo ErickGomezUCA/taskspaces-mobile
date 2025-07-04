@@ -12,20 +12,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.ucapdm2025.taskspaces.ui.components.general.UserAvatar
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
 @Composable
-fun UserCard(username: String, modifier: Modifier = Modifier) {
+fun UserCard(username: String, avatar: String, modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .size(70.dp)
-                .background(Color(0xFFFFA726), CircleShape)
-        )
+        UserAvatar(avatar = avatar, size = 70)
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = username,
@@ -52,7 +49,7 @@ fun UserCardPreviewLight() {
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                UserCard(username = "Sample User")
+                UserCard(username = "Sample User", avatar = "https://avatars.githubusercontent.com/u/90425287?v=4")
             }
         }
     }
@@ -69,7 +66,7 @@ fun UserCardPreviewDark() {
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                UserCard(username = "Sample User")
+                UserCard(username = "Sample User", avatar = "https://avatars.githubusercontent.com/u/90425287?v=4")
             }
         }
     }

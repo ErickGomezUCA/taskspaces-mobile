@@ -510,7 +510,8 @@ fun WorkspaceScreen(
                                         ) {
                                             rowItems.forEach { member ->
                                                 UserCard(
-                                                    member.user.username,
+                                                    username = member.user.username,
+                                                    avatar = member.user.avatar.toString(),
                                                     modifier = Modifier
                                                         .width(80.dp)
                                                         .fillMaxHeight()

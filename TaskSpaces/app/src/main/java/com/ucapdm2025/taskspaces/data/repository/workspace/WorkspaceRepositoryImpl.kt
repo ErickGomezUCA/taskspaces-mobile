@@ -309,16 +309,8 @@ class WorkspaceRepositoryImpl(
                     requestUserId = userId
                 )
                     .map { entities ->
-//                        TODO: Bug, shows unknown user when inviting a member
-//                        then it disappears when reloaded
                         val workspaceMembers = entities.map {
-                            val user: UserModel = userDao.getUserById(it.userId)
-                                .first()?.toDomain() ?: UserModel(
-                                id = it.userId,
-                                username = "Unknown",
-                                fullname = "Unknown",
-                                email = "Unknown",
-                            )
+                            val user: UserModel = userService.getUserById(it.userId).content.toDomain()
 
                             val parsedRole: MemberRoles = when (it.memberRoleId) {
                                 1 -> MemberRoles.READER
@@ -419,8 +411,6 @@ class WorkspaceRepositoryImpl(
         }
     }
 
-//    TODO: Bug, no longer deletes removed member from screen, but it disappears after reloading
-//    might be auth repository
     override suspend fun removeMember(userId: Int, workspaceId: Int): Result<WorkspaceMemberModel> {
         return try {
             val response = workspaceService.removeMember(
