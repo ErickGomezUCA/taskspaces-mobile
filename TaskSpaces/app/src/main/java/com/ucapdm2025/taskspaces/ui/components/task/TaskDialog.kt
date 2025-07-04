@@ -401,16 +401,18 @@ fun TaskDialog(
                                             Tag(it)
                                         }
                                     }
-                                    OutlinedButton(
-                                        onClick = { viewModel.showTagsDialog() },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        border = BorderStroke(
-                                            1.dp,
-                                            MaterialTheme.colorScheme.primary
-                                        )
-                                    ) {
-                                        Text(if (tags.value != emptyList<TagModel>()) "Manage Tags" else "Add Tags +")
+                                    if (hasPermission) {
+                                        OutlinedButton(
+                                            onClick = { viewModel.showTagsDialog() },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(8.dp),
+                                            border = BorderStroke(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.primary
+                                            )
+                                        ) {
+                                            Text(if (tags.value != emptyList<TagModel>()) "Manage Tags" else "Add Tags +")
+                                        }
                                     }
                                 }
 
@@ -440,16 +442,18 @@ fun TaskDialog(
 //                    )
 //                }
 //            }
-                                    OutlinedButton(
-                                        onClick = { },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        border = BorderStroke(
-                                            1.dp,
-                                            MaterialTheme.colorScheme.primary
-                                        )
-                                    ) {
-                                        Text("Add Media +")
+                                    if (hasPermission){
+                                        OutlinedButton(
+                                            onClick = { },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(8.dp),
+                                            border = BorderStroke(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.primary
+                                            )
+                                        ) {
+                                            Text("Add Media +")
+                                        }
                                     }
                                 }
 
@@ -457,7 +461,8 @@ fun TaskDialog(
                                 DeadlinePicker(
                                     deadline = task.value?.deadline,
                                     onDeadlineSelected = { viewModel.setTaskData(deadline = it) },
-                                    onDeadlineClear = { viewModel.clearDeadline() }
+                                    onDeadlineClear = { viewModel.clearDeadline() },
+                                    hasPermission = hasPermission
                                 )
 
                                 //MEMBERS
@@ -485,16 +490,18 @@ fun TaskDialog(
                                             )
                                         }
                                     }
-                                    OutlinedButton(
-                                        onClick = { viewModel.showTaskMembersDialog() },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        border = BorderStroke(
-                                            1.dp,
-                                            MaterialTheme.colorScheme.primary
-                                        )
-                                    ) {
-                                        Text(if (members.value.isNotEmpty()) "Manage Members" else "Add Members +")
+                                    if(hasPermission){
+                                        OutlinedButton(
+                                            onClick = { viewModel.showTaskMembersDialog() },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(8.dp),
+                                            border = BorderStroke(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.primary
+                                            )
+                                        ) {
+                                            Text(if (members.value.isNotEmpty()) "Manage Members" else "Add Members +")
+                                        }
                                     }
                                 }
 
@@ -515,40 +522,42 @@ fun TaskDialog(
                                         )
                                     }
 
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(bottom = 8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        OutlinedTextField(
-                                            value = newComment.value,
-                                            onValueChange = { viewModel.setNewCommentValue(it) },
-                                            placeholder = { Text("Add a comment...") },
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        Surface(
-                                            shape = RoundedCornerShape(8.dp), // Set your desired corner radius
-                                            color = MaterialTheme.colorScheme.primary
+                                    if(hasPermission){
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(bottom = 8.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
-                                            IconButton(
-                                                onClick = {
-                                                    if (newComment.value.isNotBlank()) {
-                                                        viewModel.createComment(newComment.value)
-                                                        viewModel.setNewCommentValue("")
-                                                    }
-                                                },
-                                                enabled = newComment.value.isNotBlank(),
-                                                modifier = Modifier
-                                                    .height(56.dp)
-                                                    .aspectRatio(1f)
+                                            OutlinedTextField(
+                                                value = newComment.value,
+                                                onValueChange = { viewModel.setNewCommentValue(it) },
+                                                placeholder = { Text("Add a comment...") },
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            Surface(
+                                                shape = RoundedCornerShape(8.dp), // Set your desired corner radius
+                                                color = MaterialTheme.colorScheme.primary
                                             ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Send,
-                                                    contentDescription = "Send",
-                                                    tint = MaterialTheme.colorScheme.onPrimary
-                                                )
+                                                IconButton(
+                                                    onClick = {
+                                                        if (newComment.value.isNotBlank()) {
+                                                            viewModel.createComment(newComment.value)
+                                                            viewModel.setNewCommentValue("")
+                                                        }
+                                                    },
+                                                    enabled = newComment.value.isNotBlank(),
+                                                    modifier = Modifier
+                                                        .height(56.dp)
+                                                        .aspectRatio(1f)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Send,
+                                                        contentDescription = "Send",
+                                                        tint = MaterialTheme.colorScheme.onPrimary
+                                                    )
+                                                }
                                             }
                                         }
                                     }
