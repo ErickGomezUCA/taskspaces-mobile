@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserRepository {
     fun getUsers(): Flow<List<UserModel>>
     fun getUserById(id: Int): Flow<Resource<UserModel?>>
-    suspend fun createUser(fullname: String, username: String, email: String, avatar: String)
+    suspend fun createUser(fullname: String, username: String, email: String, avatar: String, password: String, confirmPassword: String): Result<UserModel>
     suspend fun updateUser(id: Int, fullname: String, username: String, email: String, avatar: String)
     suspend fun deleteUser(id: Int)
 }

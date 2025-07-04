@@ -1,19 +1,37 @@
-package com.ucapdm2025.taskspaces.ui.screens
+package com.ucapdm2025.taskspaces.ui.screens.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,7 +39,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ucapdm2025.taskspaces.R
+import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight100
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
@@ -40,11 +61,30 @@ fun SignUpScreen(
     onSignUp: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
 ) {
-    var name by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    val application = LocalContext.current.applicationContext as TaskSpacesApplication
+    val userRepository = application.appProvider.provideUserRepository()
+    val authRepository = application.appProvider.provideAuthRepository()
+    val viewModel: SignUpViewModel =
+        viewModel(factory = SignUpViewModelFactory(userRepository, authRepository))
+
+    val fullname = viewModel.fullname.collectAsStateWithLifecycle()
+    val username = viewModel.username.collectAsStateWithLifecycle()
+    val email = viewModel.email.collectAsStateWithLifecycle()
+    val password = viewModel.password.collectAsStateWithLifecycle()
+    val confirmPassword = viewModel.confirmPassword.collectAsStateWithLifecycle()
+    val authToken = viewModel.authToken.collectAsStateWithLifecycle()
+
+    val fullnameError = viewModel.fullnameError.collectAsStateWithLifecycle()
+    val usernameError = viewModel.usernameError.collectAsStateWithLifecycle()
+    val emailError = viewModel.emailError.collectAsStateWithLifecycle()
+    val passwordError = viewModel.passwordError.collectAsStateWithLifecycle()
+    val confirmPasswordError = viewModel.confirmPasswordError.collectAsStateWithLifecycle()
+
+    LaunchedEffect(authToken.value) {
+        if (authToken.value.isNotEmpty()) {
+            onSignUp()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -100,8 +140,8 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             TextField(
-                value = name,
-                onValueChange = { name = it },
+                value = fullname.value,
+                onValueChange = { viewModel.setFullname(it) },
                 label = { Text("Name") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 shape = RoundedCornerShape(16.dp),
@@ -113,14 +153,23 @@ fun SignUpScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
-                )
+                ),
+                isError = fullnameError.value != null
             )
+            if (fullnameError.value != null) {
+                Text(
+                    text = fullnameError.value ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
-                value = username,
-                onValueChange = { username = it },
+                value = username.value,
+                onValueChange = { viewModel.setUsername(it) },
                 label = { Text("Username") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 shape = RoundedCornerShape(16.dp),
@@ -132,14 +181,23 @@ fun SignUpScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
-                )
+                ),
+                isError = usernameError.value != null
             )
+            if (usernameError.value != null) {
+                Text(
+                    text = usernameError.value ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
-                value = email,
-                onValueChange = { email = it },
+                value = email.value,
+                onValueChange = { viewModel.setEmail(it) },
                 label = { Text("Email") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 shape = RoundedCornerShape(16.dp),
@@ -151,14 +209,23 @@ fun SignUpScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
-                )
+                ),
+                isError = emailError.value != null
             )
+            if (emailError.value != null) {
+                Text(
+                    text = emailError.value ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
-                value = password,
-                onValueChange = { password = it },
+                value = password.value,
+                onValueChange = { viewModel.setPassword(it) },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
@@ -171,14 +238,23 @@ fun SignUpScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
-                )
+                ),
+                isError = passwordError.value != null
             )
+            if (passwordError.value != null) {
+                Text(
+                    text = passwordError.value ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                value = confirmPassword.value,
+                onValueChange = { viewModel.setConfirmPassword(it) },
                 label = { Text("Confirm password") },
                 visualTransformation = PasswordVisualTransformation(),
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
@@ -191,8 +267,17 @@ fun SignUpScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
-                )
+                ),
+                isError = confirmPasswordError.value != null
             )
+            if (confirmPasswordError.value != null) {
+                Text(
+                    text = confirmPasswordError.value ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -214,7 +299,9 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = onSignUp,
+                onClick = {
+                    viewModel.signup()
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             ) {

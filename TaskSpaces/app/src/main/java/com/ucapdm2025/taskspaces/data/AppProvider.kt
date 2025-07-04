@@ -39,18 +39,18 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class AppProvider(context: Context) {
     private val appDatabase = AppDatabase.getDatabase(context)
 
+    //    Auth
+    private val authService = RetrofitInstance.authService
+    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
+
     //    Users
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
-    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService)
+    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService, authService)
 
     //    Member roles
     private val memberRoleService = RetrofitInstance.memberRoleService
     private val memberRoleRepository: MemberRoleRepository = MemberRoleRepositoryImpl(memberRoleService)
-
-    //    Auth
-    private val authService = RetrofitInstance.authService
-    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
 
     //    Workspace
     private val workspaceDao = appDatabase.workspaceDao()
