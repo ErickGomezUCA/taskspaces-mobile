@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ucapdm2025.taskspaces.data.model.UserModel
+import com.ucapdm2025.taskspaces.ui.components.general.UserAvatar
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -72,11 +73,7 @@ fun ManageTaskMembersDialog(
                                         }
                                     }
                                 )
-                                Box(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .background(Color(0xFFFFA726), CircleShape)
-                                )
+                                UserAvatar(avatar = member.avatar, size = 24)
                                 Text(
                                     text = member.username,
                                     modifier = Modifier
