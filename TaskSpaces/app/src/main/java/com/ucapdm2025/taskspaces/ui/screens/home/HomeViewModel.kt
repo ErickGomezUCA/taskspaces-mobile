@@ -13,6 +13,7 @@ import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
+import com.ucapdm2025.taskspaces.data.repository.user.UserRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
@@ -37,12 +38,16 @@ class HomeViewModel(
     private val authRepository: AuthRepository,
     private val taskRepository: TaskRepository,
     private val memberRoleRepository: MemberRoleRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    private val _currentUserName = MutableStateFlow("User")
+    val currentUserName: StateFlow<String> = _currentUserName.asStateFlow()
 
     private val _workspaces = MutableStateFlow<UiState<List<WorkspaceModel>>>(UiState.Loading)
     val workspaces: StateFlow<UiState<List<WorkspaceModel>>> = _workspaces.asStateFlow()
@@ -78,6 +83,30 @@ class HomeViewModel(
         viewModelScope.launch {
             authRepository.authUserId.collect { userId ->
                 _authUserId.value = userId
+
+                if (userId != 0) { // Solo si hay un userId válido (no 0, que es el valor inicial por defecto)
+                    launch {
+                        userRepository.getUserById(userId).collect { resource ->
+                            when (resource) {
+                                is Resource.Success -> {
+                                    // Accede a 'data' de Resource.Success, que puede ser UserModel?
+                                    // Y luego a 'username' del UserModel, proporcionando un fallback si es null
+                                    _currentUserName.value = resource.data?.username ?: "User"
+                                }
+                                is Resource.Error -> {
+                                    Log.e("HomeViewModel", "Error fetching user from UserRepository: ${resource.message}")
+                                    _currentUserName.value = "User" // Fallback en caso de error
+                                }
+                                is Resource.Loading -> {
+                                    // Opcional: _currentUserName.value = "Cargando..."
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Si el userId es 0 (no autenticado o valor inicial), restablece a "User"
+                    _currentUserName.value = "User"
+                }
 
                 launch {
                     workspaceRepository.getWorkspacesByUserId(userId)
@@ -257,7 +286,8 @@ class HomeViewModel(
                     application.appProvider.provideWorkspaceRepository(),
                     application.appProvider.provideAuthRepository(),
                     application.appProvider.provideTaskRepository(),
-                    application.appProvider.provideMemberRoleRepository()
+                    application.appProvider.provideMemberRoleRepository(),
+                    application.appProvider.provideUserRepository()
                 )
             }
         }
