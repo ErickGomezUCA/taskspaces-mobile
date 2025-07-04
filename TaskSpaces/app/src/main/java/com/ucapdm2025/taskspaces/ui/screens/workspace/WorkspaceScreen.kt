@@ -101,8 +101,9 @@ fun WorkspaceScreen(
     val membersState = viewModel.membersState.collectAsStateWithLifecycle()
     val showManageMembersDialog = viewModel.showManageMembersDialog.collectAsStateWithLifecycle()
     val notificationState = remember { mutableStateOf<UiEvent?>(null) }
-    val wasProjectCreateAttempted =
-        viewModel.wasProjectCreateAttempted.collectAsStateWithLifecycle()
+    val wasProjectCreateAttempted = viewModel.wasProjectCreateAttempted.collectAsStateWithLifecycle()
+    val showProjectDeleteConfirmationDialog = viewModel.showProjectDeleteConfirmationDialog.collectAsStateWithLifecycle()
+    val pendingProjectToDeleteId = viewModel.pendingProjectToDeleteId.collectAsStateWithLifecycle()
 
 //    Para manejar los roles de un workspace, ahora puedes hacerlo con:
 //
@@ -240,6 +241,38 @@ fun WorkspaceScreen(
                 )
             }
 
+            // Project Delete confirmation dialog
+            if (showProjectDeleteConfirmationDialog.value) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.hideProjectDeleteConfirmationDialog() },
+                    title = { Text(text = "Confirm Deletion") },
+                    text = { Text(text = "Are you sure you want to delete this project?") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                pendingProjectToDeleteId.value?.let { projectId ->
+                                    if (viewModel.hasSufficientPermissions(MemberRoles.ADMIN)) {
+                                        viewModel.deleteProject(projectId)
+                                        viewModel.setEditMode(WorkspaceEditMode.NONE) // Exit delete mode after successful deletion
+                                    }
+                                }
+                                viewModel.hideProjectDeleteConfirmationDialog()
+                            }
+                        ) {
+                            Text("Delete")
+                        }
+                    },
+                    dismissButton = {
+                        OutlinedButton(
+                            onClick = { viewModel.hideProjectDeleteConfirmationDialog() }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+
             if (showManageMembersDialog.value) {
                 ManageMembersDialog(
                     onDismissRequest = { viewModel.hideManageMembersDialog() },
@@ -355,22 +388,22 @@ fun WorkspaceScreen(
 //                            Set the selected project ID when in update mode and show the dialog
 
                                                             WorkspaceEditMode.UPDATE -> {
-                                                                viewModel.setSelectedProjectId(
-                                                                    project.id
-                                                                )
-                                                                viewModel.setProjectDialogData(
-                                                                    project.title
-                                                                )
-                                                                viewModel.showDialog()
+                                                                if (viewModel.hasSufficientPermissions(MemberRoles.ADMIN)) {
+                                                                    viewModel.setSelectedProjectId(
+                                                                        project.id
+                                                                    )
+                                                                    viewModel.setProjectDialogData(
+                                                                        project.title
+                                                                    )
+                                                                    viewModel.showDialog()
+                                                                }
                                                             }
 
 //                                Delete the project clicked when in delete mode
 //                                TODO: Add a confirmation dialog before deleting
                                                             WorkspaceEditMode.DELETE -> {
-                                                                viewModel.deleteProject(project.id)
-                                                                viewModel.setEditMode(
-                                                                    WorkspaceEditMode.NONE
-                                                                )
+                                                                viewModel.showProjectDeleteConfirmationDialog(project.id)
+
                                                             }
 
                                                             else -> onNavigateProject(project.id)

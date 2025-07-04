@@ -150,8 +150,10 @@ fun BookmarkList(
                     ) {
                         tasksInGroup.forEach { task ->
                             TaskCard(
+                                taskId = task.id,
                                 title = task.title,
                                 tags = task.tags,
+                                onDeleteClick = {},
                                 onClick = { onBookmarkedTaskClick(task.projectId, task.id) }
                             )
                         }
