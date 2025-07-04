@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.repository.user
 
+import android.content.Context
 import android.net.Uri
 import android.net.http.HttpException
 import android.os.Build
@@ -28,6 +29,9 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.IOException
 import java.time.LocalDateTime
 
@@ -38,6 +42,7 @@ import java.time.LocalDateTime
  */
 // TODO: Replace dummy data with a real local database, or consuming from a remote API
 class UserRepositoryImpl(
+    private val context: Context,
     private val userDao: UserDao,
     private val userService: UserService,
     private val authService: AuthService,
@@ -143,6 +148,26 @@ class UserRepositoryImpl(
     }
 
     override suspend fun uploadAvatar(uri: Uri): Result<MediaResponse> {
-
+        return try {
+            val contentResolver = context.contentResolver
+            val inputStream = contentResolver.openInputStream(uri) ?: return Result.failure(Exception("Cannot open image"))
+            val fileName = uri.lastPathSegment?.split("/")?.lastOrNull() ?: "avatar.jpg"
+            val bytes = inputStream.readBytes()
+            val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+            val requestBody = RequestBody.create(mimeType.toMediaTypeOrNull(), bytes)
+            val part = MultipartBody.Part.createFormData("media", "$fileName.${mimeType.split("/").last()}", requestBody)
+            val response = mediaService.uploadMedia(part)
+            if (response.status in 200..299 && response.content != null) {
+                Result.success(response.content)
+            } else if (response.content != null) {
+                // Accept as success if content is present, even if status is not 2xx
+                Result.success(response.content)
+            } else {
+                Result.failure(Exception(response.message ?: ""))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
+

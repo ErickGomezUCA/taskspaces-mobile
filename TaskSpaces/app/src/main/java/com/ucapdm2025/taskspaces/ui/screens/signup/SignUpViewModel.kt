@@ -57,7 +57,7 @@ class SignUpViewModel(
         viewModelScope.launch {
             val result = userRepository.uploadAvatar(uri)
             if (result.isSuccess) {
-                _avatarUrl.value = result.getOrNull()
+                _avatarUrl.value = result.getOrNull()?.url
             } else {
                 _avatarUploadError.value = result.exceptionOrNull()?.message ?: "Failed to upload image"
             }

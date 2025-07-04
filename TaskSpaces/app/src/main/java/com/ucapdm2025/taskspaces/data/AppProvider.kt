@@ -49,7 +49,7 @@ class AppProvider(context: Context) {
     //    Users
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
-    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService, authService, mediaService)
+    private val userRepository: UserRepository = UserRepositoryImpl(context, userDao, userService, authService, mediaService)
 
     //    Member roles
     private val memberRoleService = RetrofitInstance.memberRoleService
@@ -151,3 +151,4 @@ class AppProvider(context: Context) {
         return commentRepository
     }
 }
+

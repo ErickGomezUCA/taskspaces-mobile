@@ -5,7 +5,6 @@ data class MediaResponse(
     val filename: String,
     val type: String,
     val url: String,
-    val authorId: Int,
     val createdAt: String? = null,
     val updatedAt: String? = null
     )
