@@ -37,7 +37,7 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
     when (currentRoute) {
         "HomeRoute" -> {
             AppTopBar(
-                title = "Welcome, ${currentUserName.value}",
+                title = if (currentUserName.value == "") "Welcome" else "Welcome, ${currentUserName.value.split(" ").first()}",
                 onUserClick = { navController.navigate(UserRoute) },
                 variant = AppTopBarVariant.HOME
             )

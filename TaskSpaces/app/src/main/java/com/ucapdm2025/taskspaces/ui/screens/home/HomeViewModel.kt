@@ -46,7 +46,7 @@ class HomeViewModel(
 
     private val _authUserId: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    private val _currentUserName = MutableStateFlow("User")
+    private val _currentUserName = MutableStateFlow("")
     val currentUserName: StateFlow<String> = _currentUserName.asStateFlow()
 
     private val _workspaces = MutableStateFlow<UiState<List<WorkspaceModel>>>(UiState.Loading)
