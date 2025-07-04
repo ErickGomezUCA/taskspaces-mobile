@@ -2,6 +2,7 @@ package com.ucapdm2025.taskspaces.ui.screens.signup
 
 import android.Manifest
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -82,6 +84,9 @@ fun SignUpScreen(
     val confirmPassword = viewModel.confirmPassword.collectAsStateWithLifecycle()
     val authToken = viewModel.authToken.collectAsStateWithLifecycle()
     val avatarUri = viewModel.avatarUri.collectAsStateWithLifecycle()
+    val avatarUrl = viewModel.avatarUrl.collectAsStateWithLifecycle()
+    val isUploadingAvatar = viewModel.isUploadingAvatar.collectAsStateWithLifecycle()
+    val avatarUploadError = viewModel.avatarUploadError.collectAsStateWithLifecycle()
 
     val fullnameError = viewModel.fullnameError.collectAsStateWithLifecycle()
     val usernameError = viewModel.usernameError.collectAsStateWithLifecycle()
@@ -92,6 +97,9 @@ fun SignUpScreen(
     val context = LocalContext.current
     val pickImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         viewModel.setAvatarUri(uri)
+        if (uri != null) {
+            viewModel.uploadAvatar(uri)
+        }
     }
 
     LaunchedEffect(authToken.value) {
@@ -250,7 +258,7 @@ fun SignUpScreen(
                         .fillMaxWidth()
                         .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
-                        .clickable { pickImageLauncher.launch("image/*") }
+                        .clickable(enabled = !isUploadingAvatar.value) { pickImageLauncher.launch("image/*") }
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -264,7 +272,19 @@ fun SignUpScreen(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                         }
-                        if (avatarUri.value != null) {
+                        if (isUploadingAvatar.value) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(32.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 3.dp
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Uploading...",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        } else if (avatarUri.value != null) {
                             Image(
                                 painter = rememberAsyncImagePainter(avatarUri.value),
                                 contentDescription = "Avatar",
@@ -286,6 +306,14 @@ fun SignUpScreen(
                             )
                         }
                     }
+                }
+                if (avatarUploadError.value != null) {
+                    Text(
+                        text = avatarUploadError.value ?: "",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))

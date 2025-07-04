@@ -43,10 +43,13 @@ class AppProvider(context: Context) {
     private val authService = RetrofitInstance.authService
     private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
 
+//    Media
+    private val mediaService = RetrofitInstance.mediaService
+
     //    Users
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
-    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService, authService)
+    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService, authService, mediaService)
 
     //    Member roles
     private val memberRoleService = RetrofitInstance.memberRoleService

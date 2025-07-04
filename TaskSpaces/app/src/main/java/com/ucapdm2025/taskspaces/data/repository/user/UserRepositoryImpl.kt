@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.data.repository.user
 
+import android.net.Uri
 import android.net.http.HttpException
 import android.os.Build
 import android.util.Log
@@ -11,11 +12,13 @@ import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.model.relational.toDatabase
 import com.ucapdm2025.taskspaces.data.model.toDatabase
 import com.ucapdm2025.taskspaces.data.remote.requests.SignUpRequest
+import com.ucapdm2025.taskspaces.data.remote.responses.MediaResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.UserResponse
 import com.ucapdm2025.taskspaces.data.remote.responses.toDomain
 import com.ucapdm2025.taskspaces.data.remote.responses.toEntity
 import com.ucapdm2025.taskspaces.data.remote.responses.workspace.toEntity
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
+import com.ucapdm2025.taskspaces.data.remote.services.MediaService
 import com.ucapdm2025.taskspaces.data.remote.services.UserService
 import com.ucapdm2025.taskspaces.helpers.Resource
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +40,8 @@ import java.time.LocalDateTime
 class UserRepositoryImpl(
     private val userDao: UserDao,
     private val userService: UserService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val mediaService: MediaService
 ) : UserRepository {
     private var autoIncrementId = 0
 
@@ -136,5 +140,9 @@ class UserRepositoryImpl(
 
     override suspend fun deleteUser(id: Int) {
         userDao.deleteUser(id)
+    }
+
+    override suspend fun uploadAvatar(uri: Uri): Result<MediaResponse> {
+
     }
 }

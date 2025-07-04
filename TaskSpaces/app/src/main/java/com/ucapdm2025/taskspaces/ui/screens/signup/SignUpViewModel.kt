@@ -38,8 +38,31 @@ class SignUpViewModel(
     private val _avatarUri = MutableStateFlow<Uri?>(null)
     val avatarUri: StateFlow<Uri?> = _avatarUri.asStateFlow()
 
+    private val _avatarUrl = MutableStateFlow<String?>(null)
+    val avatarUrl: StateFlow<String?> = _avatarUrl.asStateFlow()
+
+    private val _isUploadingAvatar = MutableStateFlow(false)
+    val isUploadingAvatar: StateFlow<Boolean> = _isUploadingAvatar.asStateFlow()
+
+    private val _avatarUploadError = MutableStateFlow<String?>(null)
+    val avatarUploadError: StateFlow<String?> = _avatarUploadError.asStateFlow()
+
     fun setAvatarUri(uri: Uri?) {
         _avatarUri.value = uri
+    }
+
+    fun uploadAvatar(uri: Uri) {
+        _isUploadingAvatar.value = true
+        _avatarUploadError.value = null
+        viewModelScope.launch {
+            val result = userRepository.uploadAvatar(uri)
+            if (result.isSuccess) {
+                _avatarUrl.value = result.getOrNull()
+            } else {
+                _avatarUploadError.value = result.exceptionOrNull()?.message ?: "Failed to upload image"
+            }
+            _isUploadingAvatar.value = false
+        }
     }
 
     val authToken: StateFlow<String> = authRepository.authToken.map { it }
