@@ -39,18 +39,21 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class AppProvider(context: Context) {
     private val appDatabase = AppDatabase.getDatabase(context)
 
+    //    Auth
+    private val authService = RetrofitInstance.authService
+    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
+
+//    Media
+    private val mediaService = RetrofitInstance.mediaService
+
     //    Users
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
-    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService)
+    private val userRepository: UserRepository = UserRepositoryImpl(context, userDao, userService, authService, mediaService)
 
     //    Member roles
     private val memberRoleService = RetrofitInstance.memberRoleService
     private val memberRoleRepository: MemberRoleRepository = MemberRoleRepositoryImpl(memberRoleService)
-
-    //    Auth
-    private val authService = RetrofitInstance.authService
-    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
 
     //    Workspace
     private val workspaceDao = appDatabase.workspaceDao()
@@ -148,3 +151,4 @@ class AppProvider(context: Context) {
         return commentRepository
     }
 }
+

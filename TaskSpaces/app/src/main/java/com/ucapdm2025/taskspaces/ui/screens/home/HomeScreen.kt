@@ -42,6 +42,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
 import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.YourWorkspacesSection
@@ -238,19 +239,20 @@ fun HomeScreen(
                             YourWorkspacesSection(
                                 workspaces = state.data,
                                 onClickWorkspaceCard = { workspace ->
-//                            Set the selected workspace ID when in update mode and show the dialog
                                     when (editMode.value) {
                                         HomeEditMode.UPDATE -> {
-                                            viewModel.setSelectedWorkspaceId(workspace.id)
-                                            viewModel.setWorkspaceDialogData(workspace.title)
-                                            viewModel.showDialog()
+                                            if (viewModel.hasSufficientPermissions(workspace.id, MemberRoles.ADMIN)) {
+                                                viewModel.setSelectedWorkspaceId(workspace.id)
+                                                viewModel.setWorkspaceDialogData(workspace.title)
+                                                viewModel.showDialog()
+                                            }
                                         }
 
-                                        //                                Delete the workspace clicked when in delete mode
-//                                TODO: Add a confirmation dialog before deleting
                                         HomeEditMode.DELETE -> {
-                                            viewModel.deleteWorkspace(workspace.id)
-                                            viewModel.setEditMode(HomeEditMode.NONE)
+                                            if (viewModel.hasSufficientPermissions(workspace.id, MemberRoles.ADMIN)) {
+                                                viewModel.deleteWorkspace(workspace.id)
+                                                viewModel.setEditMode(HomeEditMode.NONE)
+                                            }
                                         }
 
                                         else -> onNavigateWorkspace(workspace.id)
@@ -368,7 +370,6 @@ fun HomeScreenLightPreview() {
         }
     }
 }
-
 
 /**
  * Preview of the HomeScreen in dark mode using theme colors.
