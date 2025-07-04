@@ -31,89 +31,16 @@ import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 fun AssignedTasksSection(
     modifier: Modifier = Modifier,
     assignedTasks: List<TaskModel> = emptyList<TaskModel>(),
+    onAssignedTaskClick: (projectId: Int, taskId: Int) -> Unit = { projectId, taskId -> }
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        TaskCard(
-            title = "Task Title",
-            tags = listOf(
-                TagModel(
-                    id = 1,
-                    title = "Tag",
-                    color = Color.Red,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                ),
-                TagModel(
-                    id = 2,
-                    title = "Tag",
-                    color = Color.Blue,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                )
+        assignedTasks.forEach { task ->
+            TaskCard(
+                breadcrumb = task.breadcrumb,
+                title = task.title,
+                tags = task.tags,
+                onClick = { onAssignedTaskClick(task.projectId, task.id) }
             )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TaskCard(
-            title = "Task Title",
-            tags = listOf(
-                TagModel(
-                    id = 1,
-                    title = "Tag",
-                    color = Color.Red,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                ),
-                TagModel(
-                    id = 2,
-                    title = "Tag",
-                    color = Color.Blue,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                )
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TaskCard(
-            title = "Task Title",
-            tags = listOf(
-                TagModel(
-                    id = 1,
-                    title = "Tag",
-                    color = Color.Red,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                ),
-                TagModel(
-                    id = 2,
-                    title = "Tag",
-                    color = Color.Blue,
-                    projectId = 1,
-                    createdAt = "",
-                    updatedAt = ""
-                )
-            )
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-
-        if (assignedTasks.size > 2) {
-            Button(
-                onClick = { /* See more tasks */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("See more")
-            }
         }
     }
 }

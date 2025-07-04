@@ -5,8 +5,10 @@ import com.ucapdm2025.taskspaces.data.remote.interceptors.AuthInterceptor
 import com.ucapdm2025.taskspaces.data.remote.services.AuthService
 import com.ucapdm2025.taskspaces.data.remote.services.BookmarkService
 import com.ucapdm2025.taskspaces.data.remote.services.CommentService
+import com.ucapdm2025.taskspaces.data.remote.services.MediaService
 import com.ucapdm2025.taskspaces.data.remote.services.MemberRoleService
 import com.ucapdm2025.taskspaces.data.remote.services.ProjectService
+import com.ucapdm2025.taskspaces.data.remote.services.SearchService
 import com.ucapdm2025.taskspaces.data.remote.services.TagService
 import com.ucapdm2025.taskspaces.data.remote.services.TaskService
 import com.ucapdm2025.taskspaces.data.remote.services.UserService
@@ -62,6 +64,10 @@ object RetrofitInstance {
         retrofit.create(TaskService::class.java)
     }
 
+    val searchService: SearchService by lazy {
+        retrofit.create(SearchService::class.java)
+    }
+
     val bookmarkService: BookmarkService by lazy {
         retrofit.create(BookmarkService::class.java)
     }
@@ -72,5 +78,9 @@ object RetrofitInstance {
 
     val commentService: CommentService by lazy {
         retrofit.create(CommentService::class.java)
+    }
+
+    val mediaService: MediaService by lazy {
+        retrofit.create(MediaService::class.java)
     }
 }

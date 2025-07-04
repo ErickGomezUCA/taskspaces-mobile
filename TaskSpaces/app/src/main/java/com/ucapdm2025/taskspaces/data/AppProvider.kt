@@ -16,6 +16,8 @@ import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepository
 import com.ucapdm2025.taskspaces.data.repository.project.ProjectRepositoryImpl
+import com.ucapdm2025.taskspaces.data.repository.search.SearchRepository
+import com.ucapdm2025.taskspaces.data.repository.search.SearchRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
 import com.ucapdm2025.taskspaces.data.repository.tag.TagRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
@@ -37,18 +39,21 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 class AppProvider(context: Context) {
     private val appDatabase = AppDatabase.getDatabase(context)
 
+    //    Auth
+    private val authService = RetrofitInstance.authService
+    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
+
+//    Media
+    private val mediaService = RetrofitInstance.mediaService
+
     //    Users
     private val userDao = appDatabase.userDao()
     private val userService = RetrofitInstance.userService
-    private val userRepository: UserRepository = UserRepositoryImpl(userDao, userService)
+    private val userRepository: UserRepository = UserRepositoryImpl(context, userDao, userService, authService, mediaService)
 
     //    Member roles
     private val memberRoleService = RetrofitInstance.memberRoleService
     private val memberRoleRepository: MemberRoleRepository = MemberRoleRepositoryImpl(memberRoleService)
-
-    //    Auth
-    private val authService = RetrofitInstance.authService
-    private val authRepository: AuthRepository = AuthRepository(context.dataStore, authService)
 
     //    Workspace
     private val workspaceDao = appDatabase.workspaceDao()
@@ -85,7 +90,12 @@ class AppProvider(context: Context) {
         taskAssignedDao = taskAssignedDao
     )
 
-    //    Bookmark
+//    Search
+    private val searchDao = appDatabase.searchDao()
+    private val searchService = RetrofitInstance.searchService
+    private val searchRepository: SearchRepository = SearchRepositoryImpl(searchDao, searchService)
+
+//    Bookmark
     private val bookmarkDao = appDatabase.bookmarkDao()
     private val bookmarkService = RetrofitInstance.bookmarkService
     private val bookmarkRepository: BookmarkRepository = BookmarkRepositoryImpl(
@@ -125,6 +135,10 @@ class AppProvider(context: Context) {
         return taskRepository
     }
 
+    fun provideSearchRepository(): SearchRepository {
+        return searchRepository
+    }
+
     fun provideBookmarkRepository(): BookmarkRepository {
         return bookmarkRepository
     }
@@ -137,3 +151,4 @@ class AppProvider(context: Context) {
         return commentRepository
     }
 }
+

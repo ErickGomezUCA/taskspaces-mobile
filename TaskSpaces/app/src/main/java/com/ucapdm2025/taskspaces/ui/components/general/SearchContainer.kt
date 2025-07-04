@@ -62,20 +62,21 @@ fun SearchContainer(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            TextButton(onClick = onViewMoreClick) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "View more",
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = "Go to more",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+//            TODO: Reconsider to implement this
+//            TextButton(onClick = onViewMoreClick) {
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(
+//                        text = "View more",
+//                        fontSize = 20.sp,
+//                        color = MaterialTheme.colorScheme.primary
+//                    )
+//                    Icon(
+//                        imageVector = Icons.Default.ChevronRight,
+//                        contentDescription = "Go to more",
+//                        tint = MaterialTheme.colorScheme.primary
+//                    )
+//                }
+//            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))

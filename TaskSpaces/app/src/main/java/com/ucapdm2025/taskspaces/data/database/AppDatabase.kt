@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.ucapdm2025.taskspaces.data.database.dao.CommentDao
 import com.ucapdm2025.taskspaces.data.database.dao.relational.BookmarkDao
 import com.ucapdm2025.taskspaces.data.database.dao.ProjectDao
+import com.ucapdm2025.taskspaces.data.database.dao.SearchDao
 import com.ucapdm2025.taskspaces.data.database.dao.TagDao
 import com.ucapdm2025.taskspaces.data.database.dao.TaskDao
 import com.ucapdm2025.taskspaces.data.database.dao.UserDao
@@ -40,6 +41,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workspaceDao(): WorkspaceDao
     abstract fun projectDao(): ProjectDao
     abstract fun taskDao(): TaskDao
+    abstract fun searchDao(): SearchDao
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun memberRoleDao(): MemberRoleDao
     abstract fun workspaceMemberDao(): WorkspaceMemberDao

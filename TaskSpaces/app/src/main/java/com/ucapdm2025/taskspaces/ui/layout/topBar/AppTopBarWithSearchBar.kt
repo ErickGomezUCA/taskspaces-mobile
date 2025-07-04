@@ -6,6 +6,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,7 +29,7 @@ fun AppTopBarWithSearchBar(
     query: String,
     placeholder: String = "Placeholder...",
     onQueryChange: (String) -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (query: String) -> Unit = {query ->}
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
