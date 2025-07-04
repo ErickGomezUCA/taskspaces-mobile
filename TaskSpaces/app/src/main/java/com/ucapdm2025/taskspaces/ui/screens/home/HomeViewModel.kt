@@ -90,28 +90,23 @@ class HomeViewModel(
             authRepository.authUserId.collect { userId ->
                 _authUserId.value = userId
 
-                if (userId != 0) { // Solo si hay un userId válido (no 0, que es el valor inicial por defecto)
+                if (userId != 0) {
                     launch {
                         userRepository.getUserById(userId).collect { resource ->
                             when (resource) {
                                 is Resource.Success -> {
-                                    // Accede a 'data' de Resource.Success, que puede ser UserModel?
-                                    // Y luego a 'username' del UserModel, proporcionando un fallback si es null
-                                    _currentUserName.value = resource.data?.username ?: "User"
+
+                                    _currentUserName.value = resource.data?.fullname ?: "User"
                                 }
                                 is Resource.Error -> {
                                     Log.e("HomeViewModel", "Error fetching user from UserRepository: ${resource.message}")
-                                    _currentUserName.value = "User" // Fallback en caso de error
+                                    _currentUserName.value = "User"
                                 }
                                 is Resource.Loading -> {
-                                    // Opcional: _currentUserName.value = "Cargando..."
                                 }
                             }
                         }
                     }
-                } else {
-                    // Si el userId es 0 (no autenticado o valor inicial), restablece a "User"
-                    _currentUserName.value = "User"
                 }
 
                 launch {
