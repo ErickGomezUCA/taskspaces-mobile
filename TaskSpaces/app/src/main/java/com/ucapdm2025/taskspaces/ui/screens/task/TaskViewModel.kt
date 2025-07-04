@@ -392,6 +392,8 @@ class TaskViewModel(
             val a = (color.alpha * 255).toInt()
             val hexColor = String.format("#%02X%02X%02X%02X", r, g, b, a)
 
+            Log.d("TaskViewModel", "Updating tag with id: $id, title: $title and color: ${hexColor}")
+
             val response = tagRepository.updateTag(
                 id = id,
                 title = title,
