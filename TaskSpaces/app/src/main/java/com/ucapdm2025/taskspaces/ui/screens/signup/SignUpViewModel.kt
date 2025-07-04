@@ -152,7 +152,7 @@ class SignUpViewModel(
                 _fullname.value,
                 _username.value,
                 _email.value,
-                "",
+                _avatarUrl.value ?: "",
                 _password.value,
                 _confirmPassword.value
             )
