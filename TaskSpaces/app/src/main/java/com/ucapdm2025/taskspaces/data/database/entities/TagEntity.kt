@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ucapdm2025.taskspaces.data.model.TagModel
-import androidx.core.graphics.toColorInt
+import com.ucapdm2025.taskspaces.utils.toColorRRGGBBAA
 
 /**
  * TagEntity is a data class that represents a tag in the database.
@@ -36,9 +36,10 @@ fun TagEntity.toDomain(): TagModel {
     return TagModel(
         id = id,
         title = title,
-        color = Color(color.toColorInt()),
+        color = color.toColorRRGGBBAA(),
         projectId = projectId,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
 }
+

@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.toColorInt
 import com.ucapdm2025.taskspaces.data.database.entities.TagEntity
 import com.ucapdm2025.taskspaces.data.model.TagModel
+import com.ucapdm2025.taskspaces.utils.toColorRRGGBBAA
 
 /**
  * Data class representing a response containing tag information.
@@ -33,7 +34,7 @@ fun TagResponse.toDomain(): TagModel {
     return TagModel(
         id = id,
         title = title,
-        color = Color(color.toColorInt()),
+        color = color.toColorRRGGBBAA(),
         projectId = projectId,
         createdAt = createdAt,
         updatedAt = updatedAt
