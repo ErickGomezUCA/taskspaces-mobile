@@ -88,7 +88,9 @@ fun ProjectScreen(
             taskId = selectedTaskId.value,
             onDismissRequest = {
                 viewModel.reloadTasks()
-                viewModel.hideTaskDialog() },
+                viewModel.hideTaskDialog()
+            },
+            projectViewModel = viewModel,
         )
     }
 
