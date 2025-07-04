@@ -11,17 +11,20 @@ import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.WorkspaceModel
 import com.ucapdm2025.taskspaces.data.repository.auth.AuthRepository
+import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.data.repository.workspace.WorkspaceRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
 import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.helpers.friendlyMessage
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.screens.workspace.UiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +35,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val workspaceRepository: WorkspaceRepository,
     private val authRepository: AuthRepository,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val memberRoleRepository: MemberRoleRepository,
 ) : ViewModel() {
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
@@ -68,6 +72,12 @@ class HomeViewModel(
     fun setCreateAttempted(value: Boolean) {
         _wasCreateAttempted.value = value
     }
+
+    private val _showDeleteConfirmationDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showDeleteConfirmationDialog: StateFlow<Boolean> = _showDeleteConfirmationDialog.asStateFlow()
+
+    private val _pendingWorkspaceToDeleteId: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val pendingWorkspaceToDeleteId: StateFlow<Int?> = _pendingWorkspaceToDeleteId.asStateFlow()
 
     //    Fetch user id from auth
     init {
@@ -227,6 +237,33 @@ class HomeViewModel(
     fun setSelectedWorkspaceId(id: Int?) {
         _selectedWorkspaceId.value = id
     }
+    // Delete confirmation dialog functions
+    fun showDeleteConfirmationDialog(workspaceId: Int) {
+        _pendingWorkspaceToDeleteId.value = workspaceId
+        _showDeleteConfirmationDialog.value = true
+    }
+
+    fun hideDeleteConfirmationDialog() {
+        _pendingWorkspaceToDeleteId.value = null
+        _showDeleteConfirmationDialog.value = false
+    }
+
+    fun hasSufficientPermissions(
+        workspaceId: Int,
+        minimumRole: MemberRoles
+    ): Boolean {
+        return kotlinx.coroutines.runBlocking {
+            memberRoleRepository.hasSufficientPermissions(
+                workspaceId = workspaceId,
+                minimumRole = minimumRole
+            ).firstOrNull { it is Resource.Success || it is Resource.Error }?.let { resource ->
+                when (resource) {
+                    is Resource.Success -> resource.data == true
+                    else -> false
+                }
+            } == true
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -235,7 +272,8 @@ class HomeViewModel(
                 HomeViewModel(
                     application.appProvider.provideWorkspaceRepository(),
                     application.appProvider.provideAuthRepository(),
-                    application.appProvider.provideTaskRepository()
+                    application.appProvider.provideTaskRepository(),
+                    application.appProvider.provideMemberRoleRepository()
                 )
             }
         }

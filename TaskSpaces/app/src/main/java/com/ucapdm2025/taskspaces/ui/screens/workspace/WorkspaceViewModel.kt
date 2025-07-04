@@ -98,6 +98,12 @@ class WorkspaceViewModel(
         _wasInviteAttempted.value = value
     }
 
+    private val _showProjectDeleteConfirmationDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showProjectDeleteConfirmationDialog: StateFlow<Boolean> = _showProjectDeleteConfirmationDialog.asStateFlow()
+
+    private val _pendingProjectToDeleteId: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val pendingProjectToDeleteId: StateFlow<Int?> = _pendingProjectToDeleteId.asStateFlow()
+
 
     init {
 //        Get current workspace info
@@ -230,10 +236,21 @@ class WorkspaceViewModel(
         _selectedProjectId.value = projectId
     }
 
+    fun showProjectDeleteConfirmationDialog(projectId: Int) {
+        _pendingProjectToDeleteId.value = projectId
+        _showProjectDeleteConfirmationDialog.value = true
+    }
+
+    fun hideProjectDeleteConfirmationDialog() {
+        _pendingProjectToDeleteId.value = null
+        _showProjectDeleteConfirmationDialog.value = false
+    }
+
     //    Manage members dialog functions
     fun showManageMembersDialog() {
         _showManageMembersDialog.value = true
     }
+
 
     fun hideManageMembersDialog() {
         _showManageMembersDialog.value = false

@@ -42,6 +42,7 @@ import com.ucapdm2025.taskspaces.ui.components.general.FeedbackIcon
 import com.ucapdm2025.taskspaces.ui.components.general.FloatingStatusDialog
 import com.ucapdm2025.taskspaces.ui.components.general.NotificationHost
 import com.ucapdm2025.taskspaces.ui.components.home.HomeEditMode
+import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.AssignedTasksSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.SharedWorkspacesSection
 import com.ucapdm2025.taskspaces.ui.screens.home.sections.YourWorkspacesSection
@@ -73,6 +74,8 @@ fun HomeScreen(
     val editMode = viewModel.editMode.collectAsStateWithLifecycle()
     val selectedWorkspaceId = viewModel.selectedWorkspaceId.collectAsStateWithLifecycle()
     val notificationState = remember { mutableStateOf<UiEvent?>(null) }
+    val showDeleteConfirmationDialog = viewModel.showDeleteConfirmationDialog.collectAsStateWithLifecycle()
+    val pendingWorkspaceToDeleteId = viewModel.pendingWorkspaceToDeleteId.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collectLatest { evt ->
@@ -166,6 +169,39 @@ fun HomeScreen(
         )
     }
 
+    // Delete confirmation dialog
+    if (showDeleteConfirmationDialog.value) {
+        AlertDialog(
+            onDismissRequest = { viewModel.hideDeleteConfirmationDialog() },
+            title = { Text(text = "Confirm Deletion") },
+            text = { Text(text = "Are you sure you want to delete this workspace?") },
+            confirmButton = {
+                Button(   //AQUII
+                    onClick = {
+                        pendingWorkspaceToDeleteId.value?.let { workspaceId ->
+                            if (viewModel.hasSufficientPermissions(workspaceId, MemberRoles.ADMIN)) {
+                                viewModel.deleteWorkspace(workspaceId)
+                                viewModel.setEditMode(HomeEditMode.NONE)
+                            }
+
+
+                        }
+                        viewModel.hideDeleteConfirmationDialog()
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { viewModel.hideDeleteConfirmationDialog() }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
 //    Using a box to place this floating status dialog on top of the LazyColumn
 //    This floating status dialog shows the current edit mode for Home Screen
     Box(modifier = Modifier.fillMaxSize()) {
@@ -238,19 +274,20 @@ fun HomeScreen(
                             YourWorkspacesSection(
                                 workspaces = state.data,
                                 onClickWorkspaceCard = { workspace ->
-//                            Set the selected workspace ID when in update mode and show the dialog
                                     when (editMode.value) {
                                         HomeEditMode.UPDATE -> {
-                                            viewModel.setSelectedWorkspaceId(workspace.id)
-                                            viewModel.setWorkspaceDialogData(workspace.title)
-                                            viewModel.showDialog()
+                                            if (viewModel.hasSufficientPermissions(workspace.id, MemberRoles.ADMIN)) {
+                                                viewModel.setSelectedWorkspaceId(workspace.id)
+                                                viewModel.setWorkspaceDialogData(workspace.title)
+                                                viewModel.showDialog()
+                                            }
                                         }
 
-                                        //                                Delete the workspace clicked when in delete mode
-//                                TODO: Add a confirmation dialog before deleting
                                         HomeEditMode.DELETE -> {
-                                            viewModel.deleteWorkspace(workspace.id)
-                                            viewModel.setEditMode(HomeEditMode.NONE)
+
+                                            viewModel.showDeleteConfirmationDialog(workspace.id)
+
+
                                         }
 
                                         else -> onNavigateWorkspace(workspace.id)
@@ -368,7 +405,6 @@ fun HomeScreenLightPreview() {
         }
     }
 }
-
 
 /**
  * Preview of the HomeScreen in dark mode using theme colors.
