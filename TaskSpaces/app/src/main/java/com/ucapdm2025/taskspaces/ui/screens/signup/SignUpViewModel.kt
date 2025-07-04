@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.signup
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -34,14 +35,19 @@ class SignUpViewModel(
     private val _confirmPassword = MutableStateFlow<String>("")
     val confirmPassword: StateFlow<String> = _confirmPassword.asStateFlow()
 
+    private val _avatarUri = MutableStateFlow<Uri?>(null)
+    val avatarUri: StateFlow<Uri?> = _avatarUri.asStateFlow()
+
+    fun setAvatarUri(uri: Uri?) {
+        _avatarUri.value = uri
+    }
+
     val authToken: StateFlow<String> = authRepository.authToken.map { it }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = ""
         )
-
-
 
     private val _fullnameError = MutableStateFlow<String?>(null)
     val fullnameError: StateFlow<String?> = _fullnameError.asStateFlow()

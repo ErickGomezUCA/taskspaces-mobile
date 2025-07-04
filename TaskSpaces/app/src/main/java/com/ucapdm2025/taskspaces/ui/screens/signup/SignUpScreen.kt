@@ -1,8 +1,13 @@
 package com.ucapdm2025.taskspaces.ui.screens.signup
 
+import android.Manifest
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,9 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.rememberAsyncImagePainter
 import com.ucapdm2025.taskspaces.R
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
+import com.ucapdm2025.taskspaces.ui.theme.ExtendedTheme
 import com.ucapdm2025.taskspaces.ui.theme.PrimaryLight100
 import com.ucapdm2025.taskspaces.ui.theme.TaskSpacesTheme
 
@@ -73,12 +81,18 @@ fun SignUpScreen(
     val password = viewModel.password.collectAsStateWithLifecycle()
     val confirmPassword = viewModel.confirmPassword.collectAsStateWithLifecycle()
     val authToken = viewModel.authToken.collectAsStateWithLifecycle()
+    val avatarUri = viewModel.avatarUri.collectAsStateWithLifecycle()
 
     val fullnameError = viewModel.fullnameError.collectAsStateWithLifecycle()
     val usernameError = viewModel.usernameError.collectAsStateWithLifecycle()
     val emailError = viewModel.emailError.collectAsStateWithLifecycle()
     val passwordError = viewModel.passwordError.collectAsStateWithLifecycle()
     val confirmPasswordError = viewModel.confirmPasswordError.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    val pickImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        viewModel.setAvatarUri(uri)
+    }
 
     LaunchedEffect(authToken.value) {
         if (authToken.value.isNotEmpty()) {
@@ -221,6 +235,59 @@ fun SignUpScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Avatar Picker Section styled like inputs
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Upload profile image",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                        .clickable { pickImageLauncher.launch("image/*") }
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (avatarUri.value == null) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                        }
+                        if (avatarUri.value != null) {
+                            Image(
+                                painter = rememberAsyncImagePainter(avatarUri.value),
+                                contentDescription = "Avatar",
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(RoundedCornerShape(50)) // Circular shape
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Change image",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        } else {
+                            Text(
+                                text = "Select an image",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
