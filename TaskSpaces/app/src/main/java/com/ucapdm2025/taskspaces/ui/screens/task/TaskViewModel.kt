@@ -12,11 +12,11 @@ import com.ucapdm2025.taskspaces.data.model.TaskModel
 import com.ucapdm2025.taskspaces.data.model.UserModel
 import com.ucapdm2025.taskspaces.data.repository.bookmark.BookmarkRepository
 import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepository
-import com.ucapdm2025.taskspaces.data.repository.comment.CommentRepositoryImpl
 import com.ucapdm2025.taskspaces.data.repository.memberRole.MemberRoleRepository
 import com.ucapdm2025.taskspaces.data.repository.tag.TagRepository
 import com.ucapdm2025.taskspaces.data.repository.task.TaskRepository
 import com.ucapdm2025.taskspaces.helpers.Resource
+import com.ucapdm2025.taskspaces.helpers.UiState
 import com.ucapdm2025.taskspaces.ui.components.projects.StatusVariations
 import com.ucapdm2025.taskspaces.ui.components.workspace.MemberRoles
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,50 +81,53 @@ class TaskViewModel(
     private val _newComment: MutableStateFlow<String> = MutableStateFlow("")
     val newComment: StateFlow<String> = _newComment.asStateFlow()
 
+    private val _taskState = MutableStateFlow<UiState<TaskModel>>(UiState.Loading)
+    val taskState: StateFlow<UiState<TaskModel>> = _taskState.asStateFlow()
+
+
     init {
         // Use flatMapLatest to switch to the new task flow whenever _currentTaskId changes
 //        Load _task
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    taskRepository.getTaskById(taskId)
-                } else {
+            _currentTaskId.flatMapLatest { id ->
+                id?.let { taskRepository.getTaskById(it)} ?:
                     flowOf(null) // Emit null if no task ID is set
-                }
+
             }.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
                         // Handle loading state if necessary
+                        _taskState.value = UiState.Loading
                     }
 
                     is Resource.Success -> {
-                        val task = resource.data
-                        _task.value = task
+                        val taskData = resource.data
+                        _task.value = taskData
+                        _taskState.value = UiState.Success(taskData!!)
+
                     }
 
                     is Resource.Error -> {
                         // Handle error state if necessary
+                        _taskState.value = UiState.Error(
+                            resource.message ?: "Unknown error loading task"
+                        )
                     }
 
-                    null -> _task.value = null
+                    null -> {_task.value = null
+                    _taskState.value = UiState.Error("Task not found") }
                 }
             }
         }
 
 //        Load _isBookmarked
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    bookmarkRepository.isBookmarked(taskId)
-                } else {
-                    flowOf(null) // Emit null if no task ID is set
-                }
+            _currentTaskId.flatMapLatest { id ->
+                id?.let {
+                    bookmarkRepository.isBookmarked(it)
+                } ?: flowOf(null) // Emit null if no task ID is set
             }.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
-
                     is Resource.Success -> {
                         val bookmark = resource.data
                         _isBookmarked.value = bookmark
@@ -132,37 +135,33 @@ class TaskViewModel(
 
                     is Resource.Error -> {
                         // Handle error state if necessary
+                        _isBookmarked.value = false
                     }
 
-                    null -> _isBookmarked.value = false
+                    null, is Resource.Loading -> {
+                        // Handle loading state if necessary
+                    }
                 }
             }
         }
 
 //        Load _tags
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    tagRepository.getTagsByTaskId(taskId)
-                } else {
+            _currentTaskId.flatMapLatest { id ->
+                id?.let {
+                tagRepository.getTagsByTaskId(it)
+                } ?:
                     flowOf(null) // Emit null if no task ID is set
-                }
             }.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
 
-                    is Resource.Success -> {
-                        val fetchedTags = resource.data
-                        _tags.value = fetchedTags
-                    }
+                    is Resource.Success ->
+                        _tags.value = resource.data
 
-                    is Resource.Error -> {
-                        // Handle error state if necessary
-                    }
 
-                    null -> _tags.value = emptyList()
+                    is Resource.Error,
+                        null -> _tags.value = emptyList()// Handle error state if necessary
+                    else -> {}
                 }
             }
         }
@@ -170,27 +169,20 @@ class TaskViewModel(
 //        Load _projectTags
         viewModelScope.launch {
             _task.flatMapLatest { task ->
-                if (task != null) {
-                    tagRepository.getTagsByProjectId(task.projectId)
-                } else {
+                task?.let {
+                    tagRepository.getTagsByProjectId(it.projectId)
+                } ?:
                     flowOf(null) // Emit null if no task ID is set
-                }
+
             }.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
 
-                    is Resource.Success -> {
-                        val tags = resource.data
-                        _projectTags.value = tags
-                    }
+                    is Resource.Success ->
+                        _projectTags.value = resource.data
 
-                    is Resource.Error -> {
-                        // Handle error state if necessary
-                    }
 
-                    null -> _projectTags.value = emptyList()
+                    is Resource.Error, null -> _projectTags.value = emptyList()
+                    else -> {}
                 }
             }
         }
@@ -198,84 +190,60 @@ class TaskViewModel(
 
 //        Load _members
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    taskRepository.getAssignedMembersByTaskId(taskId)
-                } else {
+            _currentTaskId.flatMapLatest { id ->
+                id?.let {
+                taskRepository.getAssignedMembersByTaskId(taskId)
+                } ?:
                     flowOf(null) // Emit null if no task ID is set
-                }
             }.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
 
-                    is Resource.Success -> {
-                        val members = resource.data
-                        _members.value = members
-                    }
+                    is Resource.Success ->
+                        _members.value = resource.data
 
-                    is Resource.Error -> {
-                        // Handle error state if necessary
-                    }
 
-                    null -> _members.value = emptyList()
+                    is Resource.Error, null -> _members.value = emptyList()
+                    else -> {}
                 }
             }
         }
 
 //        Load _workspaceMembers
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
-                    taskRepository.getWorkspaceMembersByTaskId(taskId)
-                } else {
+            _currentTaskId.flatMapLatest { id ->
+                id?.let {
+                taskRepository.getWorkspaceMembersByTaskId(taskId)
+                } ?:
                     flowOf(null) // Emit null if no task ID is set
-                }
+
             }.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
 
-                    is Resource.Success -> {
-                        val members = resource.data
-                        _workspaceMembers.value = members
-                    }
+                    is Resource.Success ->
+                        _workspaceMembers.value = resource.data
 
-                    is Resource.Error -> {
-                        // Handle error state if necessary
-                    }
 
-                    null -> _workspaceMembers.value = emptyList()
+                    is Resource.Error, null -> _workspaceMembers.value = emptyList()
+                    else -> {}
                 }
             }
         }
 
 //        Load _comments
         viewModelScope.launch {
-            _currentTaskId.flatMapLatest { taskId ->
-                if (taskId != null) {
+            _currentTaskId.flatMapLatest { id ->
+                id?.let {
                     commentRepository.getCommentsByTaskId(taskId)
-                } else {
+                } ?:
                     flowOf(null) // Emit null if no task ID is set
-                }
+
             }.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {
-                        // Handle loading state if necessary
-                    }
+                    is Resource.Success ->
+                        _comments.value = resource.data
 
-                    is Resource.Success -> {
-                        val comments = resource.data
-                        _comments.value = comments
-                    }
-
-                    is Resource.Error -> {
-                        // Handle error state if necessary
-                    }
-
-                    null -> _comments.value = emptyList()
+                    is Resource.Error, null -> _comments.value = emptyList()
+                    else -> {}
                 }
             }
         }
@@ -286,7 +254,8 @@ class TaskViewModel(
      * This will trigger the flows in the init block to re-fetch data.
      */
     fun loadTask(taskId: Int) {
-        if (_currentTaskId.value != taskId) { // Only update if the ID is different
+        if (_currentTaskId.value != taskId) {// Only update if the ID is different
+            _taskState.value = UiState.Loading
             _currentTaskId.value = taskId
         }
     }
@@ -295,6 +264,7 @@ class TaskViewModel(
     fun clearTask() {
         _currentTaskId.value = null
         _task.value = null // Explicitly clear the task model
+        _taskState.value = UiState.Loading
         _comments.value = emptyList() // Explicitly clear comments
     }
 
