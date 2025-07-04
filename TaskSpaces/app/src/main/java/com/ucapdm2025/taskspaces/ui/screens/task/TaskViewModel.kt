@@ -1,5 +1,6 @@
 package com.ucapdm2025.taskspaces.ui.screens.task
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -87,6 +88,18 @@ class TaskViewModel(
     private val _taskState = MutableStateFlow<UiState<TaskModel>>(UiState.Loading)
     val taskState: StateFlow<UiState<TaskModel>> = _taskState.asStateFlow()
 
+    private val _selectedMediaUris = MutableStateFlow<List<Uri>>(emptyList())
+    val selectedMediaUris: StateFlow<List<Uri>> = _selectedMediaUris.asStateFlow()
+
+    // Media upload state
+    private val _uploadedMediaUrl = MutableStateFlow<String?>(null)
+    val uploadedMediaUrl: StateFlow<String?> = _uploadedMediaUrl.asStateFlow()
+
+    private val _isUploadingMedia = MutableStateFlow(false)
+    val isUploadingMedia: StateFlow<Boolean> = _isUploadingMedia.asStateFlow()
+
+    private val _mediaUploadError = MutableStateFlow<String?>(null)
+    val mediaUploadError: StateFlow<String?> = _mediaUploadError.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -681,6 +694,25 @@ class TaskViewModel(
         } == true
     }
 
+
+//    Media
+    fun setSelectedMediaUris(uris: List<Uri>) {
+        _selectedMediaUris.value = uris
+    }
+
+//    fun uploadMediaToTask(uri: Uri) {
+//        _isUploadingMedia.value = true
+//        _mediaUploadError.value = null
+//        viewModelScope.launch {
+//            val result = mediaRepository.uploadMedia(uri, _task.value?.id ?: 0)
+//            if (result.isSuccess) {
+//                _uploadedMediaUrl.value = result.getOrNull()?.url
+//            } else {
+//                _mediaUploadError.value = result.exceptionOrNull()?.message ?: "Failed to upload media"
+//            }
+//            _isUploadingMedia.value = false
+//        }
+//    }
 }
 
 /**
