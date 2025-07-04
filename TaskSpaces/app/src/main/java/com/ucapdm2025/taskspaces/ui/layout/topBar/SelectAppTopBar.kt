@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ucapdm2025.taskspaces.TaskSpacesApplication
 import com.ucapdm2025.taskspaces.helpers.SearchHolder
 import com.ucapdm2025.taskspaces.ui.navigation.UserRoute
+import com.ucapdm2025.taskspaces.ui.screens.home.HomeViewModel
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModel
 import com.ucapdm2025.taskspaces.ui.screens.search.SearchViewModelFactory
 import com.ucapdm2025.taskspaces.ui.theme.ExtendedColors
@@ -23,6 +24,10 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
     val viewModel: SearchViewModel = viewModel(
         factory = SearchViewModelFactory(searchRepository),
     )
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModel.Factory
+    )
+    val currentUserName = homeViewModel.currentUserName.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsStateWithLifecycle()
 
     LaunchedEffect(searchResults.value) {
@@ -32,7 +37,7 @@ fun SelectAppTopBar(currentRoute: String, navController: NavHostController) {
     when (currentRoute) {
         "HomeRoute" -> {
             AppTopBar(
-                title = "Welcome, USER",
+                title = if (currentUserName.value == "") "Welcome" else "Welcome, ${currentUserName.value.split(" ").first()}",
                 onUserClick = { navController.navigate(UserRoute) },
                 variant = AppTopBarVariant.HOME
             )
